@@ -124,6 +124,41 @@ export type Database = {
           },
         ]
       }
+      daily_tasks: {
+        Row: {
+          completed_at: string
+          id: string
+          points_awarded: number
+          task_date: string
+          task_type: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          id?: string
+          points_awarded?: number
+          task_date?: string
+          task_type: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          id?: string
+          points_awarded?: number
+          task_date?: string
+          task_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_tasks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       debate_messages: {
         Row: {
           created_at: string
@@ -514,6 +549,10 @@ export type Database = {
       cast_vote: {
         Args: { p_flint_id: string; p_user_id: string; p_vote_type: string }
         Returns: undefined
+      }
+      complete_daily_task: {
+        Args: { p_points: number; p_task_type: string; p_user_id: string }
+        Returns: boolean
       }
       find_chat_match: {
         Args: { p_topic: string; p_user_id: string }
