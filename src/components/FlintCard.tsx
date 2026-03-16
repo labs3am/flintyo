@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ThumbsUp, ThumbsDown, MessageSquare, Swords, Flag, Clock } from "lucide-react";
 import CommentsPanel from "@/components/CommentsPanel";
 import ReportDialog from "@/components/ReportDialog";
+import { completeDailyTask } from "@/lib/dailyTasks";
 
 interface FlintProps {
   flint: {
