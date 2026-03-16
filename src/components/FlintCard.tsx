@@ -32,6 +32,7 @@ const FlintCard = ({ flint, currentUserId, onVote }: FlintProps) => {
   const [clashing, setClashing] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [commentCount, setCommentCount] = useState(0);
+  const [showReport, setShowReport] = useState(false);
 
   // Fetch user's existing vote & comment count
   useEffect(() => {
