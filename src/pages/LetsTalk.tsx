@@ -199,7 +199,7 @@ const LetsTalk = () => {
           </div>
         </header>
 
-        <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4">
+        <div className="flex flex-1 flex-col items-center justify-center gap-5 px-4 py-6">
           {!searching ? (
             <>
               <MessageCircle className="h-16 w-16 text-primary/40" />
@@ -219,6 +219,47 @@ const LetsTalk = () => {
                 <Button onClick={handleSearch} className="w-full font-semibold" disabled={!topic.trim()}>
                   Find someone 🔍
                 </Button>
+              </div>
+
+              {/* Daily Tasks Widget */}
+              <div className="w-full max-w-xs rounded-lg border border-border bg-card p-3 space-y-2.5 mt-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <Zap className="h-3.5 w-3.5 text-primary" />
+                    <span className="text-[11px] font-semibold text-foreground">Daily Tasks</span>
+                  </div>
+                  <span className="text-[10px] text-muted-foreground">
+                    {completedTasks.length}/{DAILY_TASKS.length}
+                  </span>
+                </div>
+                <div className="h-1.5 rounded-full bg-secondary overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-primary transition-all duration-500"
+                    style={{ width: `${(completedTasks.length / DAILY_TASKS.length) * 100}%` }}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  {DAILY_TASKS.map((task) => {
+                    const done = completedTasks.includes(task.task_type);
+                    return (
+                      <div key={task.id} className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          {done ? (
+                            <CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0" />
+                          ) : (
+                            <Circle className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                          )}
+                          <span className={`text-[10px] ${done ? "text-muted-foreground line-through" : "text-foreground"}`}>
+                            {task.icon} {task.label}
+                          </span>
+                        </div>
+                        <span className={`text-[9px] font-mono ${done ? "text-primary" : "text-muted-foreground"}`}>
+                          +{task.points}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </>
           ) : (
