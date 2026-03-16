@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowLeft, Flame } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const CATEGORIES = ["Life", "Philosophy", "Politics", "Relationships", "Random"];
+const CATEGORIES = ["Life", "Philosophy", "Politics", "Relationships", "Religion", "Technology", "Random"];
 
 const CreateFlint = () => {
   const { user } = useAuth();

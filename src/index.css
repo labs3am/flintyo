@@ -47,9 +47,10 @@
 
     /* Rank colors */
     --rank-lead: 240 5% 55%;
-    --rank-copper: 25 80% 55%;
+    --rank-copper: 142 70% 45%;
     --rank-cobalt: 220 80% 55%;
     --rank-amethyst: 280 70% 60%;
+    --rank-gold: 43 96% 56%;
 
     /* Custom */
     --success: 142 70% 45%;

@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import FlintCard from "@/components/FlintCard";
-import { Flame, Plus, MessageCircle, User } from "lucide-react";
+import { Flame, Plus, MessageCircle, User, Globe, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import NotificationBell from "@/components/NotificationBell";
 
@@ -20,7 +20,7 @@ interface Flint {
   author_labs_id?: string;
 }
 
-const CATEGORIES = ["All", "Life", "Philosophy", "Politics", "Relationships", "Random"];
+const CATEGORIES = ["All", "Life", "Philosophy", "Politics", "Relationships", "Religion", "Technology", "Random"];
 
 const Index = () => {
   const { user, signOut } = useAuth();
@@ -28,6 +28,25 @@ const Index = () => {
   const [flints, setFlints] = useState<Flint[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("All");
+  const [feedMode, setFeedMode] = useState<"global" | "country">("global");
+  const [userCountry, setUserCountry] = useState<string | null>(null);
+  const [userInterests, setUserInterests] = useState<string[]>([]);
+
+  // Fetch user preferences
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("users")
+      .select("country, interests")
+      .eq("id", user.id)
+      .single()
+      .then(({ data }) => {
+        if (data) {
+          setUserCountry((data as any).country);
+          setUserInterests((data as any).interests || []);
+        }
+      });
+  }, [user]);
 
   const fetchFlints = async () => {
     const { data, error } = await supabase
@@ -40,24 +59,27 @@ const Index = () => {
       return;
     }
 
-    // Fetch author labs_ids
+    // Fetch author labs_ids and countries
     const authorIds = [...new Set((data || []).map((f: Flint) => f.author_id))];
-    let authorsMap: Record<string, string> = {};
+    let authorsMap: Record<string, { labs_id: string; country: string | null }> = {};
 
     if (authorIds.length > 0) {
       const { data: authors } = await supabase
         .from("users")
-        .select("id, labs_id")
+        .select("id, labs_id, country")
         .in("id", authorIds);
 
       if (authors) {
-        authorsMap = Object.fromEntries(authors.map((a: { id: string; labs_id: string }) => [a.id, a.labs_id]));
+        authorsMap = Object.fromEntries(
+          authors.map((a: any) => [a.id, { labs_id: a.labs_id, country: a.country }])
+        );
       }
     }
 
     const flintsWithAuthors = (data || []).map((f: Flint) => ({
       ...f,
-      author_labs_id: authorsMap[f.author_id] || "LabsID_???",
+      author_labs_id: authorsMap[f.author_id]?.labs_id || "LabsID_???",
+      _author_country: authorsMap[f.author_id]?.country || null,
     }));
 
     setFlints(flintsWithAuthors);
@@ -68,9 +90,44 @@ const Index = () => {
     fetchFlints();
   }, []);
 
-  const filteredFlints = activeCategory === "All"
-    ? flints
-    : flints.filter((f) => f.category === activeCategory);
+  // Smart feed: filter by category, country, then apply 70/30 interest logic
+  const getSmartFeed = () => {
+    let feed = flints;
+
+    // Country filter
+    if (feedMode === "country" && userCountry) {
+      feed = feed.filter((f: any) => f._author_country === userCountry);
+    }
+
+    // Category filter
+    if (activeCategory !== "All") {
+      feed = feed.filter((f) => f.category === activeCategory);
+    }
+
+    // 70/30 interest-based sorting when viewing "All"
+    if (activeCategory === "All" && userInterests.length > 0) {
+      const preferred = feed.filter((f) => userInterests.includes(f.category));
+      const random = feed.filter((f) => !userInterests.includes(f.category));
+
+      // Interleave: ~70% preferred, ~30% random
+      const result: Flint[] = [];
+      let pi = 0, ri = 0;
+      while (pi < preferred.length || ri < random.length) {
+        // Add ~7 preferred for every ~3 random
+        for (let i = 0; i < 7 && pi < preferred.length; i++) {
+          result.push(preferred[pi++]);
+        }
+        for (let i = 0; i < 3 && ri < random.length; i++) {
+          result.push(random[ri++]);
+        }
+      }
+      return result;
+    }
+
+    return feed;
+  };
+
+  const filteredFlints = getSmartFeed();
 
   return (
     <div className="flex min-h-screen flex-col bg-background pb-20">
@@ -82,6 +139,31 @@ const Index = () => {
             <span className="text-lg font-bold text-foreground">Flintyo</span>
           </div>
           <div className="flex items-center gap-2">
+            {/* Feed mode toggle */}
+            <div className="flex rounded-full border border-border bg-card overflow-hidden">
+              <button
+                onClick={() => setFeedMode("global")}
+                className={`flex items-center gap-1 px-2.5 py-1 text-[10px] font-medium transition-colors ${
+                  feedMode === "global"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Globe className="h-3 w-3" />
+                Global
+              </button>
+              <button
+                onClick={() => setFeedMode("country")}
+                className={`flex items-center gap-1 px-2.5 py-1 text-[10px] font-medium transition-colors ${
+                  feedMode === "country"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <MapPin className="h-3 w-3" />
+                {userCountry || "Country"}
+              </button>
+            </div>
             <NotificationBell />
             <button onClick={signOut} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
               Sign out
@@ -118,7 +200,9 @@ const Index = () => {
         ) : filteredFlints.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
             <Flame className="h-12 w-12 text-muted-foreground/30" />
-            <p className="text-sm text-muted-foreground">No flints yet. Be the first to spark one!</p>
+            <p className="text-sm text-muted-foreground">
+              {feedMode === "country" ? `No flints from ${userCountry} yet.` : "No flints yet. Be the first to spark one!"}
+            </p>
           </div>
         ) : (
           filteredFlints.map((flint) => (

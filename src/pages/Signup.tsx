@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Flame } from "lucide-react";
+import { Flame, Check } from "lucide-react";
 
 const COUNTRIES = [
   "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda",
@@ -44,14 +44,28 @@ const COUNTRIES = [
   "Zambia", "Zimbabwe",
 ];
 
+const INTEREST_OPTIONS = ["Life", "Philosophy", "Politics", "Relationships", "Religion", "Technology", "Random"];
+
 const Signup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [country, setCountry] = useState("");
+  const [interests, setInterests] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  const toggleInterest = (interest: string) => {
+    setInterests((prev) => {
+      if (prev.includes(interest)) return prev.filter((i) => i !== interest);
+      if (prev.length >= 3) {
+        toast({ title: "Pick up to 3 interests", variant: "destructive" });
+        return prev;
+      }
+      return [...prev, interest];
+    });
+  };
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,13 +78,18 @@ const Signup = () => {
       return;
     }
 
+    if (interests.length === 0) {
+      toast({ title: "Pick at least 1 interest", variant: "destructive" });
+      return;
+    }
+
     if (password.length < 6) {
       toast({ title: "Password must be at least 6 characters", variant: "destructive" });
       return;
     }
 
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
+    const { data: authData, error } = await supabase.auth.signUp({
       email: trimmedEmail,
       password,
       options: {
@@ -84,10 +103,20 @@ const Signup = () => {
 
     if (error) {
       toast({ title: "Signup failed", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Your LabsID is ready! 🔥", description: "Welcome to the anonymous world." });
-      navigate("/");
+      setLoading(false);
+      return;
     }
+
+    // Save interests to user profile
+    if (authData.user) {
+      await supabase
+        .from("users")
+        .update({ interests } as never)
+        .eq("id", authData.user.id);
+    }
+
+    toast({ title: "Your LabsID is ready! 🔥", description: "Welcome to the anonymous world." });
+    navigate("/");
     setLoading(false);
   };
 
@@ -161,6 +190,34 @@ const Signup = () => {
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          {/* Interests */}
+          <div className="space-y-2">
+            <Label>Pick up to 3 interests</Label>
+            <div className="flex flex-wrap gap-2">
+              {INTEREST_OPTIONS.map((interest) => {
+                const selected = interests.includes(interest);
+                return (
+                  <button
+                    key={interest}
+                    type="button"
+                    onClick={() => toggleInterest(interest)}
+                    className={`flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-medium transition-colors border ${
+                      selected
+                        ? "bg-primary/15 border-primary text-primary"
+                        : "bg-card border-border text-muted-foreground hover:text-foreground hover:border-foreground/30"
+                    }`}
+                  >
+                    {selected && <Check className="h-3 w-3" />}
+                    {interest}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="text-[10px] text-muted-foreground">
+              Your feed will show 70% from these topics, 30% random discovery
+            </p>
           </div>
 
           <Button type="submit" className="w-full font-semibold" disabled={loading}>
