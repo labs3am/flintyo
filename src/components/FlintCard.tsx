@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ThumbsUp, ThumbsDown, MessageSquare, Swords, Flag, Clock } from "lucide-react";
 import CommentsPanel from "@/components/CommentsPanel";
+import ReportDialog from "@/components/ReportDialog";
 
 interface FlintProps {
   flint: {
