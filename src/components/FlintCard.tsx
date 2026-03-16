@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ThumbsUp, ThumbsDown, MessageSquare, Swords, Flag, Clock } from "lucide-react";
@@ -23,9 +24,11 @@ interface FlintProps {
 
 const FlintCard = ({ flint, currentUserId, onVote }: FlintProps) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState("");
   const [userVote, setUserVote] = useState<string | null>(null);
   const [voting, setVoting] = useState(false);
+  const [clashing, setClashing] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [commentCount, setCommentCount] = useState(0);
 
@@ -87,6 +90,44 @@ const FlintCard = ({ flint, currentUserId, onVote }: FlintProps) => {
       onVote();
     }
     setVoting(false);
+  };
+
+  const handleClash = async () => {
+    if (!currentUserId || clashing || flint.author_id === currentUserId) return;
+    setClashing(true);
+
+    // Check for existing pending/active debate on this flint
+    const { data: existing } = await supabase
+      .from("debates")
+      .select("id")
+      .eq("flint_id", flint.id)
+      .in("status", ["pending", "active"])
+      .limit(1);
+
+    if (existing && existing.length > 0) {
+      toast({ title: "A clash is already in progress for this flint", variant: "destructive" });
+      setClashing(false);
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("debates")
+      .insert({
+        flint_id: flint.id,
+        user_a: currentUserId,
+        user_b: flint.author_id,
+        status: "pending",
+      })
+      .select("id")
+      .single();
+
+    if (error) {
+      toast({ title: "Failed to send clash challenge", variant: "destructive" });
+    } else if (data) {
+      toast({ title: "Clash challenge sent! ⚔️" });
+      navigate(`/debate/${data.id}`);
+    }
+    setClashing(false);
   };
 
   const categoryColors: Record<string, string> = {
@@ -156,7 +197,11 @@ const FlintCard = ({ flint, currentUserId, onVote }: FlintProps) => {
           <MessageSquare className="h-3.5 w-3.5" />
           <span>{commentCount > 0 ? commentCount : "Discuss"}</span>
         </button>
-        <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors">
+        <button
+          onClick={handleClash}
+          disabled={clashing || flint.author_id === currentUserId}
+          className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors disabled:opacity-30"
+        >
           <Swords className="h-3.5 w-3.5" />
           <span>Clash</span>
         </button>

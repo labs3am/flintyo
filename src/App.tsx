@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import CreateFlint from "./pages/CreateFlint";
+import DebateRoom from "./pages/DebateRoom";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +37,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <CreateFlint />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/debate/:id"
+              element={
+                <ProtectedRoute>
+                  <DebateRoom />
                 </ProtectedRoute>
               }
             />

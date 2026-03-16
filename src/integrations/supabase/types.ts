@@ -95,9 +95,95 @@ export type Database = {
           },
         ]
       }
+      debate_messages: {
+        Row: {
+          created_at: string
+          debate_id: string
+          id: string
+          message: string
+          sender_id: string
+        }
+        Insert: {
+          created_at?: string
+          debate_id: string
+          id?: string
+          message: string
+          sender_id: string
+        }
+        Update: {
+          created_at?: string
+          debate_id?: string
+          id?: string
+          message?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "debate_messages_debate_id_fkey"
+            columns: ["debate_id"]
+            isOneToOne: false
+            referencedRelation: "debates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "debate_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      debate_votes: {
+        Row: {
+          created_at: string
+          debate_id: string
+          id: string
+          voted_for: string | null
+          voter_id: string
+        }
+        Insert: {
+          created_at?: string
+          debate_id: string
+          id?: string
+          voted_for?: string | null
+          voter_id: string
+        }
+        Update: {
+          created_at?: string
+          debate_id?: string
+          id?: string
+          voted_for?: string | null
+          voter_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "debate_votes_debate_id_fkey"
+            columns: ["debate_id"]
+            isOneToOne: false
+            referencedRelation: "debates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "debate_votes_voted_for_fkey"
+            columns: ["voted_for"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "debate_votes_voter_id_fkey"
+            columns: ["voter_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       debates: {
         Row: {
           created_at: string
+          ends_at: string | null
           flint_id: string
           id: string
           status: string
@@ -107,6 +193,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          ends_at?: string | null
           flint_id: string
           id?: string
           status?: string
@@ -116,6 +203,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          ends_at?: string | null
           flint_id?: string
           id?: string
           status?: string
@@ -358,6 +446,7 @@ export type Database = {
         Args: { amount: number; user_id_input: string }
         Returns: undefined
       }
+      resolve_debate: { Args: { p_debate_id: string }; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
