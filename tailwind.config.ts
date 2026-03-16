@@ -66,6 +66,7 @@ export default {
           copper: "hsl(var(--rank-copper))",
           cobalt: "hsl(var(--rank-cobalt))",
           amethyst: "hsl(var(--rank-amethyst))",
+          gold: "hsl(var(--rank-gold))",
         },
         success: "hsl(var(--success))",
         warning: "hsl(var(--warning))",

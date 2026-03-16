@@ -20,7 +20,7 @@ interface Flint {
   author_labs_id?: string;
 }
 
-const CATEGORIES = ["All", "Life", "Philosophy", "Politics", "Relationships", "Random"];
+const CATEGORIES = ["All", "Life", "Philosophy", "Politics", "Relationships", "Religion", "Technology", "Random"];
 
 const Index = () => {
   const { user, signOut } = useAuth();

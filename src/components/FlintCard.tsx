@@ -137,7 +137,9 @@ const FlintCard = ({ flint, currentUserId, onVote }: FlintProps) => {
     Philosophy: "bg-rank-amethyst/20 text-rank-amethyst",
     Politics: "bg-destructive/20 text-destructive",
     Relationships: "bg-primary/20 text-primary",
-    Random: "bg-rank-cobalt/20 text-rank-cobalt",
+    Religion: "bg-rank-gold/20 text-rank-gold",
+    Technology: "bg-rank-cobalt/20 text-rank-cobalt",
+    Random: "bg-muted text-muted-foreground",
   };
 
   return (
