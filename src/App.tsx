@@ -10,6 +10,8 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import CreateFlint from "./pages/CreateFlint";
 import DebateRoom from "./pages/DebateRoom";
+import LetsTalk from "./pages/LetsTalk";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,30 +26,11 @@ const App = () => (
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <Index />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/create"
-              element={
-                <ProtectedRoute>
-                  <CreateFlint />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/debate/:id"
-              element={
-                <ProtectedRoute>
-                  <DebateRoom />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+            <Route path="/create" element={<ProtectedRoute><CreateFlint /></ProtectedRoute>} />
+            <Route path="/debate/:id" element={<ProtectedRoute><DebateRoom /></ProtectedRoute>} />
+            <Route path="/talk" element={<ProtectedRoute><LetsTalk /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

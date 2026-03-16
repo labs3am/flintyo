@@ -14,6 +14,35 @@ export type Database = {
   }
   public: {
     Tables: {
+      chat_queue: {
+        Row: {
+          created_at: string
+          id: string
+          topic: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          topic: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          topic?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_queue_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chats: {
         Row: {
           created_at: string
@@ -441,6 +470,10 @@ export type Database = {
       cast_vote: {
         Args: { p_flint_id: string; p_user_id: string; p_vote_type: string }
         Returns: undefined
+      }
+      find_chat_match: {
+        Args: { p_topic: string; p_user_id: string }
+        Returns: string
       }
       increment_points: {
         Args: { amount: number; user_id_input: string }

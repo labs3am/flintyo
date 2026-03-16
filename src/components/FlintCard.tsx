@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ThumbsUp, ThumbsDown, MessageSquare, Swords, Flag, Clock } from "lucide-react";
 import CommentsPanel from "@/components/CommentsPanel";
+import ReportDialog from "@/components/ReportDialog";
 
 interface FlintProps {
   flint: {
@@ -31,6 +32,7 @@ const FlintCard = ({ flint, currentUserId, onVote }: FlintProps) => {
   const [clashing, setClashing] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [commentCount, setCommentCount] = useState(0);
+  const [showReport, setShowReport] = useState(false);
 
   // Fetch user's existing vote & comment count
   useEffect(() => {
@@ -205,7 +207,10 @@ const FlintCard = ({ flint, currentUserId, onVote }: FlintProps) => {
           <Swords className="h-3.5 w-3.5" />
           <span>Clash</span>
         </button>
-        <button className="ml-auto text-xs text-muted-foreground hover:text-destructive transition-colors">
+        <button
+          onClick={() => setShowReport(true)}
+          className="ml-auto text-xs text-muted-foreground hover:text-destructive transition-colors"
+        >
           <Flag className="h-3.5 w-3.5" />
         </button>
       </div>
@@ -216,6 +221,15 @@ const FlintCard = ({ flint, currentUserId, onVote }: FlintProps) => {
           flintId={flint.id}
           currentUserId={currentUserId}
           onCountChange={setCommentCount}
+        />
+      )}
+
+      {/* Report Dialog */}
+      {showReport && (
+        <ReportDialog
+          flintId={flint.id}
+          userId={currentUserId}
+          onClose={() => setShowReport(false)}
         />
       )}
     </div>
