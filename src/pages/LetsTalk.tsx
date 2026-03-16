@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, MessageCircle, Send, Clock, Loader2 } from "lucide-react";
+import { completeDailyTask } from "@/lib/dailyTasks";
 
 interface ChatMsg {
   id: string;
@@ -49,9 +50,9 @@ const LetsTalk = () => {
     }
 
     if (data) {
-      // Matched immediately
       setChatId(data as string);
       setSearching(false);
+      completeDailyTask(user.id, "start_chat", 5);
     } else {
       // In queue, poll for match
       toast({ title: "Looking for someone to talk to..." });

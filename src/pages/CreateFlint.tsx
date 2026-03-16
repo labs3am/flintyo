@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Flame } from "lucide-react";
 import { Link } from "react-router-dom";
+import { completeDailyTask } from "@/lib/dailyTasks";
 
 const CATEGORIES = ["Life", "Philosophy", "Politics", "Relationships", "Religion", "Technology", "Random"];
 
@@ -47,6 +48,7 @@ const CreateFlint = () => {
     if (error) {
       toast({ title: "Failed to post flint", description: error.message, variant: "destructive" });
     } else {
+      completeDailyTask(user!.id, "post_flint", 5);
       toast({ title: "Flint posted! 🔥" });
       navigate("/");
     }

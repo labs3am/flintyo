@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ThumbsUp, ThumbsDown, MessageSquare, Swords, Flag, Clock } from "lucide-react";
 import CommentsPanel from "@/components/CommentsPanel";
 import ReportDialog from "@/components/ReportDialog";
+import { completeDailyTask } from "@/lib/dailyTasks";
 
 interface FlintProps {
   flint: {
@@ -87,8 +88,8 @@ const FlintCard = ({ flint, currentUserId, onVote }: FlintProps) => {
     if (error) {
       toast({ title: "Vote failed", variant: "destructive" });
     } else {
-      // Toggle or switch vote locally
       setUserVote((prev) => (prev === type ? null : type));
+      completeDailyTask(currentUserId, "vote_flint", 2);
       onVote();
     }
     setVoting(false);
@@ -126,6 +127,7 @@ const FlintCard = ({ flint, currentUserId, onVote }: FlintProps) => {
     if (error) {
       toast({ title: "Failed to send clash challenge", variant: "destructive" });
     } else if (data) {
+      completeDailyTask(currentUserId, "clash_debate", 5);
       toast({ title: "Clash challenge sent! ⚔️" });
       navigate(`/debate/${data.id}`);
     }

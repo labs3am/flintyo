@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Send } from "lucide-react";
+import { completeDailyTask } from "@/lib/dailyTasks";
 
 interface Comment {
   id: string;
@@ -82,6 +83,7 @@ const CommentsPanel = ({ flintId, currentUserId, onCountChange }: CommentsPanelP
     if (error) {
       toast({ title: "Failed to post comment", variant: "destructive" });
     } else {
+      completeDailyTask(currentUserId, "comment_flint", 3);
       setNewComment("");
       fetchComments();
     }
