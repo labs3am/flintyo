@@ -91,7 +91,7 @@ const DebateRoom = () => {
 
   // Track viewer count via presence
   useEffect(() => {
-    if (!id || !user) return;
+    if (!id || !user || !debate) return;
 
     const presenceChannel = supabase.channel(`debate-presence-${id}`, {
       config: { presence: { key: user.id } },
@@ -100,9 +100,11 @@ const DebateRoom = () => {
     presenceChannel
       .on("presence", { event: "sync" }, () => {
         const state = presenceChannel.presenceState();
-        const allUsers = Object.keys(state);
-        // Viewers = total users minus participants
-        setViewerCount(Math.max(0, allUsers.length - 2));
+        const allUserIds = Object.keys(state);
+        // Count users who are NOT participants
+        const participants = [debate.user_a, debate.user_b];
+        const viewers = allUserIds.filter((uid) => !participants.includes(uid));
+        setViewerCount(viewers.length);
       })
       .subscribe(async (status) => {
         if (status === "SUBSCRIBED") {
@@ -111,7 +113,7 @@ const DebateRoom = () => {
       });
 
     return () => { supabase.removeChannel(presenceChannel); };
-  }, [id, user]);
+  }, [id, user, debate?.user_a, debate?.user_b]);
 
   // Fetch messages + realtime
   useEffect(() => {
