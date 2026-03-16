@@ -207,7 +207,10 @@ const FlintCard = ({ flint, currentUserId, onVote }: FlintProps) => {
           <Swords className="h-3.5 w-3.5" />
           <span>Clash</span>
         </button>
-        <button className="ml-auto text-xs text-muted-foreground hover:text-destructive transition-colors">
+        <button
+          onClick={() => setShowReport(true)}
+          className="ml-auto text-xs text-muted-foreground hover:text-destructive transition-colors"
+        >
           <Flag className="h-3.5 w-3.5" />
         </button>
       </div>
