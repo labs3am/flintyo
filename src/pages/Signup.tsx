@@ -100,7 +100,7 @@ const Signup = () => {
             <Flame className="h-8 w-8 text-primary" />
             <h1 className="text-3xl font-bold tracking-tight text-foreground">Flintyo</h1>
           </div>
-          <p className="text-sm text-muted-foreground">join the anonymous conversation</p>
+          <p className="text-sm text-muted-foreground">generate your anonymous identity</p>
         </div>
 
         {/* Form */}
