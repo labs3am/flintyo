@@ -10,6 +10,7 @@ interface UserProfile {
   points: number;
   rank: string;
   country: string;
+  interests: string[];
 }
 
 interface SavedFlint {
@@ -26,6 +27,7 @@ const rankColors: Record<string, string> = {
   Copper: "text-rank-copper",
   Cobalt: "text-rank-cobalt",
   Amethyst: "text-rank-amethyst",
+  Gold: "text-rank-gold",
 };
 
 const rankBgColors: Record<string, string> = {
@@ -33,6 +35,7 @@ const rankBgColors: Record<string, string> = {
   Copper: "bg-rank-copper/10 border-rank-copper/20",
   Cobalt: "bg-rank-cobalt/10 border-rank-cobalt/20",
   Amethyst: "bg-rank-amethyst/10 border-rank-amethyst/20",
+  Gold: "bg-rank-gold/10 border-rank-gold/20",
 };
 
 const Profile = () => {
@@ -53,14 +56,14 @@ const Profile = () => {
         { count: wins },
         { data: saved },
       ] = await Promise.all([
-        supabase.from("users").select("labs_id, points, rank, country").eq("id", user.id).single(),
+        supabase.from("users").select("labs_id, points, rank, country, interests").eq("id", user.id).single(),
         supabase.from("flints").select("id", { count: "exact", head: true }).eq("author_id", user.id),
         supabase.from("debates").select("id", { count: "exact", head: true }).eq("winner", user.id),
         supabase.from("flints").select("id, content, category, agree_count, disagree_count, created_at")
           .eq("author_id", user.id).eq("is_saved", true).order("created_at", { ascending: false }),
       ]);
 
-      if (profileData) setProfile(profileData as UserProfile);
+      if (profileData) setProfile(profileData as unknown as UserProfile);
       setPostCount(posts || 0);
       setDebateWins(wins || 0);
       setSavedFlints((saved || []) as SavedFlint[]);
@@ -115,6 +118,16 @@ const Profile = () => {
             </span>
             <span className="text-xs text-muted-foreground">{profile.points} pts</span>
           </div>
+          {/* Interests */}
+          {profile.interests && profile.interests.length > 0 && (
+            <div className="flex flex-wrap justify-center gap-1.5 pt-1">
+              {profile.interests.map((i) => (
+                <span key={i} className="rounded-full bg-primary/10 border border-primary/20 px-2 py-0.5 text-[10px] text-primary font-medium">
+                  {i}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Stats Grid */}
@@ -145,6 +158,7 @@ const Profile = () => {
               { name: "Copper", min: 501, max: 2500 },
               { name: "Cobalt", min: 2501, max: 10000 },
               { name: "Amethyst", min: 10001, max: 50000 },
+              { name: "Gold", min: 50001, max: 999999 },
             ].map((tier) => {
               const isActive = profile.rank === tier.name;
               const isPast = profile.points > tier.max;
