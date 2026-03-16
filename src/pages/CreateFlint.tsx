@@ -19,7 +19,7 @@ const CreateFlint = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [content, setContent] = useState("");
-  const [category, setCategory] = useState("Random");
+  const [category, setCategory] = useState("Other");
   const [isSaved, setIsSaved] = useState(false);
   const [loading, setLoading] = useState(false);
 

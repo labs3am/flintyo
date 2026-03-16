@@ -136,12 +136,10 @@ const FlintCard = ({ flint, currentUserId, onVote }: FlintProps) => {
 
   const categoryColors: Record<string, string> = {
     Life: "bg-success/20 text-success",
-    Philosophy: "bg-rank-amethyst/20 text-rank-amethyst",
     Politics: "bg-destructive/20 text-destructive",
-    Relationships: "bg-primary/20 text-primary",
+    Relationship: "bg-primary/20 text-primary",
     Religion: "bg-rank-gold/20 text-rank-gold",
-    Technology: "bg-rank-cobalt/20 text-rank-cobalt",
-    Random: "bg-muted text-muted-foreground",
+    Other: "bg-muted text-muted-foreground",
   };
 
   return (

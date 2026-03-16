@@ -238,7 +238,7 @@ const LetsTalk = () => {
               <Loader2 className="h-12 w-12 text-primary animate-spin" />
               <div className="text-center space-y-1">
                 <p className="text-sm text-foreground font-medium">Searching for someone...</p>
-                <p className="text-xs text-muted-foreground">Topic: {topic}</p>
+                <p className="text-xs text-muted-foreground">Category: {selectedCategory}{topic.trim() ? ` · ${topic}` : ""}</p>
               </div>
               <Button variant="secondary" onClick={handleCancel}>Cancel</Button>
             </>
