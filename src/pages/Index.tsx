@@ -6,6 +6,8 @@ import FlintCard from "@/components/FlintCard";
 import { Flame, Plus, MessageCircle, User, Globe, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import NotificationBell from "@/components/NotificationBell";
+import { usePullToRefresh } from "@/hooks/usePullToRefresh";
+import PullIndicator from "@/components/PullIndicator";
 
 interface Flint {
   id: string;
