@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, MessageCircle, Send, Clock, Loader2 } from "lucide-react";
+import { completeDailyTask } from "@/lib/dailyTasks";
 
 interface ChatMsg {
   id: string;
