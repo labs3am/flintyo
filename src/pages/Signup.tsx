@@ -44,7 +44,7 @@ const COUNTRIES = [
   "Zambia", "Zimbabwe",
 ];
 
-const INTEREST_OPTIONS = ["Life", "Philosophy", "Politics", "Relationships", "Religion", "Technology", "Random"];
+const INTEREST_OPTIONS = ["Life", "Politics", "Relationship", "Religion", "Other"];
 
 const Signup = () => {
   const [name, setName] = useState("");
