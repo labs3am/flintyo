@@ -216,6 +216,8 @@ const Index = () => {
         </div>
       </div>
 
+      <PullIndicator pullDistance={pullDistance} refreshing={refreshing} />
+
       {/* Feed */}
       <main className="flex-1 px-4 py-4 space-y-3">
         {loading ? (
