@@ -1,0 +1,1 @@
+ALTER TABLE public.flints ADD COLUMN IF NOT EXISTS target_country text NOT NULL DEFAULT 'Global';

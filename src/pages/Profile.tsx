@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { Flame, MessageCircle, User, Plus, Trophy, FileText, Bookmark, LogOut, CheckCircle2, Circle, Zap } from "lucide-react";
+import { Flame, MessageCircle, User, Plus, Trophy, FileText, Bookmark, LogOut, CheckCircle2, Circle, Zap, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DAILY_TASKS, fetchTodayTasks, fetchTotalTaskPoints } from "@/lib/dailyTasks";
+import { useTheme } from "@/hooks/useTheme";
 
 interface UserProfile {
   labs_id: string;
@@ -41,6 +42,7 @@ const rankBgColors: Record<string, string> = {
 
 const Profile = () => {
   const { user, signOut } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [postCount, setPostCount] = useState(0);
   const [debateWins, setDebateWins] = useState(0);
@@ -110,13 +112,32 @@ const Profile = () => {
           <User className="h-5 w-5 text-primary" />
           <span className="font-semibold text-foreground">Profile</span>
         </div>
-        <Button variant="ghost" size="sm" onClick={signOut} className="text-muted-foreground text-xs">
-          <LogOut className="mr-1 h-3.5 w-3.5" />
-          Sign out
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-8 w-8 text-muted-foreground">
+            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </Button>
+          <Button variant="ghost" size="sm" onClick={signOut} className="text-muted-foreground text-xs">
+            <LogOut className="mr-1 h-3.5 w-3.5" />
+            Sign out
+          </Button>
+        </div>
       </header>
 
       <div className="px-4 py-6 space-y-6">
+        {/* Theme Toggle Card */}
+        <div className="flex items-center justify-between rounded-lg border border-border bg-card p-4">
+          <div className="flex items-center gap-3">
+            {theme === "dark" ? <Moon className="h-5 w-5 text-primary" /> : <Sun className="h-5 w-5 text-primary" />}
+            <div>
+              <p className="text-sm font-medium text-foreground">Appearance</p>
+              <p className="text-xs text-muted-foreground">{theme === "dark" ? "Dark mode" : "Light mode"}</p>
+            </div>
+          </div>
+          <Button variant="secondary" size="sm" onClick={toggleTheme} className="text-xs">
+            {theme === "dark" ? "Switch to Light" : "Switch to Dark"}
+          </Button>
+        </div>
+
         {/* Identity Card */}
         <div className={`rounded-xl border p-5 text-center space-y-3 ${rankBg}`}>
           <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-card border border-border">
@@ -162,7 +183,6 @@ const Profile = () => {
             </div>
           </div>
 
-          {/* Progress bar */}
           <div className="h-2 rounded-full bg-secondary overflow-hidden">
             <div
               className="h-full rounded-full bg-primary transition-all duration-500"
@@ -170,7 +190,6 @@ const Profile = () => {
             />
           </div>
 
-          {/* Task list */}
           <div className="space-y-2">
             {DAILY_TASKS.map((task) => {
               const done = completedTasks.includes(task.task_type);
@@ -197,7 +216,6 @@ const Profile = () => {
             })}
           </div>
 
-          {/* Total earned from tasks */}
           <div className="flex items-center justify-between pt-1 border-t border-border">
             <span className="text-[10px] text-muted-foreground">Total earned from tasks</span>
             <span className="text-xs font-semibold text-primary">{totalTaskPoints} pts</span>

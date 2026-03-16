@@ -317,6 +317,7 @@ export type Database = {
           expires_at: string | null
           id: string
           is_saved: boolean
+          target_country: string
         }
         Insert: {
           agree_count?: number
@@ -328,6 +329,7 @@ export type Database = {
           expires_at?: string | null
           id?: string
           is_saved?: boolean
+          target_country?: string
         }
         Update: {
           agree_count?: number
@@ -339,6 +341,7 @@ export type Database = {
           expires_at?: string | null
           id?: string
           is_saved?: boolean
+          target_country?: string
         }
         Relationships: [
           {

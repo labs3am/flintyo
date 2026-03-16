@@ -231,6 +231,14 @@ const Signup = () => {
             Sign in
           </Link>
         </p>
+
+        {/* Labs3am branding */}
+        <p className="text-center text-[10px] text-muted-foreground pt-4">
+          from the house of{" "}
+          <a href="https://labs3am.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-medium">
+            Labs3am.com
+          </a>
+        </p>
       </div>
     </div>
   );

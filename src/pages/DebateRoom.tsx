@@ -369,6 +369,9 @@ const DebateRoom = () => {
             <span>Draw: {voteDraw}</span>
           </div>
           <p className="text-[10px] text-muted-foreground mt-2">Redirecting to home in 5 seconds...</p>
+          <Button size="sm" variant="secondary" onClick={() => navigate("/")} className="text-xs mt-1">
+            Go Home Now
+          </Button>
         </div>
       )}
 
