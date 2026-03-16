@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Flame } from "lucide-react";
 import { Link } from "react-router-dom";
+import { completeDailyTask } from "@/lib/dailyTasks";
 
 const CATEGORIES = ["Life", "Philosophy", "Politics", "Relationships", "Religion", "Technology", "Random"];
 
