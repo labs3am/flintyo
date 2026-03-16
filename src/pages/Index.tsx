@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import FlintCard from "@/components/FlintCard";
 import { Flame, Plus, MessageCircle, User } from "lucide-react";
 import { Link } from "react-router-dom";
+import NotificationBell from "@/components/NotificationBell";
 
 interface Flint {
   id: string;
@@ -80,9 +81,12 @@ const Index = () => {
             <Flame className="h-6 w-6 text-primary" />
             <span className="text-lg font-bold text-foreground">Flintyo</span>
           </div>
-          <button onClick={signOut} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-            Sign out
-          </button>
+          <div className="flex items-center gap-2">
+            <NotificationBell />
+            <button onClick={signOut} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+              Sign out
+            </button>
+          </div>
         </div>
       </header>
 
