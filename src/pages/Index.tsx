@@ -147,8 +147,16 @@ const Index = () => {
     return feed;
   }, [flints, feedMode, userCountry, activeCategory, userInterests]);
 
+  const { containerRef, pullDistance, refreshing, handlers } = usePullToRefresh({
+    onRefresh: fetchFlints,
+  });
+
   return (
-    <div className="flex min-h-screen flex-col bg-background pb-20">
+    <div
+      ref={containerRef}
+      className="flex min-h-screen flex-col bg-background pb-20 overflow-y-auto"
+      {...handlers}
+    >
       {/* Header */}
       <header className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur-md px-4 py-3">
         <div className="flex items-center justify-between">
