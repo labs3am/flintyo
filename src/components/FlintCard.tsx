@@ -24,9 +24,11 @@ interface FlintProps {
 
 const FlintCard = ({ flint, currentUserId, onVote }: FlintProps) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState("");
   const [userVote, setUserVote] = useState<string | null>(null);
   const [voting, setVoting] = useState(false);
+  const [clashing, setClashing] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [commentCount, setCommentCount] = useState(0);
 
