@@ -88,8 +88,8 @@ const FlintCard = ({ flint, currentUserId, onVote }: FlintProps) => {
     if (error) {
       toast({ title: "Vote failed", variant: "destructive" });
     } else {
-      // Toggle or switch vote locally
       setUserVote((prev) => (prev === type ? null : type));
+      completeDailyTask(currentUserId, "vote_flint", 2);
       onVote();
     }
     setVoting(false);
