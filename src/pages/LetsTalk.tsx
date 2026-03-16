@@ -35,15 +35,9 @@ const LetsTalk = () => {
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [selectedCategory, setSelectedCategory] = useState("Life");
 
-  // Fetch daily tasks
-  useEffect(() => {
-    if (!user) return;
-    fetchTodayTasks(user.id).then(setCompletedTasks);
-  }, [user]);
-
   const handleSearch = async () => {
-    const trimmed = topic.trim();
-    if (!trimmed || !user) return;
+    const searchTopic = topic.trim() || selectedCategory;
+    if (!user) return;
 
     setSearching(true);
 
