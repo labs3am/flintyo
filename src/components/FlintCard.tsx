@@ -159,7 +159,11 @@ const FlintCard = ({ flint, currentUserId, onVote }: FlintProps) => {
           <MessageSquare className="h-3.5 w-3.5" />
           <span>{commentCount > 0 ? commentCount : "Discuss"}</span>
         </button>
-        <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors">
+        <button
+          onClick={handleClash}
+          disabled={clashing || flint.author_id === currentUserId}
+          className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors disabled:opacity-30"
+        >
           <Swords className="h-3.5 w-3.5" />
           <span>Clash</span>
         </button>
