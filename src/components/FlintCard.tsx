@@ -92,6 +92,44 @@ const FlintCard = ({ flint, currentUserId, onVote }: FlintProps) => {
     setVoting(false);
   };
 
+  const handleClash = async () => {
+    if (!currentUserId || clashing || flint.author_id === currentUserId) return;
+    setClashing(true);
+
+    // Check for existing pending/active debate on this flint
+    const { data: existing } = await supabase
+      .from("debates")
+      .select("id")
+      .eq("flint_id", flint.id)
+      .in("status", ["pending", "active"])
+      .limit(1);
+
+    if (existing && existing.length > 0) {
+      toast({ title: "A clash is already in progress for this flint", variant: "destructive" });
+      setClashing(false);
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("debates")
+      .insert({
+        flint_id: flint.id,
+        user_a: currentUserId,
+        user_b: flint.author_id,
+        status: "pending",
+      })
+      .select("id")
+      .single();
+
+    if (error) {
+      toast({ title: "Failed to send clash challenge", variant: "destructive" });
+    } else if (data) {
+      toast({ title: "Clash challenge sent! ⚔️" });
+      navigate(`/debate/${data.id}`);
+    }
+    setClashing(false);
+  };
+
   const categoryColors: Record<string, string> = {
     Life: "bg-success/20 text-success",
     Philosophy: "bg-rank-amethyst/20 text-rank-amethyst",
