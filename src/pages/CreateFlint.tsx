@@ -12,14 +12,14 @@ import { ArrowLeft, Flame } from "lucide-react";
 import { Link } from "react-router-dom";
 import { completeDailyTask } from "@/lib/dailyTasks";
 
-const CATEGORIES = ["Life", "Philosophy", "Politics", "Relationships", "Religion", "Technology", "Random"];
+const CATEGORIES = ["Life", "Politics", "Relationship", "Religion", "Other"];
 
 const CreateFlint = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [content, setContent] = useState("");
-  const [category, setCategory] = useState("Random");
+  const [category, setCategory] = useState("Other");
   const [isSaved, setIsSaved] = useState(false);
   const [loading, setLoading] = useState(false);
 
