@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -34,8 +34,9 @@ const LetsTalk = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [selectedCategory, setSelectedCategory] = useState("Life");
+  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleSearch = async () => {
+  const handleSearch = useCallback(async () => {
     const searchTopic = topic.trim() || selectedCategory;
     if (!user) return;
 
@@ -57,9 +58,18 @@ const LetsTalk = () => {
       setSearching(false);
       completeDailyTask(user.id, "start_chat", 5);
     } else {
-      // In queue, poll for match
       toast({ title: "Looking for someone to talk to..." });
+      // Poll every 3s (not 2s) with 60s timeout
+      let elapsed = 0;
       pollRef.current = setInterval(async () => {
+        elapsed += 3000;
+        if (elapsed > 60000) {
+          if (pollRef.current) clearInterval(pollRef.current);
+          await supabase.from("chat_queue").delete().eq("user_id", user.id);
+          setSearching(false);
+          toast({ title: "No one available right now. Try again later!", variant: "destructive" });
+          return;
+        }
         const { data: chats } = await supabase
           .from("chats")
           .select("id")
@@ -72,20 +82,21 @@ const LetsTalk = () => {
           setSearching(false);
           if (pollRef.current) clearInterval(pollRef.current);
         }
-      }, 2000);
+      }, 3000);
     }
-  };
+  }, [user, topic, selectedCategory, toast]);
 
-  const handleCancel = async () => {
+  const handleCancel = useCallback(async () => {
     if (!user) return;
     await supabase.from("chat_queue").delete().eq("user_id", user.id);
     setSearching(false);
     if (pollRef.current) clearInterval(pollRef.current);
-  };
+  }, [user]);
 
   useEffect(() => {
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
+      if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
     };
   }, []);
 
@@ -94,38 +105,25 @@ const LetsTalk = () => {
     if (!chatId || !user) return;
 
     const loadChat = async () => {
-      const { data } = await supabase
-        .from("chats")
-        .select("*")
-        .eq("id", chatId)
-        .single();
+      const [{ data: chatRes }, { data: msgsRes }] = await Promise.all([
+        supabase.from("chats").select("*").eq("id", chatId).single(),
+        supabase.from("messages").select("*").eq("chat_id", chatId).order("created_at", { ascending: true }),
+      ]);
 
-      if (data) {
-        setChatData({ topic: data.topic, expires_at: data.expires_at });
-        const partnerId = data.user_a === user.id ? data.user_b : data.user_a;
-        const { data: partner } = await supabase
-          .from("users")
-          .select("labs_id")
-          .eq("id", partnerId)
-          .single();
-        if (partner) setPartnerLabs(partner.labs_id);
+      if (chatRes) {
+        setChatData({ topic: chatRes.topic, expires_at: chatRes.expires_at });
+        const partnerId = chatRes.user_a === user.id ? chatRes.user_b : chatRes.user_a;
+        supabase.from("users").select("labs_id").eq("id", partnerId).single()
+          .then(({ data: partner }) => {
+            if (partner) setPartnerLabs(partner.labs_id);
+          });
       }
+      if (msgsRes) setMessages(msgsRes as ChatMsg[]);
     };
 
     loadChat();
 
-    // Load messages
-    const loadMsgs = async () => {
-      const { data } = await supabase
-        .from("messages")
-        .select("*")
-        .eq("chat_id", chatId)
-        .order("created_at", { ascending: true });
-      if (data) setMessages(data as ChatMsg[]);
-    };
-    loadMsgs();
-
-    // Realtime
+    // Realtime subscription
     const sub = supabase
       .channel(`chat-${chatId}`)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: `chat_id=eq.${chatId}` },
@@ -156,7 +154,7 @@ const LetsTalk = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSend = async () => {
+  const handleSend = useCallback(async () => {
     const trimmed = newMsg.trim();
     if (!trimmed || sending || !chatId || !user) return;
     if (timeLeft === "Chat ended") {
@@ -171,15 +169,15 @@ const LetsTalk = () => {
     });
     setNewMsg("");
     setSending(false);
-  };
+  }, [newMsg, sending, chatId, user, timeLeft, toast]);
 
-  const handleExtend = async () => {
+  const handleExtend = useCallback(async () => {
     if (!chatId) return;
     const newExpiry = new Date(Date.now() + 10 * 60 * 1000).toISOString();
     await supabase.from("chats").update({ expires_at: newExpiry }).eq("id", chatId);
     setChatData((prev) => prev ? { ...prev, expires_at: newExpiry } : prev);
     toast({ title: "Chat extended by 10 minutes! ⏳" });
-  };
+  }, [chatId, toast]);
 
   // Search / Queue screen
   if (!chatId) {
@@ -204,7 +202,6 @@ const LetsTalk = () => {
                 <p className="text-sm text-muted-foreground">Pick a category and get matched anonymously</p>
               </div>
               <div className="w-full max-w-xs space-y-3">
-                {/* Category selection */}
                 <div className="flex flex-wrap gap-2 justify-center">
                   {TALK_CATEGORIES.map((cat) => (
                     <button
@@ -297,7 +294,7 @@ const LetsTalk = () => {
       <div className="sticky bottom-0 border-t border-border bg-background px-4 py-3">
         {timeLeft === "Chat ended" ? (
           <div className="flex gap-2">
-            <Button variant="secondary" className="flex-1" onClick={() => navigate("/talk")}>
+            <Button variant="secondary" className="flex-1" onClick={() => { setChatId(null); setChatData(null); setMessages([]); }}>
               New Chat
             </Button>
             <Button onClick={handleExtend}>Extend +10min</Button>
