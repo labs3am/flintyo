@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { Flame, MessageCircle, User, Plus, Trophy, FileText, Bookmark, LogOut } from "lucide-react";
+import { Flame, MessageCircle, User, Plus, Trophy, FileText, Bookmark, LogOut, CheckCircle2, Circle, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DAILY_TASKS, fetchTodayTasks, fetchTotalTaskPoints } from "@/lib/dailyTasks";
 
 interface UserProfile {
   labs_id: string;
@@ -45,6 +46,8 @@ const Profile = () => {
   const [debateWins, setDebateWins] = useState(0);
   const [savedFlints, setSavedFlints] = useState<SavedFlint[]>([]);
   const [loading, setLoading] = useState(true);
+  const [completedTasks, setCompletedTasks] = useState<string[]>([]);
+  const [totalTaskPoints, setTotalTaskPoints] = useState(0);
 
   useEffect(() => {
     if (!user) return;
@@ -70,7 +73,17 @@ const Profile = () => {
       setLoading(false);
     };
 
+    const fetchDailyData = async () => {
+      const [completed, totalPts] = await Promise.all([
+        fetchTodayTasks(user.id),
+        fetchTotalTaskPoints(user.id),
+      ]);
+      setCompletedTasks(completed);
+      setTotalTaskPoints(totalPts);
+    };
+
     fetchProfile();
+    fetchDailyData();
   }, [user]);
 
   if (loading) {
@@ -85,6 +98,9 @@ const Profile = () => {
 
   const rankColor = rankColors[profile.rank] || "text-muted-foreground";
   const rankBg = rankBgColors[profile.rank] || "bg-secondary border-border";
+  const completedCount = completedTasks.length;
+  const totalTasks = DAILY_TASKS.length;
+  const todayPoints = DAILY_TASKS.filter((t) => completedTasks.includes(t.task_type)).reduce((s, t) => s + t.points, 0);
 
   return (
     <div className="flex min-h-screen flex-col bg-background pb-20">
@@ -118,7 +134,6 @@ const Profile = () => {
             </span>
             <span className="text-xs text-muted-foreground">{profile.points} pts</span>
           </div>
-          {/* Interests */}
           {profile.interests && profile.interests.length > 0 && (
             <div className="flex flex-wrap justify-center gap-1.5 pt-1">
               {profile.interests.map((i) => (
@@ -126,6 +141,71 @@ const Profile = () => {
                   {i}
                 </span>
               ))}
+            </div>
+          )}
+        </div>
+
+        {/* Daily Tasks */}
+        <div className="rounded-lg border border-border bg-card p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Zap className="h-4 w-4 text-primary" />
+              <p className="text-xs font-semibold text-foreground">Daily Tasks</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] text-muted-foreground">
+                {completedCount}/{totalTasks} done
+              </span>
+              {todayPoints > 0 && (
+                <span className="text-[10px] font-semibold text-primary">+{todayPoints} pts today</span>
+              )}
+            </div>
+          </div>
+
+          {/* Progress bar */}
+          <div className="h-2 rounded-full bg-secondary overflow-hidden">
+            <div
+              className="h-full rounded-full bg-primary transition-all duration-500"
+              style={{ width: `${(completedCount / totalTasks) * 100}%` }}
+            />
+          </div>
+
+          {/* Task list */}
+          <div className="space-y-2">
+            {DAILY_TASKS.map((task) => {
+              const done = completedTasks.includes(task.task_type);
+              return (
+                <div
+                  key={task.id}
+                  className={`flex items-center justify-between rounded-lg px-3 py-2 transition-colors ${
+                    done ? "bg-primary/5" : "bg-secondary/50"
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    {done ? (
+                      <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
+                    ) : (
+                      <Circle className="h-4 w-4 text-muted-foreground shrink-0" />
+                    )}
+                    <span className="text-[11px] text-foreground">{task.icon} {task.label}</span>
+                  </div>
+                  <span className={`text-[10px] font-mono font-medium ${done ? "text-primary" : "text-muted-foreground"}`}>
+                    +{task.points}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Total earned from tasks */}
+          <div className="flex items-center justify-between pt-1 border-t border-border">
+            <span className="text-[10px] text-muted-foreground">Total earned from tasks</span>
+            <span className="text-xs font-semibold text-primary">{totalTaskPoints} pts</span>
+          </div>
+
+          {completedCount === totalTasks && (
+            <div className="text-center">
+              <span className="text-xs text-primary font-semibold">🎉 All tasks completed today!</span>
             </div>
           )}
         </div>
