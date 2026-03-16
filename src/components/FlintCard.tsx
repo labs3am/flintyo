@@ -223,6 +223,15 @@ const FlintCard = ({ flint, currentUserId, onVote }: FlintProps) => {
           onCountChange={setCommentCount}
         />
       )}
+
+      {/* Report Dialog */}
+      {showReport && (
+        <ReportDialog
+          flintId={flint.id}
+          userId={currentUserId}
+          onClose={() => setShowReport(false)}
+        />
+      )}
     </div>
   );
 };
