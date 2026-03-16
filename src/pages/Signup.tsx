@@ -85,7 +85,7 @@ const Signup = () => {
     if (error) {
       toast({ title: "Signup failed", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Welcome to Flintyo!", description: "Your anonymous LabsID has been created." });
+      toast({ title: "Your LabsID is ready! 🔥", description: "Welcome to the anonymous world." });
       navigate("/");
     }
     setLoading(false);
@@ -100,7 +100,7 @@ const Signup = () => {
             <Flame className="h-8 w-8 text-primary" />
             <h1 className="text-3xl font-bold tracking-tight text-foreground">Flintyo</h1>
           </div>
-          <p className="text-sm text-muted-foreground">join the anonymous conversation</p>
+          <p className="text-sm text-muted-foreground">generate your anonymous identity</p>
         </div>
 
         {/* Form */}
@@ -164,7 +164,7 @@ const Signup = () => {
           </div>
 
           <Button type="submit" className="w-full font-semibold" disabled={loading}>
-            {loading ? "Creating account..." : "Create Account"}
+            {loading ? "Generating your LabsID..." : "Generate Your LabsID"}
           </Button>
         </form>
 
