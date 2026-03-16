@@ -40,6 +40,14 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/debate/:id"
+              element={
+                <ProtectedRoute>
+                  <DebateRoom />
+                </ProtectedRoute>
+              }
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
