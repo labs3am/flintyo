@@ -440,6 +440,7 @@ export type Database = {
           created_at: string
           email: string
           id: string
+          interests: string[] | null
           labs_id: string
           points: number
           rank: string
@@ -449,6 +450,7 @@ export type Database = {
           created_at?: string
           email: string
           id: string
+          interests?: string[] | null
           labs_id: string
           points?: number
           rank?: string
@@ -458,6 +460,7 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+          interests?: string[] | null
           labs_id?: string
           points?: number
           rank?: string
