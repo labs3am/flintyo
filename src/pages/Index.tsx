@@ -1,16 +1,35 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import { Flame, LogOut } from "lucide-react";
 
-// IMPORTANT: Fully REPLACE this with your own code
-const PlaceholderIndex = () => {
-  // PLACEHOLDER: Replace this entire return statement with the user's app.
-  // The inline background color is intentionally not part of the design system.
+const Index = () => {
+  const { user, signOut } = useAuth();
+
   return (
-    <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#fcfbf8' }}>
-      <img data-lovable-blank-page-placeholder="REMOVE_THIS" src="/placeholder.svg" alt="Your app will live here!" />
+    <div className="flex min-h-screen flex-col bg-background">
+      {/* Header */}
+      <header className="flex items-center justify-between border-b border-border px-4 py-3">
+        <div className="flex items-center gap-2">
+          <Flame className="h-6 w-6 text-primary" />
+          <span className="text-lg font-bold text-foreground">Flintyo</span>
+        </div>
+        <Button variant="ghost" size="sm" onClick={signOut} className="text-muted-foreground">
+          <LogOut className="mr-1 h-4 w-4" />
+          Sign out
+        </Button>
+      </header>
+
+      {/* Placeholder feed */}
+      <main className="flex flex-1 flex-col items-center justify-center gap-4 px-4">
+        <Flame className="h-16 w-16 text-primary animate-pulse-glow" />
+        <h2 className="text-xl font-semibold text-foreground">Welcome to Flintyo</h2>
+        <p className="text-sm text-muted-foreground text-center max-w-xs">
+          You're signed in as <span className="font-mono text-primary">{user?.email}</span>. 
+          The home feed is coming next.
+        </p>
+      </main>
     </div>
   );
 };
-
-const Index = PlaceholderIndex;
 
 export default Index;
