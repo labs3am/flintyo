@@ -201,61 +201,36 @@ const LetsTalk = () => {
               <MessageCircle className="h-16 w-16 text-primary/40" />
               <div className="text-center space-y-1">
                 <h2 className="text-lg font-semibold text-foreground">Talk to a stranger</h2>
-                <p className="text-sm text-muted-foreground">Enter a topic and get matched anonymously</p>
+                <p className="text-sm text-muted-foreground">Pick a category and get matched anonymously</p>
               </div>
               <div className="w-full max-w-xs space-y-3">
+                {/* Category selection */}
+                <div className="flex flex-wrap gap-2 justify-center">
+                  {TALK_CATEGORIES.map((cat) => (
+                    <button
+                      key={cat}
+                      onClick={() => setSelectedCategory(cat)}
+                      className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors ${
+                        selectedCategory === cat
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
                 <Input
-                  placeholder="What's on your mind?"
+                  placeholder="Add a specific topic (optional)"
                   value={topic}
                   onChange={(e) => setTopic(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   className="bg-card border-border"
                   maxLength={200}
                 />
-                <Button onClick={handleSearch} className="w-full font-semibold" disabled={!topic.trim()}>
+                <Button onClick={handleSearch} className="w-full font-semibold">
                   Find someone 🔍
                 </Button>
-              </div>
-
-              {/* Daily Tasks Widget */}
-              <div className="w-full max-w-xs rounded-lg border border-border bg-card p-3 space-y-2.5 mt-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5">
-                    <Zap className="h-3.5 w-3.5 text-primary" />
-                    <span className="text-[11px] font-semibold text-foreground">Daily Tasks</span>
-                  </div>
-                  <span className="text-[10px] text-muted-foreground">
-                    {completedTasks.length}/{DAILY_TASKS.length}
-                  </span>
-                </div>
-                <div className="h-1.5 rounded-full bg-secondary overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-primary transition-all duration-500"
-                    style={{ width: `${(completedTasks.length / DAILY_TASKS.length) * 100}%` }}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  {DAILY_TASKS.map((task) => {
-                    const done = completedTasks.includes(task.task_type);
-                    return (
-                      <div key={task.id} className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          {done ? (
-                            <CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0" />
-                          ) : (
-                            <Circle className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                          )}
-                          <span className={`text-[10px] ${done ? "text-muted-foreground line-through" : "text-foreground"}`}>
-                            {task.icon} {task.label}
-                          </span>
-                        </div>
-                        <span className={`text-[9px] font-mono ${done ? "text-primary" : "text-muted-foreground"}`}>
-                          +{task.points}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
               </div>
             </>
           ) : (
