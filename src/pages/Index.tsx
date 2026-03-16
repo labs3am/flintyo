@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import FlintCard from "@/components/FlintCard";
 import { Flame, Plus, MessageCircle, User } from "lucide-react";
 import { Link } from "react-router-dom";
+import NotificationBell from "@/components/NotificationBell";
 
 interface Flint {
   id: string;
