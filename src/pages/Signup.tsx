@@ -85,7 +85,7 @@ const Signup = () => {
     if (error) {
       toast({ title: "Signup failed", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Welcome to Flintyo!", description: "Your anonymous LabsID has been created." });
+      toast({ title: "Your LabsID is ready! 🔥", description: "Welcome to the anonymous world." });
       navigate("/");
     }
     setLoading(false);
