@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Send } from "lucide-react";
+import { completeDailyTask } from "@/lib/dailyTasks";
 
 interface Comment {
   id: string;
