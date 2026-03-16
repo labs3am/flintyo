@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -18,6 +18,7 @@ interface Flint {
   agree_count: number;
   disagree_count: number;
   author_labs_id?: string;
+  _author_country?: string | null;
 }
 
 const CATEGORIES = ["All", "Life", "Politics", "Relationship", "Religion", "Other"];
@@ -31,6 +32,8 @@ const Index = () => {
   const [feedMode, setFeedMode] = useState<"global" | "country">("global");
   const [userCountry, setUserCountry] = useState<string | null>(null);
   const [userInterests, setUserInterests] = useState<string[]>([]);
+  const [userVotes, setUserVotes] = useState<Record<string, string>>({});
+  const [commentCounts, setCommentCounts] = useState<Record<string, number>>({});
 
   // Fetch user preferences
   useEffect(() => {
@@ -48,7 +51,9 @@ const Index = () => {
       });
   }, [user]);
 
-  const fetchFlints = async () => {
+  const fetchFlints = useCallback(async () => {
+    if (!user) return;
+
     const { data, error } = await supabase
       .from("flints")
       .select("*")
@@ -59,75 +64,86 @@ const Index = () => {
       return;
     }
 
-    // Fetch author labs_ids and countries
-    const authorIds = [...new Set((data || []).map((f: Flint) => f.author_id))];
-    let authorsMap: Record<string, { labs_id: string; country: string | null }> = {};
+    const flintsList = data || [];
+    const flintIds = flintsList.map((f: Flint) => f.id);
+    const authorIds = [...new Set(flintsList.map((f: Flint) => f.author_id))];
 
-    if (authorIds.length > 0) {
-      const { data: authors } = await supabase
-        .from("users")
-        .select("id, labs_id, country")
-        .in("id", authorIds);
+    // Batch: authors, user votes, comment counts — all in parallel
+    const [authorsRes, votesRes, commentsRes] = await Promise.all([
+      authorIds.length > 0
+        ? supabase.from("users").select("id, labs_id, country").in("id", authorIds)
+        : Promise.resolve({ data: [] }),
+      flintIds.length > 0
+        ? supabase.from("votes").select("flint_id, vote_type").eq("user_id", user.id).in("flint_id", flintIds)
+        : Promise.resolve({ data: [] }),
+      flintIds.length > 0
+        ? supabase.from("comments").select("flint_id").in("flint_id", flintIds)
+        : Promise.resolve({ data: [] }),
+    ]);
 
-      if (authors) {
-        authorsMap = Object.fromEntries(
-          authors.map((a: any) => [a.id, { labs_id: a.labs_id, country: a.country }])
-        );
+    const authorsMap: Record<string, { labs_id: string; country: string | null }> = {};
+    if (authorsRes.data) {
+      for (const a of authorsRes.data as any[]) {
+        authorsMap[a.id] = { labs_id: a.labs_id, country: a.country };
       }
     }
 
-    const flintsWithAuthors = (data || []).map((f: Flint) => ({
+    const votesMap: Record<string, string> = {};
+    if (votesRes.data) {
+      for (const v of votesRes.data as any[]) {
+        votesMap[v.flint_id] = v.vote_type;
+      }
+    }
+
+    const countsMap: Record<string, number> = {};
+    if (commentsRes.data) {
+      for (const c of commentsRes.data as any[]) {
+        countsMap[c.flint_id] = (countsMap[c.flint_id] || 0) + 1;
+      }
+    }
+
+    const flintsWithAuthors = flintsList.map((f: Flint) => ({
       ...f,
       author_labs_id: authorsMap[f.author_id]?.labs_id || "LabsID_???",
       _author_country: authorsMap[f.author_id]?.country || null,
     }));
 
     setFlints(flintsWithAuthors);
+    setUserVotes(votesMap);
+    setCommentCounts(countsMap);
     setLoading(false);
-  };
+  }, [user, toast]);
 
   useEffect(() => {
     fetchFlints();
-  }, []);
+  }, [fetchFlints]);
 
-  // Smart feed: filter by category, country, then apply 70/30 interest logic
-  const getSmartFeed = () => {
+  // Smart feed with memoization
+  const filteredFlints = useMemo(() => {
     let feed = flints;
 
-    // Country filter
     if (feedMode === "country" && userCountry) {
       feed = feed.filter((f: any) => f._author_country === userCountry);
     }
 
-    // Category filter
     if (activeCategory !== "All") {
       feed = feed.filter((f) => f.category === activeCategory);
     }
 
-    // 70/30 interest-based sorting when viewing "All"
     if (activeCategory === "All" && userInterests.length > 0) {
       const preferred = feed.filter((f) => userInterests.includes(f.category));
       const random = feed.filter((f) => !userInterests.includes(f.category));
-
-      // Interleave: ~70% preferred, ~30% random
       const result: Flint[] = [];
       let pi = 0, ri = 0;
       while (pi < preferred.length || ri < random.length) {
-        // Add ~7 preferred for every ~3 random
-        for (let i = 0; i < 7 && pi < preferred.length; i++) {
-          result.push(preferred[pi++]);
-        }
-        for (let i = 0; i < 3 && ri < random.length; i++) {
-          result.push(random[ri++]);
-        }
+        for (let i = 0; i < 7 && pi < preferred.length; i++) result.push(preferred[pi++]);
+        for (let i = 0; i < 3 && ri < random.length; i++) result.push(random[ri++]);
       }
       return result;
     }
 
     return feed;
-  };
-
-  const filteredFlints = getSmartFeed();
+  }, [flints, feedMode, userCountry, activeCategory, userInterests]);
 
   return (
     <div className="flex min-h-screen flex-col bg-background pb-20">
@@ -139,7 +155,6 @@ const Index = () => {
             <span className="text-lg font-bold text-foreground">Flintyo</span>
           </div>
           <div className="flex items-center gap-2">
-            {/* Feed mode toggle */}
             <div className="flex rounded-full border border-border bg-card overflow-hidden">
               <button
                 onClick={() => setFeedMode("global")}
@@ -210,6 +225,8 @@ const Index = () => {
               key={flint.id}
               flint={flint}
               currentUserId={user?.id || ""}
+              userVote={userVotes[flint.id] || null}
+              commentCount={commentCounts[flint.id] || 0}
               onVote={fetchFlints}
             />
           ))

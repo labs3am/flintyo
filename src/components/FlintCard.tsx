@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -21,42 +21,33 @@ interface FlintProps {
     author_labs_id?: string;
   };
   currentUserId: string;
+  userVote?: string | null;
+  commentCount?: number;
   onVote: () => void;
 }
 
-const FlintCard = ({ flint, currentUserId, onVote }: FlintProps) => {
+const categoryColors: Record<string, string> = {
+  Life: "bg-success/20 text-success",
+  Politics: "bg-destructive/20 text-destructive",
+  Relationship: "bg-primary/20 text-primary",
+  Religion: "bg-rank-gold/20 text-rank-gold",
+  Other: "bg-muted text-muted-foreground",
+};
+
+const FlintCard = memo(({ flint, currentUserId, userVote: initialVote, commentCount: initialCommentCount, onVote }: FlintProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState("");
-  const [userVote, setUserVote] = useState<string | null>(null);
+  const [userVote, setUserVote] = useState<string | null>(initialVote ?? null);
   const [voting, setVoting] = useState(false);
   const [clashing, setClashing] = useState(false);
   const [showComments, setShowComments] = useState(false);
-  const [commentCount, setCommentCount] = useState(0);
+  const [commentCount, setCommentCount] = useState(initialCommentCount ?? 0);
   const [showReport, setShowReport] = useState(false);
 
-  // Fetch user's existing vote & comment count
-  useEffect(() => {
-    if (!currentUserId) return;
-
-    supabase
-      .from("votes")
-      .select("vote_type")
-      .eq("flint_id", flint.id)
-      .eq("user_id", currentUserId)
-      .maybeSingle()
-      .then(({ data }) => {
-        setUserVote(data?.vote_type || null);
-      });
-
-    supabase
-      .from("comments")
-      .select("id", { count: "exact", head: true })
-      .eq("flint_id", flint.id)
-      .then(({ count }) => {
-        setCommentCount(count || 0);
-      });
-  }, [flint.id, currentUserId]);
+  // Sync props
+  useEffect(() => { setUserVote(initialVote ?? null); }, [initialVote]);
+  useEffect(() => { setCommentCount(initialCommentCount ?? 0); }, [initialCommentCount]);
 
   useEffect(() => {
     if (!flint.expires_at || flint.is_saved) {
@@ -75,7 +66,7 @@ const FlintCard = ({ flint, currentUserId, onVote }: FlintProps) => {
     return () => clearInterval(interval);
   }, [flint.expires_at, flint.is_saved]);
 
-  const handleVote = async (type: "agree" | "disagree") => {
+  const handleVote = useCallback(async (type: "agree" | "disagree") => {
     if (voting) return;
     setVoting(true);
 
@@ -93,13 +84,12 @@ const FlintCard = ({ flint, currentUserId, onVote }: FlintProps) => {
       onVote();
     }
     setVoting(false);
-  };
+  }, [voting, flint.id, currentUserId, onVote, toast]);
 
-  const handleClash = async () => {
+  const handleClash = useCallback(async () => {
     if (!currentUserId || clashing || flint.author_id === currentUserId) return;
     setClashing(true);
 
-    // Check for existing pending/active debate on this flint
     const { data: existing } = await supabase
       .from("debates")
       .select("id")
@@ -132,15 +122,7 @@ const FlintCard = ({ flint, currentUserId, onVote }: FlintProps) => {
       navigate(`/debate/${data.id}`);
     }
     setClashing(false);
-  };
-
-  const categoryColors: Record<string, string> = {
-    Life: "bg-success/20 text-success",
-    Politics: "bg-destructive/20 text-destructive",
-    Relationship: "bg-primary/20 text-primary",
-    Religion: "bg-rank-gold/20 text-rank-gold",
-    Other: "bg-muted text-muted-foreground",
-  };
+  }, [currentUserId, clashing, flint.id, flint.author_id, navigate, toast]);
 
   return (
     <div className="rounded-lg border border-border bg-card p-4 space-y-3">
@@ -236,6 +218,8 @@ const FlintCard = ({ flint, currentUserId, onVote }: FlintProps) => {
       )}
     </div>
   );
-};
+});
+
+FlintCard.displayName = "FlintCard";
 
 export default FlintCard;
