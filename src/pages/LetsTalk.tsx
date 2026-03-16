@@ -43,7 +43,7 @@ const LetsTalk = () => {
 
     const { data, error } = await supabase.rpc("find_chat_match" as never, {
       p_user_id: user.id,
-      p_topic: trimmed,
+      p_topic: searchTopic,
     } as never);
 
     if (error) {
