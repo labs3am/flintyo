@@ -52,8 +52,6 @@ const CreateFlint = () => {
       toast({ title: "Flint posted! 🔥" });
       navigate("/");
     }
-      navigate("/");
-    }
     setLoading(false);
   };
 
