@@ -127,6 +127,7 @@ const FlintCard = ({ flint, currentUserId, onVote }: FlintProps) => {
     if (error) {
       toast({ title: "Failed to send clash challenge", variant: "destructive" });
     } else if (data) {
+      completeDailyTask(currentUserId, "clash_debate", 5);
       toast({ title: "Clash challenge sent! ⚔️" });
       navigate(`/debate/${data.id}`);
     }

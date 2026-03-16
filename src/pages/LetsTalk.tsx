@@ -50,9 +50,9 @@ const LetsTalk = () => {
     }
 
     if (data) {
-      // Matched immediately
       setChatId(data as string);
       setSearching(false);
+      completeDailyTask(user.id, "start_chat", 5);
     } else {
       // In queue, poll for match
       toast({ title: "Looking for someone to talk to..." });
