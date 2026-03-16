@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, MessageCircle, Send, Clock, Loader2 } from "lucide-react";
+import { ArrowLeft, MessageCircle, Send, Clock, Loader2, Lock } from "lucide-react";
 import { completeDailyTask } from "@/lib/dailyTasks";
 
 const TALK_CATEGORIES = ["Life", "Politics", "Relationship", "Religion", "Other"];
@@ -29,12 +29,19 @@ const LetsTalk = () => {
   const [newMsg, setNewMsg] = useState("");
   const [sending, setSending] = useState(false);
   const [timeLeft, setTimeLeft] = useState("");
-  const [chatData, setChatData] = useState<{ topic: string; expires_at: string } | null>(null);
+  const [chatData, setChatData] = useState<{ topic: string; expires_at: string; user_a: string; user_b: string } | null>(null);
   const [partnerLabs, setPartnerLabs] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [selectedCategory, setSelectedCategory] = useState("Life");
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Determine who starts: user_a is randomly chosen by the DB function as the first speaker
+  // The other user can only type after the first message is sent
+  const firstSpeaker = chatData?.user_a || null;
+  const isFirstSpeaker = user && firstSpeaker === user.id;
+  const hasFirstMessage = messages.length > 0;
+  const canType = isFirstSpeaker || hasFirstMessage;
 
   const handleSearch = useCallback(async () => {
     const searchTopic = topic.trim() || selectedCategory;
@@ -59,7 +66,6 @@ const LetsTalk = () => {
       completeDailyTask(user.id, "start_chat", 5);
     } else {
       toast({ title: "Looking for someone to talk to..." });
-      // Poll every 3s (not 2s) with 60s timeout
       let elapsed = 0;
       pollRef.current = setInterval(async () => {
         elapsed += 3000;
@@ -111,7 +117,7 @@ const LetsTalk = () => {
       ]);
 
       if (chatRes) {
-        setChatData({ topic: chatRes.topic, expires_at: chatRes.expires_at });
+        setChatData({ topic: chatRes.topic, expires_at: chatRes.expires_at, user_a: chatRes.user_a, user_b: chatRes.user_b });
         const partnerId = chatRes.user_a === user.id ? chatRes.user_b : chatRes.user_a;
         supabase.from("users").select("labs_id").eq("id", partnerId).single()
           .then(({ data: partner }) => {
@@ -123,7 +129,6 @@ const LetsTalk = () => {
 
     loadChat();
 
-    // Realtime subscription
     const sub = supabase
       .channel(`chat-${chatId}`)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: `chat_id=eq.${chatId}` },
@@ -134,20 +139,32 @@ const LetsTalk = () => {
     return () => { supabase.removeChannel(sub); };
   }, [chatId, user]);
 
-  // Timer
+  // Timer + auto-redirect when chat ends
   useEffect(() => {
     if (!chatData?.expires_at) return;
+    let redirectTimeout: ReturnType<typeof setTimeout> | null = null;
+
     const update = () => {
       const diff = new Date(chatData.expires_at).getTime() - Date.now();
-      if (diff <= 0) { setTimeLeft("Chat ended"); return; }
+      if (diff <= 0) {
+        setTimeLeft("Chat ended");
+        // Auto-redirect after 3 seconds
+        redirectTimeout = setTimeout(() => {
+          navigate("/");
+        }, 3000);
+        return;
+      }
       const m = Math.floor(diff / 60000);
       const s = Math.floor((diff % 60000) / 1000);
       setTimeLeft(`${m}:${s.toString().padStart(2, "0")}`);
     };
     update();
     const interval = setInterval(update, 1000);
-    return () => clearInterval(interval);
-  }, [chatData?.expires_at]);
+    return () => {
+      clearInterval(interval);
+      if (redirectTimeout) clearTimeout(redirectTimeout);
+    };
+  }, [chatData?.expires_at, navigate]);
 
   // Auto-scroll
   useEffect(() => {
@@ -161,6 +178,7 @@ const LetsTalk = () => {
       toast({ title: "This chat has ended", variant: "destructive" });
       return;
     }
+    if (!canType) return;
     setSending(true);
     await supabase.from("messages").insert({
       chat_id: chatId,
@@ -169,7 +187,7 @@ const LetsTalk = () => {
     });
     setNewMsg("");
     setSending(false);
-  }, [newMsg, sending, chatId, user, timeLeft, toast]);
+  }, [newMsg, sending, chatId, user, timeLeft, toast, canType]);
 
   const handleExtend = useCallback(async () => {
     if (!chatId) return;
@@ -274,7 +292,21 @@ const LetsTalk = () => {
 
       <div className="flex-1 overflow-y-auto px-4 py-3 space-y-2" style={{ maxHeight: "calc(100vh - 130px)" }}>
         {messages.length === 0 && (
-          <p className="text-center text-xs text-muted-foreground py-8">You're connected! Say hello 👋</p>
+          <div className="text-center py-8 space-y-2">
+            {isFirstSpeaker ? (
+              <>
+                <p className="text-xs text-primary font-medium">You've been chosen to start! 🎯</p>
+                <p className="text-xs text-muted-foreground">Say hello and break the ice 👋</p>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center justify-center gap-1.5 text-muted-foreground">
+                  <Lock className="h-3.5 w-3.5" />
+                  <p className="text-xs">Waiting for your partner to start the conversation...</p>
+                </div>
+              </>
+            )}
+          </div>
         )}
         {messages.map((msg) => {
           const isMine = msg.sender_id === user?.id;
@@ -293,11 +325,19 @@ const LetsTalk = () => {
 
       <div className="sticky bottom-0 border-t border-border bg-background px-4 py-3">
         {timeLeft === "Chat ended" ? (
-          <div className="flex gap-2">
-            <Button variant="secondary" className="flex-1" onClick={() => { setChatId(null); setChatData(null); setMessages([]); }}>
-              New Chat
-            </Button>
-            <Button onClick={handleExtend}>Extend +10min</Button>
+          <div className="text-center space-y-2">
+            <p className="text-xs text-muted-foreground">Chat ended. Redirecting to home...</p>
+            <div className="flex gap-2">
+              <Button variant="secondary" className="flex-1" onClick={() => { setChatId(null); setChatData(null); setMessages([]); }}>
+                New Chat
+              </Button>
+              <Button onClick={handleExtend}>Extend +10min</Button>
+            </div>
+          </div>
+        ) : !canType ? (
+          <div className="flex items-center justify-center gap-2 py-1 text-muted-foreground">
+            <Lock className="h-3.5 w-3.5" />
+            <span className="text-xs">Waiting for partner to send the first message...</span>
           </div>
         ) : (
           <div className="flex gap-2">

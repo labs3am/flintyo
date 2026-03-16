@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -41,7 +41,9 @@ const DebateRoom = () => {
   const [voteCountA, setVoteCountA] = useState(0);
   const [voteCountB, setVoteCountB] = useState(0);
   const [voteDraw, setVoteDraw] = useState(0);
+  const [viewerCount, setViewerCount] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const isParticipant = debate && user && (debate.user_a === user.id || debate.user_b === user.id);
   const isActive = debate?.status === "active";
@@ -62,7 +64,6 @@ const DebateRoom = () => {
       if (data) {
         setDebate(data as DebateData);
 
-        // Fetch labs IDs
         const userIds = [data.user_a, data.user_b].filter(Boolean);
         const { data: users } = await supabase
           .from("users")
@@ -76,7 +77,6 @@ const DebateRoom = () => {
 
     fetchDebate();
 
-    // Realtime subscription for debate status changes
     const debateSub = supabase
       .channel(`debate-${id}`)
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "debates", filter: `id=eq.${id}` },
@@ -88,6 +88,30 @@ const DebateRoom = () => {
 
     return () => { supabase.removeChannel(debateSub); };
   }, [id]);
+
+  // Track viewer count via presence
+  useEffect(() => {
+    if (!id || !user) return;
+
+    const presenceChannel = supabase.channel(`debate-presence-${id}`, {
+      config: { presence: { key: user.id } },
+    });
+
+    presenceChannel
+      .on("presence", { event: "sync" }, () => {
+        const state = presenceChannel.presenceState();
+        const allUsers = Object.keys(state);
+        // Viewers = total users minus participants
+        setViewerCount(Math.max(0, allUsers.length - 2));
+      })
+      .subscribe(async (status) => {
+        if (status === "SUBSCRIBED") {
+          await presenceChannel.track({ user_id: user.id });
+        }
+      });
+
+    return () => { supabase.removeChannel(presenceChannel); };
+  }, [id, user]);
 
   // Fetch messages + realtime
   useEffect(() => {
@@ -116,9 +140,9 @@ const DebateRoom = () => {
     return () => { supabase.removeChannel(msgSub); };
   }, [id]);
 
-  // Fetch votes
+  // Fetch votes + realtime
   useEffect(() => {
-    if (!id || !user) return;
+    if (!id || !user || !debate) return;
 
     const fetchVotes = async () => {
       const { data } = await supabase
@@ -127,15 +151,24 @@ const DebateRoom = () => {
         .eq("debate_id", id);
 
       if (data) {
-        setVoteCountA(data.filter((v: { voted_for: string | null }) => v.voted_for === debate?.user_a).length);
-        setVoteCountB(data.filter((v: { voted_for: string | null }) => v.voted_for === debate?.user_b).length);
+        setVoteCountA(data.filter((v: { voted_for: string | null }) => v.voted_for === debate.user_a).length);
+        setVoteCountB(data.filter((v: { voted_for: string | null }) => v.voted_for === debate.user_b).length);
         setVoteDraw(data.filter((v: { voted_for: string | null }) => v.voted_for === null).length);
         setHasVoted(data.some((v: { voter_id: string }) => v.voter_id === user.id));
       }
     };
 
-    if (debate) fetchVotes();
-  }, [id, debate, user]);
+    fetchVotes();
+
+    const voteSub = supabase
+      .channel(`debate-votes-${id}`)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "debate_votes", filter: `debate_id=eq.${id}` },
+        () => { fetchVotes(); }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(voteSub); };
+  }, [id, debate?.user_a, debate?.user_b, user]);
 
   // Countdown timer
   useEffect(() => {
@@ -145,7 +178,6 @@ const DebateRoom = () => {
       const diff = new Date(debate.ends_at!).getTime() - Date.now();
       if (diff <= 0) {
         setTimeLeft("Time's up!");
-        // Auto-resolve
         supabase.rpc("resolve_debate" as never, { p_debate_id: debate.id } as never);
         return;
       }
@@ -159,6 +191,18 @@ const DebateRoom = () => {
     return () => clearInterval(interval);
   }, [debate?.ends_at, isActive]);
 
+  // Auto-redirect home after debate finishes (5s delay)
+  useEffect(() => {
+    if (isFinished) {
+      redirectTimerRef.current = setTimeout(() => {
+        navigate("/");
+      }, 5000);
+    }
+    return () => {
+      if (redirectTimerRef.current) clearTimeout(redirectTimerRef.current);
+    };
+  }, [isFinished, navigate]);
+
   // Auto-scroll
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -166,6 +210,13 @@ const DebateRoom = () => {
 
   const handleAccept = async () => {
     if (!debate || !user) return;
+    
+    // Check viewer count - need at least 1 viewer
+    if (viewerCount < 1) {
+      toast({ title: "Need at least 1 viewer to start a clash!", variant: "destructive" });
+      return;
+    }
+    
     const endsAt = new Date(Date.now() + 3 * 60 * 1000).toISOString();
     await supabase
       .from("debates")
@@ -196,7 +247,7 @@ const DebateRoom = () => {
   };
 
   const handleVote = async (votedFor: string | null) => {
-    if (!debate || !user || hasVoted) return;
+    if (!debate || !user || hasVoted || isParticipant) return;
     const { error } = await supabase.from("debate_votes").insert({
       debate_id: debate.id,
       voter_id: user.id,
@@ -207,7 +258,6 @@ const DebateRoom = () => {
     } else {
       setHasVoted(true);
       toast({ title: "Vote cast! 🗳️" });
-      // Refresh counts
       if (votedFor === debate.user_a) setVoteCountA((p) => p + 1);
       else if (votedFor === debate.user_b) setVoteCountB((p) => p + 1);
       else setVoteDraw((p) => p + 1);
@@ -224,6 +274,7 @@ const DebateRoom = () => {
 
   const labsA = labsIds[debate.user_a] || "LabsID_???";
   const labsB = labsIds[debate.user_b] || "LabsID_???";
+  const totalVotes = voteCountA + voteCountB + voteDraw;
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -239,12 +290,18 @@ const DebateRoom = () => {
               <span className="font-semibold text-foreground">Clash</span>
             </div>
           </div>
-          {isActive && timeLeft && (
-            <div className="flex items-center gap-1.5 text-primary font-mono font-bold text-sm">
-              <Clock className="h-4 w-4" />
-              {timeLeft}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <Users className="h-3.5 w-3.5" />
+              <span>{viewerCount} watching</span>
             </div>
-          )}
+            {isActive && timeLeft && (
+              <div className="flex items-center gap-1.5 text-primary font-mono font-bold text-sm">
+                <Clock className="h-4 w-4" />
+                {timeLeft}
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
@@ -255,15 +312,22 @@ const DebateRoom = () => {
         <span className="text-xs font-mono font-medium text-primary">{labsB}</span>
       </div>
 
-      {/* Pending state */}
+      {/* Pending state - user_b accepts */}
       {isPending && debate.user_b === user?.id && (
         <div className="flex flex-col items-center gap-4 px-4 py-8">
           <Swords className="h-12 w-12 text-primary" />
           <p className="text-sm text-foreground text-center">
             <span className="font-mono text-primary">{labsA}</span> challenged you to a clash!
           </p>
+          <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1">
+            <Users className="h-3.5 w-3.5" />
+            <span>{viewerCount} viewer{viewerCount !== 1 ? "s" : ""} watching</span>
+          </div>
+          {viewerCount < 1 && (
+            <p className="text-xs text-destructive">Need at least 1 viewer to start!</p>
+          )}
           <div className="flex gap-3">
-            <Button onClick={handleAccept} className="font-semibold">Accept ⚔️</Button>
+            <Button onClick={handleAccept} className="font-semibold" disabled={viewerCount < 1}>Accept ⚔️</Button>
             <Button variant="secondary" onClick={handleReject}>Decline</Button>
           </div>
         </div>
@@ -273,6 +337,10 @@ const DebateRoom = () => {
         <div className="flex flex-col items-center gap-3 px-4 py-8">
           <Swords className="h-12 w-12 text-muted-foreground/30 animate-pulse-glow" />
           <p className="text-sm text-muted-foreground">Waiting for opponent to accept...</p>
+          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <Users className="h-3.5 w-3.5" />
+            <span>{viewerCount} viewer{viewerCount !== 1 ? "s" : ""} watching</span>
+          </div>
         </div>
       )}
 
@@ -298,6 +366,7 @@ const DebateRoom = () => {
             <span>{labsB}: {voteCountB} votes</span>
             <span>Draw: {voteDraw}</span>
           </div>
+          <p className="text-[10px] text-muted-foreground mt-2">Redirecting to home in 5 seconds...</p>
         </div>
       )}
 
@@ -351,7 +420,7 @@ const DebateRoom = () => {
 
       {isActive && !isParticipant && hasVoted && (
         <div className="border-t border-border px-4 py-3 bg-card">
-          <p className="text-xs text-muted-foreground text-center">✅ You've voted. Watching the debate...</p>
+          <p className="text-xs text-muted-foreground text-center">✅ You've voted ({totalVotes} total votes). Watching the debate...</p>
         </div>
       )}
 
