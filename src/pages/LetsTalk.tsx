@@ -31,6 +31,13 @@ const LetsTalk = () => {
   const [partnerLabs, setPartnerLabs] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [completedTasks, setCompletedTasks] = useState<string[]>([]);
+
+  // Fetch daily tasks
+  useEffect(() => {
+    if (!user) return;
+    fetchTodayTasks(user.id).then(setCompletedTasks);
+  }, [user]);
 
   const handleSearch = async () => {
     const trimmed = topic.trim();
