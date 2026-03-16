@@ -31,6 +31,14 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/create"
+              element={
+                <ProtectedRoute>
+                  <CreateFlint />
+                </ProtectedRoute>
+              }
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
