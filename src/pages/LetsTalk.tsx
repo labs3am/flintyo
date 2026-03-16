@@ -33,7 +33,7 @@ const LetsTalk = () => {
   const [partnerLabs, setPartnerLabs] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const [completedTasks, setCompletedTasks] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState("Life");
 
   // Fetch daily tasks
   useEffect(() => {
