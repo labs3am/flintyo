@@ -306,11 +306,54 @@ export type Database = {
         }
         Relationships: []
       }
+      votes: {
+        Row: {
+          created_at: string
+          flint_id: string
+          id: string
+          user_id: string
+          vote_type: string
+        }
+        Insert: {
+          created_at?: string
+          flint_id: string
+          id?: string
+          user_id: string
+          vote_type: string
+        }
+        Update: {
+          created_at?: string
+          flint_id?: string
+          id?: string
+          user_id?: string
+          vote_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "votes_flint_id_fkey"
+            columns: ["flint_id"]
+            isOneToOne: false
+            referencedRelation: "flints"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "votes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      cast_vote: {
+        Args: { p_flint_id: string; p_user_id: string; p_vote_type: string }
+        Returns: undefined
+      }
       increment_points: {
         Args: { amount: number; user_id_input: string }
         Returns: undefined

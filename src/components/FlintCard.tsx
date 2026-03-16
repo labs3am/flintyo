@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ThumbsUp, ThumbsDown, MessageSquare, Swords, Flag, Clock } from "lucide-react";
+import CommentsPanel from "@/components/CommentsPanel";
 
 interface FlintProps {
   flint: {
@@ -23,47 +24,69 @@ interface FlintProps {
 const FlintCard = ({ flint, currentUserId, onVote }: FlintProps) => {
   const { toast } = useToast();
   const [timeLeft, setTimeLeft] = useState("");
+  const [userVote, setUserVote] = useState<string | null>(null);
+  const [voting, setVoting] = useState(false);
+  const [showComments, setShowComments] = useState(false);
+  const [commentCount, setCommentCount] = useState(0);
+
+  // Fetch user's existing vote & comment count
+  useEffect(() => {
+    if (!currentUserId) return;
+
+    supabase
+      .from("votes")
+      .select("vote_type")
+      .eq("flint_id", flint.id)
+      .eq("user_id", currentUserId)
+      .maybeSingle()
+      .then(({ data }) => {
+        setUserVote(data?.vote_type || null);
+      });
+
+    supabase
+      .from("comments")
+      .select("id", { count: "exact", head: true })
+      .eq("flint_id", flint.id)
+      .then(({ count }) => {
+        setCommentCount(count || 0);
+      });
+  }, [flint.id, currentUserId]);
 
   useEffect(() => {
     if (!flint.expires_at || flint.is_saved) {
       setTimeLeft("");
       return;
     }
-
     const update = () => {
       const diff = new Date(flint.expires_at!).getTime() - Date.now();
-      if (diff <= 0) {
-        setTimeLeft("Expired");
-        return;
-      }
+      if (diff <= 0) { setTimeLeft("Expired"); return; }
       const h = Math.floor(diff / 3600000);
       const m = Math.floor((diff % 3600000) / 60000);
       setTimeLeft(`${h}h ${m}m`);
     };
-
     update();
     const interval = setInterval(update, 60000);
     return () => clearInterval(interval);
   }, [flint.expires_at, flint.is_saved]);
 
   const handleVote = async (type: "agree" | "disagree") => {
-    const field = type === "agree" ? "agree_count" : "disagree_count";
-    const { error } = await supabase
-      .from("flints")
-      .update({ [field]: flint[field] + 1 })
-      .eq("id", flint.id);
+    if (voting) return;
+    setVoting(true);
+
+    const { error } = await supabase.rpc("cast_vote" as never, {
+      p_flint_id: flint.id,
+      p_user_id: currentUserId,
+      p_vote_type: type,
+    } as never);
 
     if (error) {
       toast({ title: "Vote failed", variant: "destructive" });
-      return;
+    } else {
+      // Toggle or switch vote locally
+      setUserVote((prev) => (prev === type ? null : type));
+      onVote();
     }
-
-    // Award +1 point to author for agree
-    if (type === "agree") {
-      await supabase.rpc("increment_points" as never, { user_id_input: flint.author_id, amount: 1 } as never);
-    }
-
-    onVote();
+    setVoting(false);
   };
 
   const categoryColors: Record<string, string> = {
@@ -106,21 +129,32 @@ const FlintCard = ({ flint, currentUserId, onVote }: FlintProps) => {
       <div className="flex items-center gap-3 pt-1">
         <button
           onClick={() => handleVote("agree")}
-          className="flex items-center gap-1 text-xs text-muted-foreground hover:text-success transition-colors"
+          disabled={voting}
+          className={`flex items-center gap-1 text-xs transition-colors ${
+            userVote === "agree" ? "text-success" : "text-muted-foreground hover:text-success"
+          }`}
         >
           <ThumbsUp className="h-3.5 w-3.5" />
           <span>{flint.agree_count}</span>
         </button>
         <button
           onClick={() => handleVote("disagree")}
-          className="flex items-center gap-1 text-xs text-muted-foreground hover:text-destructive transition-colors"
+          disabled={voting}
+          className={`flex items-center gap-1 text-xs transition-colors ${
+            userVote === "disagree" ? "text-destructive" : "text-muted-foreground hover:text-destructive"
+          }`}
         >
           <ThumbsDown className="h-3.5 w-3.5" />
           <span>{flint.disagree_count}</span>
         </button>
-        <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
+        <button
+          onClick={() => setShowComments(!showComments)}
+          className={`flex items-center gap-1 text-xs transition-colors ${
+            showComments ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
           <MessageSquare className="h-3.5 w-3.5" />
-          <span>Discuss</span>
+          <span>{commentCount > 0 ? commentCount : "Discuss"}</span>
         </button>
         <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors">
           <Swords className="h-3.5 w-3.5" />
@@ -130,6 +164,15 @@ const FlintCard = ({ flint, currentUserId, onVote }: FlintProps) => {
           <Flag className="h-3.5 w-3.5" />
         </button>
       </div>
+
+      {/* Comments Panel */}
+      {showComments && (
+        <CommentsPanel
+          flintId={flint.id}
+          currentUserId={currentUserId}
+          onCountChange={setCommentCount}
+        />
+      )}
     </div>
   );
 };
