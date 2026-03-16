@@ -14,7 +14,298 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      chats: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          topic: string
+          user_a: string
+          user_b: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          topic: string
+          user_a: string
+          user_b: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          topic?: string
+          user_a?: string
+          user_b?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chats_user_a_fkey"
+            columns: ["user_a"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chats_user_b_fkey"
+            columns: ["user_b"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      comments: {
+        Row: {
+          content: string
+          created_at: string
+          flint_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          flint_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          flint_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_flint_id_fkey"
+            columns: ["flint_id"]
+            isOneToOne: false
+            referencedRelation: "flints"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      debates: {
+        Row: {
+          created_at: string
+          flint_id: string
+          id: string
+          status: string
+          user_a: string
+          user_b: string
+          winner: string | null
+        }
+        Insert: {
+          created_at?: string
+          flint_id: string
+          id?: string
+          status?: string
+          user_a: string
+          user_b: string
+          winner?: string | null
+        }
+        Update: {
+          created_at?: string
+          flint_id?: string
+          id?: string
+          status?: string
+          user_a?: string
+          user_b?: string
+          winner?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "debates_flint_id_fkey"
+            columns: ["flint_id"]
+            isOneToOne: false
+            referencedRelation: "flints"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "debates_user_a_fkey"
+            columns: ["user_a"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "debates_user_b_fkey"
+            columns: ["user_b"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "debates_winner_fkey"
+            columns: ["winner"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      flints: {
+        Row: {
+          agree_count: number
+          author_id: string
+          category: string
+          content: string
+          created_at: string
+          disagree_count: number
+          expires_at: string | null
+          id: string
+          is_saved: boolean
+        }
+        Insert: {
+          agree_count?: number
+          author_id: string
+          category?: string
+          content: string
+          created_at?: string
+          disagree_count?: number
+          expires_at?: string | null
+          id?: string
+          is_saved?: boolean
+        }
+        Update: {
+          agree_count?: number
+          author_id?: string
+          category?: string
+          content?: string
+          created_at?: string
+          disagree_count?: number
+          expires_at?: string | null
+          id?: string
+          is_saved?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "flints_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          chat_id: string
+          created_at: string
+          id: string
+          message: string
+          sender_id: string
+        }
+        Insert: {
+          chat_id: string
+          created_at?: string
+          id?: string
+          message: string
+          sender_id: string
+        }
+        Update: {
+          chat_id?: string
+          created_at?: string
+          id?: string
+          message?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_chat_id_fkey"
+            columns: ["chat_id"]
+            isOneToOne: false
+            referencedRelation: "chats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reports: {
+        Row: {
+          created_at: string
+          flint_id: string
+          id: string
+          reason: string
+          reported_by: string
+        }
+        Insert: {
+          created_at?: string
+          flint_id: string
+          id?: string
+          reason: string
+          reported_by: string
+        }
+        Update: {
+          created_at?: string
+          flint_id?: string
+          id?: string
+          reason?: string
+          reported_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_flint_id_fkey"
+            columns: ["flint_id"]
+            isOneToOne: false
+            referencedRelation: "flints"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          country: string | null
+          created_at: string
+          email: string
+          id: string
+          labs_id: string
+          points: number
+          rank: string
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string
+          email: string
+          id: string
+          labs_id: string
+          points?: number
+          rank?: string
+        }
+        Update: {
+          country?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          labs_id?: string
+          points?: number
+          rank?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
