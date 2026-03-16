@@ -164,7 +164,7 @@ const Signup = () => {
           </div>
 
           <Button type="submit" className="w-full font-semibold" disabled={loading}>
-            {loading ? "Creating account..." : "Create Account"}
+            {loading ? "Generating your LabsID..." : "Generate Your LabsID"}
           </Button>
         </form>
 
