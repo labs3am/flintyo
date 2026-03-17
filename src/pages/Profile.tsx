@@ -252,11 +252,11 @@ const Profile = () => {
           <p className="text-xs font-medium text-foreground">Rank Progress</p>
           <div className="flex gap-1">
             {[
-              { name: "Lead", min: 0, max: 500 },
-              { name: "Copper", min: 501, max: 2500 },
-              { name: "Cobalt", min: 2501, max: 10000 },
-              { name: "Amethyst", min: 10001, max: 50000 },
-              { name: "Gold", min: 50001, max: 999999 },
+              { name: "Lead", label: "Simple", min: 0, max: 500 },
+              { name: "Copper", label: "New Mind", min: 501, max: 2500 },
+              { name: "Cobalt", label: "Thinker", min: 2501, max: 10000 },
+              { name: "Amethyst", label: "Debater", min: 10001, max: 50000 },
+              { name: "Gold", label: "Legend", min: 50001, max: 999999 },
             ].map((tier) => {
               const isActive = profile.rank === tier.name;
               const isPast = profile.points > tier.max;
