@@ -81,7 +81,7 @@ const FlintCard = memo(({ flint, currentUserId, userVote: initialVote, commentCo
       toast({ title: "Vote failed", variant: "destructive" });
     } else {
       setUserVote((prev) => (prev === type ? null : type));
-      completeDailyTask(currentUserId, "vote_flint", 2);
+      completeDailyTask("vote_flint");
       onVote();
     }
     setVoting(false);
