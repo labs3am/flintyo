@@ -86,6 +86,9 @@ const Index = () => {
       flintIds.length > 0
         ? supabase.from("debates").select("id, flint_id, status").in("flint_id", flintIds).in("status", ["pending", "active"])
         : Promise.resolve({ data: [] }),
+      flintIds.length > 0
+        ? supabase.from("debates").select("id, flint_id, winner").in("flint_id", flintIds).eq("status", "finished").order("created_at", { ascending: false })
+        : Promise.resolve({ data: [] }),
     ]);
 
     const authorsMap: Record<string, { labs_id: string; country: string | null }> = {};
