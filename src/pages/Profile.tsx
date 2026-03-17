@@ -266,7 +266,7 @@ const Profile = () => {
                     isPast ? "bg-primary" : isActive ? "bg-primary/60" : "bg-secondary"
                   }`} />
                   <p className={`text-[9px] mt-1 ${isActive ? rankColors[tier.name] : "text-muted-foreground"}`}>
-                    {tier.name}
+                    {tier.label}
                   </p>
                 </div>
               );
