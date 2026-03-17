@@ -36,7 +36,7 @@ const Index = () => {
   const [userInterests, setUserInterests] = useState<string[]>([]);
   const [userVotes, setUserVotes] = useState<Record<string, string>>({});
   const [commentCounts, setCommentCounts] = useState<Record<string, number>>({});
-  const [activeClashes, setActiveClashes] = useState<Record<string, { id: string; viewerCount: number }>>({});
+  const [activeClashes, setActiveClashes] = useState<Record<string, { id: string; viewerCount: number; status: string }>>({});
 
   // Fetch user preferences
   useEffect(() => {
