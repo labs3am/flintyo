@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { Flame, Zap, Swords, MessageCircle, ArrowRight, Sparkles, ThumbsUp, ThumbsDown, Clock, ChevronDown } from "lucide-react";
+import { Flame, Zap, Swords, MessageCircle, ArrowRight, Sparkles, ThumbsUp, ThumbsDown, Clock, ChevronDown, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTheme } from "@/hooks/useTheme";
 
 const EXAMPLE_FLINTS = [
   { id: "LabsID_48291", content: "Is success worth sacrificing peace?", category: "Life" },
