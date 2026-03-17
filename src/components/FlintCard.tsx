@@ -23,6 +23,7 @@ interface FlintProps {
   currentUserId: string;
   userVote?: string | null;
   commentCount?: number;
+  activeClash?: { id: string; viewerCount: number } | null;
   onVote: () => void;
 }
 
@@ -34,7 +35,7 @@ const categoryColors: Record<string, string> = {
   Other: "bg-muted text-muted-foreground",
 };
 
-const FlintCard = memo(({ flint, currentUserId, userVote: initialVote, commentCount: initialCommentCount, onVote }: FlintProps) => {
+const FlintCard = memo(({ flint, currentUserId, userVote: initialVote, commentCount: initialCommentCount, activeClash, onVote }: FlintProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState("");
@@ -137,6 +138,16 @@ const FlintCard = memo(({ flint, currentUserId, userVote: initialVote, commentCo
           </span>
         </div>
         <div className="flex items-center gap-1.5">
+          {activeClash && (
+            <button
+              onClick={() => navigate(`/debate/${activeClash.id}`)}
+              className="flex items-center gap-1 rounded-full bg-destructive/15 px-2 py-0.5 text-[10px] font-medium text-destructive animate-pulse"
+            >
+              <Swords className="h-3 w-3" />
+              <span>LIVE</span>
+              <span className="text-destructive/70">· {activeClash.viewerCount} watching</span>
+            </button>
+          )}
           {timeLeft && (
             <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
               <Clock className="h-3 w-3" />

@@ -36,6 +36,7 @@ const Index = () => {
   const [userInterests, setUserInterests] = useState<string[]>([]);
   const [userVotes, setUserVotes] = useState<Record<string, string>>({});
   const [commentCounts, setCommentCounts] = useState<Record<string, number>>({});
+  const [activeClashes, setActiveClashes] = useState<Record<string, { id: string; viewerCount: number }>>({});
 
   // Fetch user preferences
   useEffect(() => {
@@ -70,8 +71,8 @@ const Index = () => {
     const flintIds = flintsList.map((f: Flint) => f.id);
     const authorIds = [...new Set(flintsList.map((f: Flint) => f.author_id))];
 
-    // Batch: authors, user votes, comment counts — all in parallel
-    const [authorsRes, votesRes, commentsRes] = await Promise.all([
+    // Batch: authors, user votes, comment counts, active debates — all in parallel
+    const [authorsRes, votesRes, commentsRes, debatesRes] = await Promise.all([
       authorIds.length > 0
         ? supabase.from("users").select("id, labs_id, country").in("id", authorIds)
         : Promise.resolve({ data: [] }),
@@ -80,6 +81,9 @@ const Index = () => {
         : Promise.resolve({ data: [] }),
       flintIds.length > 0
         ? supabase.from("comments").select("flint_id").in("flint_id", flintIds)
+        : Promise.resolve({ data: [] }),
+      flintIds.length > 0
+        ? supabase.from("debates").select("id, flint_id, status").in("flint_id", flintIds).in("status", ["pending", "active"])
         : Promise.resolve({ data: [] }),
     ]);
 
@@ -104,6 +108,30 @@ const Index = () => {
       }
     }
 
+    // Active debates per flint + fetch viewer counts
+    const clashMap: Record<string, { id: string; viewerCount: number }> = {};
+    if (debatesRes.data && (debatesRes.data as any[]).length > 0) {
+      const activeDebates = (debatesRes.data as any[]).filter((d: any) => d.status === "active");
+      const debateIds = activeDebates.map((d: any) => d.id);
+      
+      let viewerCounts: Record<string, number> = {};
+      if (debateIds.length > 0) {
+        const { data: votes } = await supabase
+          .from("debate_votes")
+          .select("debate_id")
+          .in("debate_id", debateIds);
+        if (votes) {
+          for (const v of votes as any[]) {
+            viewerCounts[v.debate_id] = (viewerCounts[v.debate_id] || 0) + 1;
+          }
+        }
+      }
+      
+      for (const d of activeDebates) {
+        clashMap[d.flint_id] = { id: d.id, viewerCount: viewerCounts[d.id] || 0 };
+      }
+    }
+
     const flintsWithAuthors = flintsList.map((f: Flint) => ({
       ...f,
       author_labs_id: authorsMap[f.author_id]?.labs_id || "LabsID_???",
@@ -113,6 +141,7 @@ const Index = () => {
     setFlints(flintsWithAuthors);
     setUserVotes(votesMap);
     setCommentCounts(countsMap);
+    setActiveClashes(clashMap);
     setLoading(false);
   }, [user, toast]);
 
@@ -239,6 +268,7 @@ const Index = () => {
               currentUserId={user?.id || ""}
               userVote={userVotes[flint.id] || null}
               commentCount={commentCounts[flint.id] || 0}
+              activeClash={activeClashes[flint.id] || null}
               onVote={fetchFlints}
             />
           ))
