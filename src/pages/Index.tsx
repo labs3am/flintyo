@@ -108,6 +108,30 @@ const Index = () => {
       }
     }
 
+    // Active debates per flint + fetch viewer counts
+    const clashMap: Record<string, { id: string; viewerCount: number }> = {};
+    if (debatesRes.data && (debatesRes.data as any[]).length > 0) {
+      const activeDebates = (debatesRes.data as any[]).filter((d: any) => d.status === "active");
+      const debateIds = activeDebates.map((d: any) => d.id);
+      
+      let viewerCounts: Record<string, number> = {};
+      if (debateIds.length > 0) {
+        const { data: votes } = await supabase
+          .from("debate_votes")
+          .select("debate_id")
+          .in("debate_id", debateIds);
+        if (votes) {
+          for (const v of votes as any[]) {
+            viewerCounts[v.debate_id] = (viewerCounts[v.debate_id] || 0) + 1;
+          }
+        }
+      }
+      
+      for (const d of activeDebates) {
+        clashMap[d.flint_id] = { id: d.id, viewerCount: viewerCounts[d.id] || 0 };
+      }
+    }
+
     const flintsWithAuthors = flintsList.map((f: Flint) => ({
       ...f,
       author_labs_id: authorsMap[f.author_id]?.labs_id || "LabsID_???",
@@ -117,6 +141,7 @@ const Index = () => {
     setFlints(flintsWithAuthors);
     setUserVotes(votesMap);
     setCommentCounts(countsMap);
+    setActiveClashes(clashMap);
     setLoading(false);
   }, [user, toast]);
 
