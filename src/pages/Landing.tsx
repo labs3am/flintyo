@@ -17,6 +17,8 @@ const STEPS = [
 ];
 
 const Landing = () => {
+  const { theme, toggleTheme } = useTheme();
+
   const scrollToContent = () => {
     document.getElementById("what-is-flint")?.scrollIntoView({ behavior: "smooth" });
   };
