@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { Flame, Zap, Swords, MessageCircle, ArrowRight, Sparkles, ThumbsUp, ThumbsDown, Clock, ChevronDown } from "lucide-react";
+import { Flame, Zap, Swords, MessageCircle, ArrowRight, Sparkles, ThumbsUp, ThumbsDown, Clock, ChevronDown, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTheme } from "@/hooks/useTheme";
 
 const EXAMPLE_FLINTS = [
   { id: "LabsID_48291", content: "Is success worth sacrificing peace?", category: "Life" },
@@ -16,6 +17,8 @@ const STEPS = [
 ];
 
 const Landing = () => {
+  const { theme, toggleTheme } = useTheme();
+
   const scrollToContent = () => {
     document.getElementById("what-is-flint")?.scrollIntoView({ behavior: "smooth" });
   };
@@ -30,6 +33,9 @@ const Landing = () => {
             <span className="text-lg font-bold tracking-tight">Flintyo</span>
           </div>
           <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-8 w-8">
+              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
             <Link to="/login">
               <Button variant="ghost" size="sm" className="text-xs">Sign In</Button>
             </Link>
