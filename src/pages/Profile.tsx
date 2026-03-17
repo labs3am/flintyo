@@ -158,9 +158,9 @@ const Profile = () => {
             <p className="text-xs text-muted-foreground mt-0.5">{profile.country}</p>
           </div>
           <div className="flex items-center justify-center gap-2">
-            <span className={`rounded-full px-3 py-1 text-xs font-semibold border ${rankBg} ${rankColor}`}>
-              {profile.rank}
-            </span>
+             <span className={`rounded-full px-3 py-1 text-xs font-semibold border ${rankBg} ${rankColor}`}>
+               {rankDisplayNames[profile.rank] || profile.rank}
+             </span>
             <span className="text-xs text-muted-foreground">{profile.points} pts</span>
           </div>
           {profile.interests && profile.interests.length > 0 && (
