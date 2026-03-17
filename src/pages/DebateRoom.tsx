@@ -198,7 +198,7 @@ const DebateRoom = () => {
     if (isFinished) {
       redirectTimerRef.current = setTimeout(() => {
         navigate("/");
-      }, 5000);
+      }, 15000);
     }
     return () => {
       if (redirectTimerRef.current) clearTimeout(redirectTimerRef.current);
