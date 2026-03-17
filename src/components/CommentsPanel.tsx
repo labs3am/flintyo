@@ -83,7 +83,7 @@ const CommentsPanel = ({ flintId, currentUserId, onCountChange }: CommentsPanelP
     if (error) {
       toast({ title: "Failed to post comment", variant: "destructive" });
     } else {
-      completeDailyTask(currentUserId, "comment_flint", 3);
+      completeDailyTask("comment_flint");
       setNewComment("");
       fetchComments();
     }
