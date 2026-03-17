@@ -23,6 +23,7 @@ interface FlintProps {
   currentUserId: string;
   userVote?: string | null;
   commentCount?: number;
+  activeClash?: { id: string; viewerCount: number } | null;
   onVote: () => void;
 }
 
