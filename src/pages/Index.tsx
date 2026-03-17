@@ -71,8 +71,8 @@ const Index = () => {
     const flintIds = flintsList.map((f: Flint) => f.id);
     const authorIds = [...new Set(flintsList.map((f: Flint) => f.author_id))];
 
-    // Batch: authors, user votes, comment counts — all in parallel
-    const [authorsRes, votesRes, commentsRes] = await Promise.all([
+    // Batch: authors, user votes, comment counts, active debates — all in parallel
+    const [authorsRes, votesRes, commentsRes, debatesRes] = await Promise.all([
       authorIds.length > 0
         ? supabase.from("users").select("id, labs_id, country").in("id", authorIds)
         : Promise.resolve({ data: [] }),
@@ -81,6 +81,9 @@ const Index = () => {
         : Promise.resolve({ data: [] }),
       flintIds.length > 0
         ? supabase.from("comments").select("flint_id").in("flint_id", flintIds)
+        : Promise.resolve({ data: [] }),
+      flintIds.length > 0
+        ? supabase.from("debates").select("id, flint_id, status").in("flint_id", flintIds).in("status", ["pending", "active"])
         : Promise.resolve({ data: [] }),
     ]);
 
