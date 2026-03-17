@@ -73,7 +73,7 @@ const Index = () => {
     const authorIds = [...new Set(flintsList.map((f: Flint) => f.author_id))];
 
     // Batch: authors, user votes, comment counts, active debates — all in parallel
-    const [authorsRes, votesRes, commentsRes, debatesRes] = await Promise.all([
+    const [authorsRes, votesRes, commentsRes, debatesRes, finishedDebatesRes] = await Promise.all([
       authorIds.length > 0
         ? supabase.from("user_profiles" as any).select("id, labs_id, country").in("id", authorIds)
         : Promise.resolve({ data: [] }),
