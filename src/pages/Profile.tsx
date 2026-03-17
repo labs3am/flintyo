@@ -24,14 +24,6 @@ interface SavedFlint {
   created_at: string;
 }
 
-const rankDisplayNames: Record<string, string> = {
-  Lead: "Grey",
-  Copper: "New Mind",
-  Cobalt: "Blue Thinker",
-  Amethyst: "Purple Debater",
-  Gold: "Gold Legend",
-};
-
 const rankColors: Record<string, string> = {
   Lead: "text-rank-lead",
   Copper: "text-rank-copper",
@@ -158,9 +150,9 @@ const Profile = () => {
             <p className="text-xs text-muted-foreground mt-0.5">{profile.country}</p>
           </div>
           <div className="flex items-center justify-center gap-2">
-             <span className={`rounded-full px-3 py-1 text-xs font-semibold border ${rankBg} ${rankColor}`}>
-               {rankDisplayNames[profile.rank] || profile.rank}
-             </span>
+            <span className={`rounded-full px-3 py-1 text-xs font-semibold border ${rankBg} ${rankColor}`}>
+              {profile.rank}
+            </span>
             <span className="text-xs text-muted-foreground">{profile.points} pts</span>
           </div>
           {profile.interests && profile.interests.length > 0 && (
@@ -273,9 +265,9 @@ const Profile = () => {
                   <div className={`h-1.5 rounded-full ${
                     isPast ? "bg-primary" : isActive ? "bg-primary/60" : "bg-secondary"
                   }`} />
-                   <p className={`text-[9px] mt-1 ${isActive ? rankColors[tier.name] : "text-muted-foreground"}`}>
-                     {rankDisplayNames[tier.name] || tier.name}
-                   </p>
+                  <p className={`text-[9px] mt-1 ${isActive ? rankColors[tier.name] : "text-muted-foreground"}`}>
+                    {tier.name}
+                  </p>
                 </div>
               );
             })}
