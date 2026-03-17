@@ -74,7 +74,7 @@ const Index = () => {
     // Batch: authors, user votes, comment counts, active debates — all in parallel
     const [authorsRes, votesRes, commentsRes, debatesRes] = await Promise.all([
       authorIds.length > 0
-        ? supabase.from("users").select("id, labs_id, country").in("id", authorIds)
+        ? supabase.from("user_profiles" as any).select("id, labs_id, country").in("id", authorIds)
         : Promise.resolve({ data: [] }),
       flintIds.length > 0
         ? supabase.from("votes").select("flint_id, vote_type").eq("user_id", user.id).in("flint_id", flintIds)

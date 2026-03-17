@@ -66,7 +66,7 @@ const DebateRoom = () => {
 
         const userIds = [data.user_a, data.user_b].filter(Boolean);
         const { data: users } = await supabase
-          .from("users")
+          .from("user_profiles" as any)
           .select("id, labs_id")
           .in("id", userIds);
         if (users) {

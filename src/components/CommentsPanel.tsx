@@ -41,7 +41,7 @@ const CommentsPanel = ({ flintId, currentUserId, onCountChange }: CommentsPanelP
 
     if (userIds.length > 0) {
       const { data: authors } = await supabase
-        .from("users")
+        .from("user_profiles" as any)
         .select("id, labs_id")
         .in("id", userIds);
 
