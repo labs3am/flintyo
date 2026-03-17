@@ -268,6 +268,7 @@ const Index = () => {
               currentUserId={user?.id || ""}
               userVote={userVotes[flint.id] || null}
               commentCount={commentCounts[flint.id] || 0}
+              activeClash={activeClashes[flint.id] || null}
               onVote={fetchFlints}
             />
           ))
