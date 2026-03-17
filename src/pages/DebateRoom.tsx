@@ -180,7 +180,7 @@ const DebateRoom = () => {
       const diff = new Date(debate.ends_at!).getTime() - Date.now();
       if (diff <= 0) {
         setTimeLeft("Time's up!");
-        supabase.rpc("resolve_debate" as never, { p_debate_id: debate.id } as never);
+        supabase.rpc("resolve_debate", { p_debate_id: debate.id });
         return;
       }
       const m = Math.floor(diff / 60000);
