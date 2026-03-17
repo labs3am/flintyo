@@ -81,7 +81,7 @@ const FlintCard = memo(({ flint, currentUserId, userVote: initialVote, commentCo
       toast({ title: "Vote failed", variant: "destructive" });
     } else {
       setUserVote((prev) => (prev === type ? null : type));
-      completeDailyTask(currentUserId, "vote_flint", 2);
+      completeDailyTask("vote_flint");
       onVote();
     }
     setVoting(false);
@@ -118,7 +118,7 @@ const FlintCard = memo(({ flint, currentUserId, userVote: initialVote, commentCo
     if (error) {
       toast({ title: "Failed to send clash challenge", variant: "destructive" });
     } else if (data) {
-      completeDailyTask(currentUserId, "clash_debate", 5);
+      completeDailyTask("clash_debate");
       toast({ title: "Clash challenge sent! ⚔️" });
       navigate(`/debate/${data.id}`);
     }

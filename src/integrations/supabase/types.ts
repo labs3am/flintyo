@@ -38,6 +38,13 @@ export type Database = {
             foreignKeyName: "chat_queue_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: true
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_queue_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
@@ -73,7 +80,21 @@ export type Database = {
             foreignKeyName: "chats_user_a_fkey"
             columns: ["user_a"]
             isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chats_user_a_fkey"
+            columns: ["user_a"]
+            isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chats_user_b_fkey"
+            columns: ["user_b"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
           {
@@ -119,6 +140,13 @@ export type Database = {
             foreignKeyName: "comments_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
@@ -150,6 +178,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "daily_tasks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "daily_tasks_user_id_fkey"
             columns: ["user_id"]
@@ -187,6 +222,13 @@ export type Database = {
             columns: ["debate_id"]
             isOneToOne: false
             referencedRelation: "debates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "debate_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
           {
@@ -232,7 +274,21 @@ export type Database = {
             foreignKeyName: "debate_votes_voted_for_fkey"
             columns: ["voted_for"]
             isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "debate_votes_voted_for_fkey"
+            columns: ["voted_for"]
+            isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "debate_votes_voter_id_fkey"
+            columns: ["voter_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
           {
@@ -287,6 +343,13 @@ export type Database = {
             foreignKeyName: "debates_user_a_fkey"
             columns: ["user_a"]
             isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "debates_user_a_fkey"
+            columns: ["user_a"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
@@ -294,7 +357,21 @@ export type Database = {
             foreignKeyName: "debates_user_b_fkey"
             columns: ["user_b"]
             isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "debates_user_b_fkey"
+            columns: ["user_b"]
+            isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "debates_winner_fkey"
+            columns: ["winner"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
           {
@@ -348,6 +425,13 @@ export type Database = {
             foreignKeyName: "flints_author_id_fkey"
             columns: ["author_id"]
             isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "flints_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
@@ -381,6 +465,13 @@ export type Database = {
             columns: ["chat_id"]
             isOneToOne: false
             referencedRelation: "chats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
           {
@@ -428,6 +519,13 @@ export type Database = {
             foreignKeyName: "notifications_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
@@ -461,6 +559,13 @@ export type Database = {
             columns: ["flint_id"]
             isOneToOne: false
             referencedRelation: "flints"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
           {
@@ -539,6 +644,13 @@ export type Database = {
             foreignKeyName: "votes_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "votes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
@@ -546,17 +658,48 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      user_profiles: {
+        Row: {
+          country: string | null
+          created_at: string | null
+          id: string | null
+          interests: string[] | null
+          labs_id: string | null
+          points: number | null
+          rank: string | null
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string | null
+          id?: string | null
+          interests?: string[] | null
+          labs_id?: string | null
+          points?: number | null
+          rank?: string | null
+        }
+        Update: {
+          country?: string | null
+          created_at?: string | null
+          id?: string | null
+          interests?: string[] | null
+          labs_id?: string | null
+          points?: number | null
+          rank?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       cast_vote: {
         Args: { p_flint_id: string; p_user_id: string; p_vote_type: string }
         Returns: undefined
       }
-      complete_daily_task: {
-        Args: { p_points: number; p_task_type: string; p_user_id: string }
-        Returns: boolean
-      }
+      complete_daily_task:
+        | { Args: { p_task_type: string }; Returns: boolean }
+        | {
+            Args: { p_points: number; p_task_type: string; p_user_id: string }
+            Returns: boolean
+          }
       find_chat_match: {
         Args: { p_topic: string; p_user_id: string }
         Returns: string

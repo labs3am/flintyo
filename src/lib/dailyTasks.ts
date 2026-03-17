@@ -16,11 +16,9 @@ export const DAILY_TASKS: DailyTask[] = [
   { id: "clash_debate", label: "Start or join a Clash", task_type: "clash_debate", points: 5, icon: "⚔️" },
 ];
 
-export const completeDailyTask = async (userId: string, taskType: string, points: number): Promise<boolean> => {
+export const completeDailyTask = async (taskType: string): Promise<boolean> => {
   const { data, error } = await supabase.rpc("complete_daily_task" as never, {
-    p_user_id: userId,
     p_task_type: taskType,
-    p_points: points,
   } as never);
 
   if (error) return false;

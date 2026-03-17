@@ -40,10 +40,10 @@ const CommentsPanel = ({ flintId, currentUserId, onCountChange }: CommentsPanelP
     let authorsMap: Record<string, string> = {};
 
     if (userIds.length > 0) {
-      const { data: authors } = await supabase
-        .from("users")
+      const { data: authors } = await (supabase
+        .from("user_profiles" as any)
         .select("id, labs_id")
-        .in("id", userIds);
+        .in("id", userIds) as any);
 
       if (authors) {
         authorsMap = Object.fromEntries(authors.map((a: { id: string; labs_id: string }) => [a.id, a.labs_id]));
@@ -83,7 +83,7 @@ const CommentsPanel = ({ flintId, currentUserId, onCountChange }: CommentsPanelP
     if (error) {
       toast({ title: "Failed to post comment", variant: "destructive" });
     } else {
-      completeDailyTask(currentUserId, "comment_flint", 3);
+      completeDailyTask("comment_flint");
       setNewComment("");
       fetchComments();
     }

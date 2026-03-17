@@ -111,7 +111,7 @@ const CreateFlint = () => {
     if (error) {
       toast({ title: "Failed to post flint", description: error.message, variant: "destructive" });
     } else {
-      completeDailyTask(user!.id, "post_flint", 5);
+      completeDailyTask("post_flint");
       toast({ title: "Flint posted! 🔥" });
       navigate("/");
     }
