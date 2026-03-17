@@ -273,9 +273,9 @@ const Profile = () => {
                   <div className={`h-1.5 rounded-full ${
                     isPast ? "bg-primary" : isActive ? "bg-primary/60" : "bg-secondary"
                   }`} />
-                  <p className={`text-[9px] mt-1 ${isActive ? rankColors[tier.name] : "text-muted-foreground"}`}>
-                    {tier.name}
-                  </p>
+                   <p className={`text-[9px] mt-1 ${isActive ? rankColors[tier.name] : "text-muted-foreground"}`}>
+                     {rankDisplayNames[tier.name] || tier.name}
+                   </p>
                 </div>
               );
             })}
