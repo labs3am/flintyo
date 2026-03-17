@@ -119,7 +119,7 @@ const LetsTalk = () => {
       if (chatRes) {
         setChatData({ topic: chatRes.topic, expires_at: chatRes.expires_at, user_a: chatRes.user_a, user_b: chatRes.user_b });
         const partnerId = chatRes.user_a === user.id ? chatRes.user_b : chatRes.user_a;
-        supabase.from("user_profiles" as any).select("labs_id").eq("id", partnerId).single()
+        (supabase.from("user_profiles" as any).select("labs_id").eq("id", partnerId).single() as any)
           .then(({ data: partner }) => {
             if (partner) setPartnerLabs(partner.labs_id);
           });
