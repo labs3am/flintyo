@@ -33,6 +33,9 @@ const Landing = () => {
             <span className="text-lg font-bold tracking-tight">Flintyo</span>
           </div>
           <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-8 w-8">
+              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
             <Link to="/login">
               <Button variant="ghost" size="sm" className="text-xs">Sign In</Button>
             </Link>
