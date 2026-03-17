@@ -37,6 +37,7 @@ const Index = () => {
   const [userVotes, setUserVotes] = useState<Record<string, string>>({});
   const [commentCounts, setCommentCounts] = useState<Record<string, number>>({});
   const [activeClashes, setActiveClashes] = useState<Record<string, { id: string; viewerCount: number; status: string }>>({});
+  const [finishedClashes, setFinishedClashes] = useState<Record<string, { id: string; winnerLabsId: string | null; winnerVotes: number }>>({});
 
   // Fetch user preferences
   useEffect(() => {
@@ -72,7 +73,7 @@ const Index = () => {
     const authorIds = [...new Set(flintsList.map((f: Flint) => f.author_id))];
 
     // Batch: authors, user votes, comment counts, active debates — all in parallel
-    const [authorsRes, votesRes, commentsRes, debatesRes] = await Promise.all([
+    const [authorsRes, votesRes, commentsRes, debatesRes, finishedDebatesRes] = await Promise.all([
       authorIds.length > 0
         ? supabase.from("user_profiles" as any).select("id, labs_id, country").in("id", authorIds)
         : Promise.resolve({ data: [] }),
@@ -84,6 +85,9 @@ const Index = () => {
         : Promise.resolve({ data: [] }),
       flintIds.length > 0
         ? supabase.from("debates").select("id, flint_id, status").in("flint_id", flintIds).in("status", ["pending", "active"])
+        : Promise.resolve({ data: [] }),
+      flintIds.length > 0
+        ? supabase.from("debates").select("id, flint_id, winner").in("flint_id", flintIds).eq("status", "finished").order("created_at", { ascending: false })
         : Promise.resolve({ data: [] }),
     ]);
 
@@ -136,6 +140,31 @@ const Index = () => {
       }
     }
 
+    // Process finished clashes - show most recent finished clash per flint (only if no active/pending clash)
+    const finishedMap: Record<string, { id: string; winnerLabsId: string | null; winnerVotes: number }> = {};
+    if (finishedDebatesRes.data && (finishedDebatesRes.data as any[]).length > 0) {
+      const finishedDebates = finishedDebatesRes.data as any[];
+      // Get vote counts for finished debates
+      const finishedIds = finishedDebates.map((d: any) => d.id);
+      const { data: finishedVotes } = await supabase
+        .from("debate_votes")
+        .select("debate_id, voted_for")
+        .in("debate_id", finishedIds);
+
+      for (const d of finishedDebates) {
+        // Only show if no active clash exists for this flint
+        if (clashMap[d.flint_id]) continue;
+        if (finishedMap[d.flint_id]) continue; // only most recent
+
+        const debateVotes = (finishedVotes || []).filter((v: any) => v.debate_id === d.id && v.voted_for === d.winner);
+        finishedMap[d.flint_id] = {
+          id: d.id,
+          winnerLabsId: d.winner ? (authorsMap[d.winner]?.labs_id || "LabsID_???") : null,
+          winnerVotes: debateVotes.length,
+        };
+      }
+    }
+
     const flintsWithAuthors = flintsList.map((f: Flint) => ({
       ...f,
       author_labs_id: authorsMap[f.author_id]?.labs_id || "LabsID_???",
@@ -146,6 +175,7 @@ const Index = () => {
     setUserVotes(votesMap);
     setCommentCounts(countsMap);
     setActiveClashes(clashMap);
+    setFinishedClashes(finishedMap);
     setLoading(false);
   }, [user, toast]);
 
@@ -273,6 +303,7 @@ const Index = () => {
               userVote={userVotes[flint.id] || null}
               commentCount={commentCounts[flint.id] || 0}
               activeClash={activeClashes[flint.id] || null}
+              finishedClash={finishedClashes[flint.id] || null}
               onVote={fetchFlints}
             />
           ))

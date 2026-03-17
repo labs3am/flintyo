@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ThumbsUp, ThumbsDown, MessageSquare, Swords, Flag, Clock } from "lucide-react";
+import { ThumbsUp, ThumbsDown, MessageSquare, Swords, Flag, Clock, Trophy } from "lucide-react";
 import CommentsPanel from "@/components/CommentsPanel";
 import ReportDialog from "@/components/ReportDialog";
 import { completeDailyTask } from "@/lib/dailyTasks";
@@ -24,6 +24,7 @@ interface FlintProps {
   userVote?: string | null;
   commentCount?: number;
   activeClash?: { id: string; viewerCount: number; status: string } | null;
+  finishedClash?: { id: string; winnerLabsId: string | null; winnerVotes: number } | null;
   onVote: () => void;
 }
 
@@ -35,7 +36,7 @@ const categoryColors: Record<string, string> = {
   Other: "bg-muted text-muted-foreground",
 };
 
-const FlintCard = memo(({ flint, currentUserId, userVote: initialVote, commentCount: initialCommentCount, activeClash, onVote }: FlintProps) => {
+const FlintCard = memo(({ flint, currentUserId, userVote: initialVote, commentCount: initialCommentCount, activeClash, finishedClash, onVote }: FlintProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState("");
@@ -127,6 +128,21 @@ const FlintCard = memo(({ flint, currentUserId, userVote: initialVote, commentCo
 
   return (
     <div className="rounded-lg border border-border bg-card p-4 space-y-3">
+      {/* Finished clash banner */}
+      {finishedClash && (
+        <div className="flex items-center gap-2 rounded-md bg-rank-gold/10 border border-rank-gold/20 px-3 py-2 -mx-1 -mt-1">
+          <Trophy className="h-4 w-4 text-rank-gold flex-shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-semibold text-foreground">
+              Clash ended — {finishedClash.winnerLabsId ? (
+                <><span className="font-mono text-primary">{finishedClash.winnerLabsId}</span> won with {finishedClash.winnerVotes} votes</>
+              ) : (
+                "It's a draw!"
+              )}
+            </p>
+          </div>
+        </div>
+      )}
       {/* Top row */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
