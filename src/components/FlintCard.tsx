@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ThumbsUp, ThumbsDown, MessageSquare, Swords, Flag, Clock } from "lucide-react";
+import { ThumbsUp, ThumbsDown, MessageSquare, Swords, Flag, Clock, Trophy } from "lucide-react";
 import CommentsPanel from "@/components/CommentsPanel";
 import ReportDialog from "@/components/ReportDialog";
 import { completeDailyTask } from "@/lib/dailyTasks";
