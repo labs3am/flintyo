@@ -140,6 +140,31 @@ const Index = () => {
       }
     }
 
+    // Process finished clashes - show most recent finished clash per flint (only if no active/pending clash)
+    const finishedMap: Record<string, { id: string; winnerLabsId: string | null; winnerVotes: number }> = {};
+    if (finishedDebatesRes.data && (finishedDebatesRes.data as any[]).length > 0) {
+      const finishedDebates = finishedDebatesRes.data as any[];
+      // Get vote counts for finished debates
+      const finishedIds = finishedDebates.map((d: any) => d.id);
+      const { data: finishedVotes } = await supabase
+        .from("debate_votes")
+        .select("debate_id, voted_for")
+        .in("debate_id", finishedIds);
+
+      for (const d of finishedDebates) {
+        // Only show if no active clash exists for this flint
+        if (clashMap[d.flint_id]) continue;
+        if (finishedMap[d.flint_id]) continue; // only most recent
+
+        const debateVotes = (finishedVotes || []).filter((v: any) => v.debate_id === d.id && v.voted_for === d.winner);
+        finishedMap[d.flint_id] = {
+          id: d.id,
+          winnerLabsId: d.winner ? (authorsMap[d.winner]?.labs_id || "LabsID_???") : null,
+          winnerVotes: debateVotes.length,
+        };
+      }
+    }
+
     const flintsWithAuthors = flintsList.map((f: Flint) => ({
       ...f,
       author_labs_id: authorsMap[f.author_id]?.labs_id || "LabsID_???",
@@ -150,6 +175,7 @@ const Index = () => {
     setUserVotes(votesMap);
     setCommentCounts(countsMap);
     setActiveClashes(clashMap);
+    setFinishedClashes(finishedMap);
     setLoading(false);
   }, [user, toast]);
 
