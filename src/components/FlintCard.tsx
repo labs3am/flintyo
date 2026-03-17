@@ -128,6 +128,21 @@ const FlintCard = memo(({ flint, currentUserId, userVote: initialVote, commentCo
 
   return (
     <div className="rounded-lg border border-border bg-card p-4 space-y-3">
+      {/* Finished clash banner */}
+      {finishedClash && (
+        <div className="flex items-center gap-2 rounded-md bg-rank-gold/10 border border-rank-gold/20 px-3 py-2 -mx-1 -mt-1">
+          <Trophy className="h-4 w-4 text-rank-gold flex-shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-semibold text-foreground">
+              Clash ended — {finishedClash.winnerLabsId ? (
+                <><span className="font-mono text-primary">{finishedClash.winnerLabsId}</span> won with {finishedClash.winnerVotes} votes</>
+              ) : (
+                "It's a draw!"
+              )}
+            </p>
+          </div>
+        </div>
+      )}
       {/* Top row */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
