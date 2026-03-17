@@ -180,7 +180,7 @@ const DebateRoom = () => {
       const diff = new Date(debate.ends_at!).getTime() - Date.now();
       if (diff <= 0) {
         setTimeLeft("Time's up!");
-        supabase.rpc("resolve_debate" as never, { p_debate_id: debate.id } as never);
+        supabase.rpc("resolve_debate", { p_debate_id: debate.id });
         return;
       }
       const m = Math.floor(diff / 60000);
@@ -198,7 +198,7 @@ const DebateRoom = () => {
     if (isFinished) {
       redirectTimerRef.current = setTimeout(() => {
         navigate("/");
-      }, 5000);
+      }, 15000);
     }
     return () => {
       if (redirectTimerRef.current) clearTimeout(redirectTimerRef.current);
@@ -354,22 +354,37 @@ const DebateRoom = () => {
 
       {/* Finished state */}
       {isFinished && (
-        <div className="flex flex-col items-center gap-3 px-4 py-6 border-b border-border">
-          <Trophy className="h-10 w-10 text-warning" />
+        <div className="flex flex-col items-center gap-4 px-4 py-8 border-b border-border bg-card">
+          <Trophy className="h-14 w-14 text-yellow-500 animate-bounce" />
           {debate.winner ? (
-            <p className="text-sm text-foreground font-medium">
-              🏆 <span className="font-mono text-primary">{labsIds[debate.winner] || "LabsID_???"}</span> wins! (+50 pts)
-            </p>
+            <>
+              <p className="text-lg font-bold text-foreground">
+                🏆 Winner: <span className="font-mono text-primary">{labsIds[debate.winner] || "LabsID_???"}</span>
+              </p>
+              <p className="text-sm text-muted-foreground">+50 points awarded!</p>
+            </>
           ) : (
-            <p className="text-sm text-muted-foreground font-medium">It's a draw!</p>
+            <p className="text-lg font-bold text-muted-foreground">It's a draw! 🤝</p>
           )}
-          <div className="flex gap-4 text-xs text-muted-foreground">
-            <span>{labsA}: {voteCountA} votes</span>
-            <span>{labsB}: {voteCountB} votes</span>
-            <span>Draw: {voteDraw}</span>
+          <div className="flex gap-6 text-sm text-muted-foreground mt-2">
+            <span className="flex flex-col items-center">
+              <span className="font-mono text-primary text-xs">{labsA}</span>
+              <span className="font-bold text-foreground text-lg">{voteCountA}</span>
+              <span className="text-[10px]">votes</span>
+            </span>
+            <span className="flex flex-col items-center">
+              <span className="text-xs">Draw</span>
+              <span className="font-bold text-foreground text-lg">{voteDraw}</span>
+              <span className="text-[10px]">votes</span>
+            </span>
+            <span className="flex flex-col items-center">
+              <span className="font-mono text-primary text-xs">{labsB}</span>
+              <span className="font-bold text-foreground text-lg">{voteCountB}</span>
+              <span className="text-[10px]">votes</span>
+            </span>
           </div>
-          <p className="text-[10px] text-muted-foreground mt-2">Redirecting to home in 5 seconds...</p>
-          <Button size="sm" variant="secondary" onClick={() => navigate("/")} className="text-xs mt-1">
+          <p className="text-xs text-muted-foreground mt-3">Returning home in 15 seconds...</p>
+          <Button size="sm" variant="secondary" onClick={() => navigate("/")} className="text-xs">
             Go Home Now
           </Button>
         </div>
