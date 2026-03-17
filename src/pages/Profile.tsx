@@ -24,6 +24,14 @@ interface SavedFlint {
   created_at: string;
 }
 
+const rankDisplayNames: Record<string, string> = {
+  Lead: "Grey",
+  Copper: "New Mind",
+  Cobalt: "Blue Thinker",
+  Amethyst: "Purple Debater",
+  Gold: "Gold Legend",
+};
+
 const rankColors: Record<string, string> = {
   Lead: "text-rank-lead",
   Copper: "text-rank-copper",
