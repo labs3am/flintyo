@@ -35,7 +35,7 @@ const categoryColors: Record<string, string> = {
   Other: "bg-muted text-muted-foreground",
 };
 
-const FlintCard = memo(({ flint, currentUserId, userVote: initialVote, commentCount: initialCommentCount, onVote }: FlintProps) => {
+const FlintCard = memo(({ flint, currentUserId, userVote: initialVote, commentCount: initialCommentCount, activeClash, onVote }: FlintProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState("");
