@@ -63,7 +63,7 @@ const LetsTalk = () => {
     if (data) {
       setChatId(data as string);
       setSearching(false);
-      completeDailyTask(user.id, "start_chat", 5);
+      completeDailyTask("start_chat");
     } else {
       toast({ title: "Looking for someone to talk to..." });
       let elapsed = 0;
