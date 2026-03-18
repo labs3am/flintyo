@@ -23,7 +23,7 @@ interface FlintProps {
   currentUserId: string;
   userVote?: string | null;
   commentCount?: number;
-  activeClash?: { id: string; viewerCount: number; status: string } | null;
+  activeClash?: { id: string; status: string } | null;
   finishedClash?: { id: string; winnerLabsId: string | null; winnerVotes: number } | null;
   onVote: () => void;
 }
