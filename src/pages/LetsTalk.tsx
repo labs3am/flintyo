@@ -26,7 +26,6 @@ const LetsTalk = () => {
     setSearching(true);
     setNoUserFound(false);
     const { data, error } = await supabase.rpc("find_chat_match" as never, {
-      p_user_id: user.id,
       p_topic: searchTopic,
     } as never);
 

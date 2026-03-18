@@ -233,11 +233,13 @@ const DebateRoom = () => {
       return;
     }
     
-    const endsAt = new Date(Date.now() + 3 * 60 * 1000).toISOString();
-    await supabase
-      .from("debates")
-      .update({ status: "active", ends_at: endsAt })
-      .eq("id", debate.id);
+    const { error } = await supabase.rpc("accept_debate" as never, {
+      p_debate_id: debate.id,
+    } as never);
+    if (error) {
+      toast({ title: "Failed to accept debate", variant: "destructive" });
+      return;
+    }
     toast({ title: "Debate started! ⚔️ You have 3 minutes." });
   };
 
