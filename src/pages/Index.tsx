@@ -37,6 +37,9 @@ const Index = () => {
   const [activeCategory, setActiveCategory] = useState("All");
   const [feedMode, setFeedMode] = useState<"global" | "country">("global");
   const [userCountry, setUserCountry] = useState<string | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  const [countrySearch, setCountrySearch] = useState("");
+  const [countryOpen, setCountryOpen] = useState(false);
   const [userInterests, setUserInterests] = useState<string[]>([]);
   const [userVotes, setUserVotes] = useState<Record<string, string>>({});
   const [commentCounts, setCommentCounts] = useState<Record<string, number>>({});
