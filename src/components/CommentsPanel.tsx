@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
-import { Send } from "lucide-react";
+import { Send, Swords } from "lucide-react";
 import { completeDailyTask } from "@/lib/dailyTasks";
 
 interface Comment {
@@ -21,10 +22,12 @@ interface CommentsPanelProps {
 
 const CommentsPanel = ({ flintId, currentUserId, onCountChange }: CommentsPanelProps) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
   const [loading, setLoading] = useState(true);
   const [posting, setPosting] = useState(false);
+  const [clashing, setClashing] = useState(false);
 
   const fetchComments = async () => {
     const { data, error } = await supabase
@@ -35,7 +38,6 @@ const CommentsPanel = ({ flintId, currentUserId, onCountChange }: CommentsPanelP
 
     if (error) return;
 
-    // Fetch author labs_ids
     const userIds = [...new Set((data || []).map((c: Comment) => c.user_id))];
     let authorsMap: Record<string, string> = {};
 
@@ -90,6 +92,45 @@ const CommentsPanel = ({ flintId, currentUserId, onCountChange }: CommentsPanelP
     setPosting(false);
   };
 
+  const handleClashComment = async (targetUserId: string) => {
+    if (!currentUserId || clashing || targetUserId === currentUserId) return;
+    setClashing(true);
+
+    // Check for existing active/pending clash on this flint
+    const { data: existing } = await supabase
+      .from("debates")
+      .select("id")
+      .eq("flint_id", flintId)
+      .in("status", ["pending", "active"])
+      .limit(1);
+
+    if (existing && existing.length > 0) {
+      toast({ title: "A clash is already in progress for this flint", variant: "destructive" });
+      setClashing(false);
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("debates")
+      .insert({
+        flint_id: flintId,
+        user_a: currentUserId,
+        user_b: targetUserId,
+        status: "pending",
+      })
+      .select("id")
+      .single();
+
+    if (error) {
+      toast({ title: "Failed to send clash challenge", variant: "destructive" });
+    } else if (data) {
+      completeDailyTask("clash_debate");
+      toast({ title: "Clash challenge sent! ⚔️" });
+      navigate(`/debate/${data.id}`);
+    }
+    setClashing(false);
+  };
+
   const timeAgo = (date: string) => {
     const diff = Date.now() - new Date(date).getTime();
     const mins = Math.floor(diff / 60000);
@@ -110,10 +151,21 @@ const CommentsPanel = ({ flintId, currentUserId, onCountChange }: CommentsPanelP
           <p className="text-xs text-muted-foreground">No comments yet. Start the discussion!</p>
         ) : (
           comments.map((c) => (
-            <div key={c.id} className="space-y-0.5">
+            <div key={c.id} className="space-y-0.5 group">
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-mono font-medium text-primary">{c.author_labs_id}</span>
                 <span className="text-[10px] text-muted-foreground">{timeAgo(c.created_at)}</span>
+                {c.user_id !== currentUserId && (
+                  <button
+                    onClick={() => handleClashComment(c.user_id)}
+                    disabled={clashing}
+                    className="opacity-0 group-hover:opacity-100 flex items-center gap-0.5 text-[10px] text-muted-foreground hover:text-primary transition-all disabled:opacity-30"
+                    title={`Clash with ${c.author_labs_id}`}
+                  >
+                    <Swords className="h-3 w-3" />
+                    <span>Clash</span>
+                  </button>
+                )}
               </div>
               <p className="text-xs text-foreground/90">{c.content}</p>
             </div>
