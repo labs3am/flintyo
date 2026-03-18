@@ -14,6 +14,7 @@ import LetsTalk from "./pages/LetsTalk";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import Landing from "./pages/Landing";
+import ResetPassword from "./pages/ResetPassword";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/landing" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/create" element={<ProtectedRoute><CreateFlint /></ProtectedRoute>} />
             <Route path="/debate/:id" element={<ProtectedRoute><DebateRoom /></ProtectedRoute>} />
