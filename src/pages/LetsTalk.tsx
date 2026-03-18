@@ -88,6 +88,7 @@ const LetsTalk = () => {
   return (
     <TalkSearch
       searching={searching}
+      noUserFound={noUserFound}
       onSearch={handleSearch}
       onCancel={handleCancel}
       onMatch={(id) => setChatId(id)}
