@@ -161,16 +161,6 @@ const FlintCard = memo(({ flint, currentUserId, userVote: initialVote, commentCo
             >
               <Swords className="h-3 w-3" />
               <span>LIVE</span>
-              <span className="text-destructive/70">· {activeClash.viewerCount} watching</span>
-            </button>
-          )}
-          {activeClash && activeClash.status === "pending" && (
-            <button
-              onClick={() => navigate(`/debate/${activeClash.id}`)}
-              className="flex items-center gap-1 rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-medium text-primary"
-            >
-              <Swords className="h-3 w-3" />
-              <span>Waiting for viewer</span>
             </button>
           )}
           {timeLeft && (
