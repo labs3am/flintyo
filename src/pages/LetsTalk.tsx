@@ -48,7 +48,7 @@ const LetsTalk = () => {
           if (pollRef.current) clearInterval(pollRef.current);
           await supabase.from("chat_queue").delete().eq("user_id", user.id);
           setSearching(false);
-          toast({ title: "No one available right now. Try again later!", variant: "destructive" });
+          setNoUserFound(true);
           return;
         }
         const { data: chats } = await supabase
