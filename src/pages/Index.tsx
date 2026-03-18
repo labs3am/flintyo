@@ -191,8 +191,8 @@ const Index = () => {
   const filteredFlints = useMemo(() => {
     let feed = flints;
 
-    if (feedMode === "country" && userCountry) {
-      feed = feed.filter((f: any) => f._author_country === userCountry);
+    if (feedMode === "country" && selectedCountry) {
+      feed = feed.filter((f: any) => f._author_country === selectedCountry);
     }
 
     if (activeCategory !== "All") {
