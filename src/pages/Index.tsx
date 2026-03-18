@@ -57,6 +57,7 @@ const Index = () => {
       .then(({ data }) => {
         if (data) {
           setUserCountry((data as any).country);
+          setSelectedCountry((data as any).country);
           setUserInterests((data as any).interests || []);
         }
       });
