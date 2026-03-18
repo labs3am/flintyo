@@ -3,11 +3,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import FlintCard from "@/components/FlintCard";
-import { Flame, Plus, MessageCircle, User, Globe, MapPin } from "lucide-react";
+import { Flame, Plus, MessageCircle, User, Globe, MapPin, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import NotificationBell from "@/components/NotificationBell";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import PullIndicator from "@/components/PullIndicator";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Input } from "@/components/ui/input";
+
+const COUNTRIES = ["Global","Afghanistan","Albania","Algeria","Andorra","Angola","Antigua and Barbuda","Argentina","Armenia","Australia","Austria","Azerbaijan","Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bhutan","Bolivia","Bosnia and Herzegovina","Botswana","Brazil","Brunei","Bulgaria","Burkina Faso","Burundi","Cabo Verde","Cambodia","Cameroon","Canada","Central African Republic","Chad","Chile","China","Colombia","Comoros","Congo","Costa Rica","Croatia","Cuba","Cyprus","Czech Republic","Denmark","Djibouti","Dominica","Dominican Republic","Ecuador","Egypt","El Salvador","Equatorial Guinea","Eritrea","Estonia","Eswatini","Ethiopia","Fiji","Finland","France","Gabon","Gambia","Georgia","Germany","Ghana","Greece","Grenada","Guatemala","Guinea","Guinea-Bissau","Guyana","Haiti","Honduras","Hungary","Iceland","India","Indonesia","Iran","Iraq","Ireland","Israel","Italy","Jamaica","Japan","Jordan","Kazakhstan","Kenya","Kiribati","Kosovo","Kuwait","Kyrgyzstan","Laos","Latvia","Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg","Madagascar","Malawi","Malaysia","Maldives","Mali","Malta","Marshall Islands","Mauritania","Mauritius","Mexico","Micronesia","Moldova","Monaco","Mongolia","Montenegro","Morocco","Mozambique","Myanmar","Namibia","Nauru","Nepal","Netherlands","New Zealand","Nicaragua","Niger","Nigeria","North Korea","North Macedonia","Norway","Oman","Pakistan","Palau","Palestine","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Poland","Portugal","Qatar","Romania","Russia","Rwanda","Saint Kitts and Nevis","Saint Lucia","Saint Vincent and the Grenadines","Samoa","San Marino","Sao Tome and Principe","Saudi Arabia","Senegal","Serbia","Seychelles","Sierra Leone","Singapore","Slovakia","Slovenia","Solomon Islands","Somalia","South Africa","South Korea","South Sudan","Spain","Sri Lanka","Sudan","Suriname","Sweden","Switzerland","Syria","Taiwan","Tajikistan","Tanzania","Thailand","Timor-Leste","Togo","Tonga","Trinidad and Tobago","Tunisia","Turkey","Turkmenistan","Tuvalu","Uganda","Ukraine","United Arab Emirates","United Kingdom","United States","Uruguay","Uzbekistan","Vanuatu","Vatican City","Venezuela","Vietnam","Yemen","Zambia","Zimbabwe"];
 
 interface Flint {
   id: string;
@@ -33,6 +37,9 @@ const Index = () => {
   const [activeCategory, setActiveCategory] = useState("All");
   const [feedMode, setFeedMode] = useState<"global" | "country">("global");
   const [userCountry, setUserCountry] = useState<string | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  const [countrySearch, setCountrySearch] = useState("");
+  const [countryOpen, setCountryOpen] = useState(false);
   const [userInterests, setUserInterests] = useState<string[]>([]);
   const [userVotes, setUserVotes] = useState<Record<string, string>>({});
   const [commentCounts, setCommentCounts] = useState<Record<string, number>>({});
@@ -50,6 +57,7 @@ const Index = () => {
       .then(({ data }) => {
         if (data) {
           setUserCountry((data as any).country);
+          setSelectedCountry((data as any).country);
           setUserInterests((data as any).interests || []);
         }
       });
@@ -183,8 +191,8 @@ const Index = () => {
   const filteredFlints = useMemo(() => {
     let feed = flints;
 
-    if (feedMode === "country" && userCountry) {
-      feed = feed.filter((f: any) => f._author_country === userCountry);
+    if (feedMode === "country" && selectedCountry) {
+      feed = feed.filter((f: any) => f._author_country === selectedCountry);
     }
 
     if (activeCategory !== "All") {
@@ -204,7 +212,7 @@ const Index = () => {
     }
 
     return feed;
-  }, [flints, feedMode, userCountry, activeCategory, userInterests]);
+  }, [flints, feedMode, selectedCountry, activeCategory, userInterests]);
 
   const { containerRef, pullDistance, refreshing, handlers } = usePullToRefresh({
     onRefresh: fetchFlints,
@@ -226,7 +234,7 @@ const Index = () => {
           <div className="flex items-center gap-2">
             <div className="flex rounded-full border border-border bg-card overflow-hidden">
               <button
-                onClick={() => setFeedMode("global")}
+                onClick={() => { setFeedMode("global"); setSelectedCountry(null); }}
                 className={`flex items-center gap-1 px-2.5 py-1 text-[10px] font-medium transition-colors ${
                   feedMode === "global"
                     ? "bg-primary text-primary-foreground"
@@ -236,17 +244,55 @@ const Index = () => {
                 <Globe className="h-3 w-3" />
                 Global
               </button>
-              <button
-                onClick={() => setFeedMode("country")}
-                className={`flex items-center gap-1 px-2.5 py-1 text-[10px] font-medium transition-colors ${
-                  feedMode === "country"
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <MapPin className="h-3 w-3" />
-                {userCountry || "Country"}
-              </button>
+              <Popover open={countryOpen} onOpenChange={setCountryOpen}>
+                <PopoverTrigger asChild>
+                  <button
+                    onClick={() => { if (feedMode !== "country") { setFeedMode("country"); setSelectedCountry(userCountry); } }}
+                    className={`flex items-center gap-1 px-2.5 py-1 text-[10px] font-medium transition-colors ${
+                      feedMode === "country"
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <MapPin className="h-3 w-3" />
+                    {feedMode === "country" && selectedCountry ? selectedCountry : (userCountry || "Country")}
+                    <ChevronDown className="h-2.5 w-2.5" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-56 p-2" align="end">
+                  <Input
+                    placeholder="Search country…"
+                    value={countrySearch}
+                    onChange={(e) => setCountrySearch(e.target.value)}
+                    className="h-8 text-xs mb-2"
+                  />
+                  <div className="max-h-48 overflow-y-auto space-y-0.5">
+                    {COUNTRIES.filter((c) => c.toLowerCase().includes(countrySearch.toLowerCase())).map((country) => (
+                      <button
+                        key={country}
+                        onClick={() => {
+                          if (country === "Global") {
+                            setFeedMode("global");
+                            setSelectedCountry(null);
+                          } else {
+                            setFeedMode("country");
+                            setSelectedCountry(country);
+                          }
+                          setCountryOpen(false);
+                          setCountrySearch("");
+                        }}
+                        className={`w-full text-left rounded-md px-2.5 py-1.5 text-xs transition-colors ${
+                          (country === "Global" && feedMode === "global") || (selectedCountry === country && feedMode === "country")
+                            ? "bg-primary/15 text-primary font-medium"
+                            : "text-foreground hover:bg-secondary"
+                        }`}
+                      >
+                        {country}
+                      </button>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
             <NotificationBell />
             <button onClick={signOut} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
@@ -287,7 +333,7 @@ const Index = () => {
           <div className="flex flex-col items-center justify-center py-20 gap-3">
             <Flame className="h-12 w-12 text-muted-foreground/30" />
             <p className="text-sm text-muted-foreground">
-              {feedMode === "country" ? `No flints from ${userCountry} yet.` : "No flints yet. Be the first to spark one!"}
+              {feedMode === "country" ? `No flints from ${selectedCountry} yet.` : "No flints yet. Be the first to spark one!"}
             </p>
           </div>
         ) : (
