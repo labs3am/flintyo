@@ -212,7 +212,7 @@ const Index = () => {
     }
 
     return feed;
-  }, [flints, feedMode, userCountry, activeCategory, userInterests]);
+  }, [flints, feedMode, selectedCountry, activeCategory, userInterests]);
 
   const { containerRef, pullDistance, refreshing, handlers } = usePullToRefresh({
     onRefresh: fetchFlints,
