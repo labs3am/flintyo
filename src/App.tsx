@@ -14,6 +14,7 @@ import LetsTalk from "./pages/LetsTalk";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import Landing from "./pages/Landing";
+import ResetPassword from "./pages/ResetPassword";
 
 const queryClient = new QueryClient();
 
