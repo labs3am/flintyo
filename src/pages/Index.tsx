@@ -234,7 +234,7 @@ const Index = () => {
           <div className="flex items-center gap-2">
             <div className="flex rounded-full border border-border bg-card overflow-hidden">
               <button
-                onClick={() => setFeedMode("global")}
+                onClick={() => { setFeedMode("global"); setSelectedCountry(null); }}
                 className={`flex items-center gap-1 px-2.5 py-1 text-[10px] font-medium transition-colors ${
                   feedMode === "global"
                     ? "bg-primary text-primary-foreground"
@@ -244,17 +244,55 @@ const Index = () => {
                 <Globe className="h-3 w-3" />
                 Global
               </button>
-              <button
-                onClick={() => setFeedMode("country")}
-                className={`flex items-center gap-1 px-2.5 py-1 text-[10px] font-medium transition-colors ${
-                  feedMode === "country"
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <MapPin className="h-3 w-3" />
-                {userCountry || "Country"}
-              </button>
+              <Popover open={countryOpen} onOpenChange={setCountryOpen}>
+                <PopoverTrigger asChild>
+                  <button
+                    onClick={() => { if (feedMode !== "country") { setFeedMode("country"); setSelectedCountry(userCountry); } }}
+                    className={`flex items-center gap-1 px-2.5 py-1 text-[10px] font-medium transition-colors ${
+                      feedMode === "country"
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <MapPin className="h-3 w-3" />
+                    {feedMode === "country" && selectedCountry ? selectedCountry : (userCountry || "Country")}
+                    <ChevronDown className="h-2.5 w-2.5" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-56 p-2" align="end">
+                  <Input
+                    placeholder="Search country…"
+                    value={countrySearch}
+                    onChange={(e) => setCountrySearch(e.target.value)}
+                    className="h-8 text-xs mb-2"
+                  />
+                  <div className="max-h-48 overflow-y-auto space-y-0.5">
+                    {COUNTRIES.filter((c) => c.toLowerCase().includes(countrySearch.toLowerCase())).map((country) => (
+                      <button
+                        key={country}
+                        onClick={() => {
+                          if (country === "Global") {
+                            setFeedMode("global");
+                            setSelectedCountry(null);
+                          } else {
+                            setFeedMode("country");
+                            setSelectedCountry(country);
+                          }
+                          setCountryOpen(false);
+                          setCountrySearch("");
+                        }}
+                        className={`w-full text-left rounded-md px-2.5 py-1.5 text-xs transition-colors ${
+                          (country === "Global" && feedMode === "global") || (selectedCountry === country && feedMode === "country")
+                            ? "bg-primary/15 text-primary font-medium"
+                            : "text-foreground hover:bg-secondary"
+                        }`}
+                      >
+                        {country}
+                      </button>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
             <NotificationBell />
             <button onClick={signOut} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
