@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import FlintCard from "@/components/FlintCard";
-import { Flame, Plus, MessageCircle, User, Globe, MapPin } from "lucide-react";
+import { Flame, Plus, MessageCircle, User, Globe, MapPin, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import NotificationBell from "@/components/NotificationBell";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
