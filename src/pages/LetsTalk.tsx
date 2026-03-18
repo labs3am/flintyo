@@ -25,6 +25,9 @@ const LetsTalk = () => {
     const searchTopic = topic.trim() || category;
     setSearching(true);
     setNoUserFound(false);
+    
+    const searchStartedAt = new Date().toISOString();
+    
     const { data, error } = await supabase.rpc("find_chat_match" as never, {
       p_topic: searchTopic,
     } as never);
@@ -54,6 +57,7 @@ const LetsTalk = () => {
           .from("chats")
           .select("id")
           .or(`user_a.eq.${user.id},user_b.eq.${user.id}`)
+          .gte("created_at", searchStartedAt)
           .order("created_at", { ascending: false })
           .limit(1);
 
