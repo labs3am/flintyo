@@ -29,6 +29,7 @@ const App = () => (
             <Route path="/landing" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/create" element={<ProtectedRoute><CreateFlint /></ProtectedRoute>} />
             <Route path="/debate/:id" element={<ProtectedRoute><DebateRoom /></ProtectedRoute>} />
