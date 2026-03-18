@@ -60,7 +60,7 @@ const TalkChat = ({ chatId, userId, onNewChat }: TalkChatProps) => {
     loadChat();
 
     const sub = supabase
-      .channel(`chat-${chatId}`)
+      .channel(`chat-msgs-${chatId}`)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: `chat_id=eq.${chatId}` },
         (payload) => setMessages((prev) => [...prev, payload.new as ChatMsg])
       )
