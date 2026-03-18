@@ -333,7 +333,7 @@ const Index = () => {
           <div className="flex flex-col items-center justify-center py-20 gap-3">
             <Flame className="h-12 w-12 text-muted-foreground/30" />
             <p className="text-sm text-muted-foreground">
-              {feedMode === "country" ? `No flints from ${userCountry} yet.` : "No flints yet. Be the first to spark one!"}
+              {feedMode === "country" ? `No flints from ${selectedCountry} yet.` : "No flints yet. Be the first to spark one!"}
             </p>
           </div>
         ) : (
