@@ -112,31 +112,12 @@ const Index = () => {
       }
     }
 
-    // Active/pending debates per flint + fetch viewer counts
-    const clashMap: Record<string, { id: string; viewerCount: number; status: string }> = {};
+    // Active debates per flint — only show truly active clashes (not pending)
+    const clashMap: Record<string, { id: string; status: string }> = {};
     if (debatesRes.data && (debatesRes.data as any[]).length > 0) {
-      const relevantDebates = debatesRes.data as any[];
-      const activeDebates = relevantDebates.filter((d: any) => d.status === "active");
-      const debateIds = activeDebates.map((d: any) => d.id);
-      
-      let viewerCounts: Record<string, number> = {};
-      if (debateIds.length > 0) {
-        const { data: votes } = await supabase
-          .from("debate_votes")
-          .select("debate_id")
-          .in("debate_id", debateIds);
-        if (votes) {
-          for (const v of votes as any[]) {
-            viewerCounts[v.debate_id] = (viewerCounts[v.debate_id] || 0) + 1;
-          }
-        }
-      }
-      
-      // Active debates take priority over pending
+      const relevantDebates = (debatesRes.data as any[]).filter((d: any) => d.status === "active");
       for (const d of relevantDebates) {
-        if (!clashMap[d.flint_id] || d.status === "active") {
-          clashMap[d.flint_id] = { id: d.id, viewerCount: viewerCounts[d.id] || 0, status: d.status };
-        }
+        clashMap[d.flint_id] = { id: d.id, status: d.status };
       }
     }
 
