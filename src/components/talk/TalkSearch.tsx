@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { ArrowLeft, Loader2, MessageCircle, Heart, Swords, Brain, Shuffle, Users, Globe } from "lucide-react";
+import { useState, useEffect } from "react";
+import { ArrowLeft, Loader2, MessageCircle, Heart, Swords, Brain, Shuffle, Users, Globe, Clock, Shield, UserX, RefreshCw } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,26 +20,62 @@ const SEARCHING_MESSAGES = [
   "Looking for the right person…",
 ];
 
+const HOW_IT_WORKS = [
+  { icon: UserX, title: "100% Anonymous", desc: "No names, no photos — just your LabsID" },
+  { icon: Clock, title: "10 Min Chats", desc: "Timed conversations. Hold to extend if it's good" },
+  { icon: Shield, title: "Safe Space", desc: "Report anything inappropriate with one tap" },
+  { icon: MessageCircle, title: "Real Talks", desc: "Pick a mood, share what's on your mind, get matched" },
+];
+
 interface TalkSearchProps {
   onMatch: (chatId: string) => void;
   searching: boolean;
+  noUserFound: boolean;
   onSearch: (category: string, topic: string) => void;
   onCancel: () => void;
 }
 
-const TalkSearch = ({ searching, onSearch, onCancel }: TalkSearchProps) => {
+const TalkSearch = ({ searching, noUserFound, onSearch, onCancel }: TalkSearchProps) => {
   const [selected, setSelected] = useState("Random Chat");
   const [topic, setTopic] = useState("");
   const [msgIndex, setMsgIndex] = useState(0);
 
   // Cycle searching messages
-  useState(() => {
+  useEffect(() => {
     if (!searching) return;
     const interval = setInterval(() => {
       setMsgIndex((prev) => (prev + 1) % SEARCHING_MESSAGES.length);
     }, 2000);
     return () => clearInterval(interval);
-  });
+  }, [searching]);
+
+  // No user found screen
+  if (noUserFound) {
+    return (
+      <div className="flex min-h-screen flex-col bg-background">
+        <header className="sticky top-0 z-10 flex items-center gap-3 border-b border-border bg-background/80 backdrop-blur-md px-4 py-3">
+          <Link to="/" className="text-muted-foreground hover:text-foreground">
+            <ArrowLeft className="h-5 w-5" />
+          </Link>
+          <div className="flex items-center gap-2">
+            <MessageCircle className="h-5 w-5 text-primary" />
+            <span className="font-semibold text-foreground">Let's Talk</span>
+          </div>
+        </header>
+        <div className="flex flex-1 flex-col items-center justify-center gap-5 px-4">
+          <div className="text-4xl">😔</div>
+          <div className="text-center space-y-1">
+            <h2 className="text-lg font-bold text-foreground">No one available right now</h2>
+            <p className="text-sm text-muted-foreground">Everyone's busy. Give it a minute and try again!</p>
+          </div>
+          <Button onClick={() => onSearch(selected, topic)} className="font-semibold gap-2">
+            <RefreshCw className="h-4 w-4" />
+            Try Again
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   if (searching) {
     return (
@@ -88,7 +124,23 @@ const TalkSearch = ({ searching, onSearch, onCancel }: TalkSearchProps) => {
         </div>
       </header>
 
-      <div className="flex flex-1 flex-col items-center gap-6 px-4 py-8">
+      <div className="flex flex-1 flex-col items-center gap-6 px-4 py-6 overflow-y-auto">
+        {/* How it works */}
+        <div className="w-full max-w-sm space-y-3">
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">How it works</h3>
+          <div className="grid grid-cols-2 gap-2">
+            {HOW_IT_WORKS.map(({ icon: Icon, title, desc }) => (
+              <div key={title} className="rounded-xl bg-card border border-border p-3 space-y-1">
+                <Icon className="h-4 w-4 text-primary" />
+                <p className="text-xs font-semibold text-foreground">{title}</p>
+                <p className="text-[10px] text-muted-foreground leading-tight">{desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="w-full max-w-sm h-px bg-border" />
+
         <div className="text-center space-y-1">
           <h2 className="text-lg font-bold text-foreground">What's the vibe?</h2>
           <p className="text-xs text-muted-foreground">Pick a mood and get matched anonymously</p>

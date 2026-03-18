@@ -10,6 +10,7 @@ const LetsTalk = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [searching, setSearching] = useState(false);
+  const [noUserFound, setNoUserFound] = useState(false);
   const [chatId, setChatId] = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -23,7 +24,7 @@ const LetsTalk = () => {
     if (!user) return;
     const searchTopic = topic.trim() || category;
     setSearching(true);
-
+    setNoUserFound(false);
     const { data, error } = await supabase.rpc("find_chat_match" as never, {
       p_user_id: user.id,
       p_topic: searchTopic,
@@ -47,7 +48,7 @@ const LetsTalk = () => {
           if (pollRef.current) clearInterval(pollRef.current);
           await supabase.from("chat_queue").delete().eq("user_id", user.id);
           setSearching(false);
-          toast({ title: "No one available right now. Try again later!", variant: "destructive" });
+          setNoUserFound(true);
           return;
         }
         const { data: chats } = await supabase
@@ -87,6 +88,7 @@ const LetsTalk = () => {
   return (
     <TalkSearch
       searching={searching}
+      noUserFound={noUserFound}
       onSearch={handleSearch}
       onCancel={handleCancel}
       onMatch={(id) => setChatId(id)}
