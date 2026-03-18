@@ -193,7 +193,21 @@ const DebateRoom = () => {
     return () => clearInterval(interval);
   }, [debate?.ends_at, isActive]);
 
-  // Auto-redirect home after debate finishes (5s delay)
+  // Auto-expire pending clash after 30 seconds if not accepted
+  useEffect(() => {
+    if (!isPending || !debate) return;
+
+    const pendingTimer = setTimeout(async () => {
+      // Delete the pending debate
+      await supabase.from("debates").delete().eq("id", debate.id);
+      toast({ title: "Clash expired — no response in 30 seconds" });
+      navigate("/");
+    }, 30000);
+
+    return () => clearTimeout(pendingTimer);
+  }, [isPending, debate?.id, navigate, toast]);
+
+  // Auto-redirect home after debate finishes (15s delay)
   useEffect(() => {
     if (isFinished) {
       redirectTimerRef.current = setTimeout(() => {
