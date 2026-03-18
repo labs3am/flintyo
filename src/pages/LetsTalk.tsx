@@ -10,6 +10,7 @@ const LetsTalk = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [searching, setSearching] = useState(false);
+  const [noUserFound, setNoUserFound] = useState(false);
   const [chatId, setChatId] = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
