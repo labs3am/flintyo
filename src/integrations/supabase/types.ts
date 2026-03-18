@@ -690,6 +690,7 @@ export type Database = {
       }
     }
     Functions: {
+      accept_debate: { Args: { p_debate_id: string }; Returns: undefined }
       cast_vote: {
         Args: { p_flint_id: string; p_user_id: string; p_vote_type: string }
         Returns: undefined
@@ -700,10 +701,7 @@ export type Database = {
             Args: { p_points: number; p_task_type: string; p_user_id: string }
             Returns: boolean
           }
-      find_chat_match: {
-        Args: { p_topic: string; p_user_id: string }
-        Returns: string
-      }
+      find_chat_match: { Args: { p_topic: string }; Returns: string }
       increment_points: {
         Args: { amount: number; user_id_input: string }
         Returns: undefined
