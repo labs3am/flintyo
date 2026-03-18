@@ -353,6 +353,7 @@ const DebateRoom = () => {
         <div className="flex flex-col items-center gap-3 px-4 py-8">
           <Swords className="h-12 w-12 text-muted-foreground/30 animate-pulse-glow" />
           <p className="text-sm text-muted-foreground">Waiting for opponent to accept...</p>
+          <p className="text-xs text-destructive">Auto-expires in 30 seconds if not accepted</p>
           <div className="flex items-center gap-1 text-xs text-muted-foreground">
             <Users className="h-3.5 w-3.5" />
             <span>{viewerCount} viewer{viewerCount !== 1 ? "s" : ""} watching</span>
