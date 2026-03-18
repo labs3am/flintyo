@@ -164,6 +164,21 @@ const Index = () => {
     fetchFlints();
   }, [fetchFlints]);
 
+  // Realtime: refresh feed when a debate status changes (so LIVE clears when clash ends)
+  useEffect(() => {
+    const debateSub = supabase
+      .channel("feed-debates")
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "debates" }, () => {
+        fetchFlints();
+      })
+      .on("postgres_changes", { event: "DELETE", schema: "public", table: "debates" }, () => {
+        fetchFlints();
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(debateSub); };
+  }, [fetchFlints]);
+
   // Smart feed with memoization
   const filteredFlints = useMemo(() => {
     let feed = flints;
