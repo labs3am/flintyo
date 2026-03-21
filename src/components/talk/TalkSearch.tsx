@@ -3,6 +3,7 @@ import { ArrowLeft, Loader2, MessageCircle, Heart, Swords, Brain, Shuffle, Users
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import BottomNav from "@/components/BottomNav";
 
 const MOOD_OPTIONS = [
   { label: "Need Advice", icon: Heart, color: "text-pink-400" },
@@ -52,7 +53,7 @@ const TalkSearch = ({ searching, noUserFound, onSearch, onCancel }: TalkSearchPr
   // No user found screen
   if (noUserFound) {
     return (
-      <div className="flex min-h-screen flex-col bg-background">
+      <div className="flex min-h-screen flex-col bg-background pb-16">
         <header className="sticky top-0 z-10 flex items-center gap-3 border-b border-border bg-background/80 backdrop-blur-md px-4 py-3">
           <Link to="/" className="text-muted-foreground hover:text-foreground">
             <ArrowLeft className="h-5 w-5" />
@@ -73,13 +74,14 @@ const TalkSearch = ({ searching, noUserFound, onSearch, onCancel }: TalkSearchPr
             Try Again
           </Button>
         </div>
+        <BottomNav />
       </div>
     );
   }
 
   if (searching) {
     return (
-      <div className="flex min-h-screen flex-col bg-background">
+      <div className="flex min-h-screen flex-col bg-background pb-16">
         <header className="sticky top-0 z-10 flex items-center gap-3 border-b border-border bg-background/80 backdrop-blur-md px-4 py-3">
           <button onClick={onCancel} className="text-muted-foreground hover:text-foreground">
             <ArrowLeft className="h-5 w-5" />
@@ -108,12 +110,13 @@ const TalkSearch = ({ searching, noUserFound, onSearch, onCancel }: TalkSearchPr
             Cancel
           </Button>
         </div>
+        <BottomNav />
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col bg-background pb-16">
       <header className="sticky top-0 z-10 flex items-center gap-3 border-b border-border bg-background/80 backdrop-blur-md px-4 py-3">
         <Link to="/" className="text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-5 w-5" />
@@ -187,6 +190,7 @@ const TalkSearch = ({ searching, noUserFound, onSearch, onCancel }: TalkSearchPr
           Find someone 🔍
         </Button>
       </div>
+      <BottomNav />
     </div>
   );
 };
