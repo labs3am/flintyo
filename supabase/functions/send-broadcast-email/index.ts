@@ -11,7 +11,27 @@ const SITE_URL = 'https://flintyo.com'
 const FROM_ADDRESS = 'Flintyo <no-reply@flintyo.com>'
 const LOGO_URL = `${SITE_URL}/flintyo-logo.png`
 
-function buildBroadcastHtml(): string {
+function buildBroadcastHtml(type: string): string {
+  if (type === 'review') {
+    return `<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="background-color:#0c1222;font-family:'Space Grotesk',Arial,sans-serif;margin:0;padding:0;">
+<div style="max-width:480px;margin:0 auto;padding:40px 25px;">
+  <a href="${SITE_URL}" style="display:inline-block;margin:0 0 30px;text-decoration:none;">
+    <img src="${LOGO_URL}" alt="Flintyo" width="140" height="140" style="display:block;width:140px;height:auto;border:0;" />
+  </a>
+  <h1 style="font-size:26px;font-weight:bold;color:#e8eaed;margin:0 0 20px;">We'd love your feedback! ⭐</h1>
+  <p style="font-size:15px;color:#8b8fa3;line-height:1.7;margin:0 0 10px;">Hey there, anonymous one!</p>
+  <p style="font-size:15px;color:#8b8fa3;line-height:1.7;margin:0 0 10px;">You've been part of the Flintyo community — sharing thoughts, clashing in debates, and talking with strangers. That means a lot to us.</p>
+  <p style="font-size:15px;color:#8b8fa3;line-height:1.7;margin:0 0 25px;">We'd really appreciate it if you could take a moment to review the app. Your feedback helps us make Flintyo even better for everyone. 🙏</p>
+  <a href="${SITE_URL}" style="display:inline-block;background-color:#0ea5e9;color:#ffffff;font-size:15px;font-weight:bold;border-radius:12px;padding:14px 32px;text-decoration:none;margin:0 0 20px;">Open Flintyo & Review ⭐</a>
+  <p style="font-size:13px;color:#555770;margin:30px 0 0;">Love the app? Tell your friends about it! Hate something? Tell us — we're listening.</p>
+  <hr style="border:none;border-top:1px solid #1e293b;margin:30px 0 15px;" />
+  <p style="font-size:11px;color:#555770;margin:0;">You're receiving this because you're a member of <a href="${SITE_URL}" style="color:#0ea5e9;text-decoration:none;">Flintyo</a>.</p>
+</div>
+</body></html>`
+  }
+
   return `<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="background-color:#0c1222;font-family:'Space Grotesk',Arial,sans-serif;margin:0;padding:0;">
