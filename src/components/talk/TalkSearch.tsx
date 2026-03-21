@@ -189,7 +189,7 @@ const TalkSearch = ({ searching, noUserFound, onSearch, onCancel }: TalkSearchPr
         >
           Find someone 🔍
         </Button>
-      </div>
+        <BottomNav />
     </div>
   );
 };
