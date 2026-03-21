@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import FlintCard from "@/components/FlintCard";
 import { Flame, Plus, MessageCircle, User, Globe, MapPin, ChevronDown } from "lucide-react";
+import BottomNav from "@/components/BottomNav";
 import { Link } from "react-router-dom";
 import NotificationBell from "@/components/NotificationBell";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";

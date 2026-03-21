@@ -3,6 +3,7 @@ import { ArrowLeft, Loader2, MessageCircle, Heart, Swords, Brain, Shuffle, Users
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import BottomNav from "@/components/BottomNav";
 
 const MOOD_OPTIONS = [
   { label: "Need Advice", icon: Heart, color: "text-pink-400" },

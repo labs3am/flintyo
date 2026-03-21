@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Clock, Send, Lock, Flag } from "lucide-react";
 import { Link } from "react-router-dom";
 import TalkEndScreen from "./TalkEndScreen";
+import BottomNav from "@/components/BottomNav";
 
 interface ChatMsg {
   id: string;
