@@ -9,6 +9,7 @@ const corsHeaders = {
 
 const SITE_URL = 'https://flintyo.com'
 const FROM_ADDRESS = 'Flintyo <no-reply@flintyo.com>'
+const LOGO_URL = `${SITE_URL}/flintyo-logo.png`
 
 function buildEmailHtml(title: string, body: string, ctaText?: string, ctaUrl?: string): string {
   const ctaBlock = ctaText && ctaUrl
