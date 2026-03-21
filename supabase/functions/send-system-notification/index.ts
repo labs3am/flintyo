@@ -20,7 +20,9 @@ function buildEmailHtml(title: string, body: string, ctaText?: string, ctaUrl?: 
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="background-color:#0c1222;font-family:'Space Grotesk',Arial,sans-serif;margin:0;padding:0;">
 <div style="max-width:480px;margin:0 auto;padding:40px 25px;">
-  <p style="font-size:20px;font-weight:bold;color:#0ea5e9;margin:0 0 30px;">⚡ Flintyo</p>
+  <a href="${SITE_URL}" style="display:inline-block;margin:0 0 30px;text-decoration:none;">
+    <img src="${LOGO_URL}" alt="Flintyo" width="140" height="140" style="display:block;width:140px;height:auto;border:0;" />
+  </a>
   <h1 style="font-size:24px;font-weight:bold;color:#e8eaed;margin:0 0 20px;">${title}</h1>
   <p style="font-size:14px;color:#8b8fa3;line-height:1.6;margin:0 0 20px;">${body}</p>
   ${ctaBlock}
