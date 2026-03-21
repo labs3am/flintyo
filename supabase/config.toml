@@ -1,7 +1,5 @@
 project_id = "tyeqzhiwrymkrebhjvor"
 
 [functions]
-  [functions.auth-email-hook]
-    verify_jwt = false
   [functions.send-notification-email]
     verify_jwt = false
