@@ -56,6 +56,13 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // Parse optional type from body
+    let emailType = 'engage'
+    try {
+      const body = await req.json()
+      if (body?.type) emailType = body.type
+    } catch { /* no body, use default */ }
+
     const smtpHost = Deno.env.get('SMTP_HOST')
     const smtpPort = Deno.env.get('SMTP_PORT')
     const smtpUser = Deno.env.get('SMTP_USER')
@@ -73,7 +80,6 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     )
 
-    // Fetch all user emails
     const { data: users, error } = await supabase
       .from('users')
       .select('email')
@@ -93,7 +99,11 @@ Deno.serve(async (req) => {
       auth: { user: smtpUser, pass: smtpPass },
     })
 
-    const html = buildBroadcastHtml()
+    const html = buildBroadcastHtml(emailType)
+    const subject = emailType === 'review'
+      ? "⭐ We'd love your feedback on Flintyo!"
+      : "🔥 What's on your mind? Let's Flint it!"
+
     let sent = 0
     let failed = 0
 
@@ -102,7 +112,7 @@ Deno.serve(async (req) => {
         await transporter.sendMail({
           from: FROM_ADDRESS,
           to: user.email,
-          subject: "🔥 What's on your mind? Let's Flint it!",
+          subject,
           html,
         })
         sent++
