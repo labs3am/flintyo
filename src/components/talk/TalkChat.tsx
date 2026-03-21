@@ -278,6 +278,7 @@ const TalkChat = ({ chatId, userId, onNewChat }: TalkChatProps) => {
             </Button>
           </div>
         )}
+      </div>
       <BottomNav />
     </div>
   );
