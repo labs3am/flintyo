@@ -53,7 +53,7 @@ const TalkSearch = ({ searching, noUserFound, onSearch, onCancel }: TalkSearchPr
   // No user found screen
   if (noUserFound) {
     return (
-      <div className="flex min-h-screen flex-col bg-background">
+      <div className="flex min-h-screen flex-col bg-background pb-16">
         <header className="sticky top-0 z-10 flex items-center gap-3 border-b border-border bg-background/80 backdrop-blur-md px-4 py-3">
           <Link to="/" className="text-muted-foreground hover:text-foreground">
             <ArrowLeft className="h-5 w-5" />
@@ -74,6 +74,7 @@ const TalkSearch = ({ searching, noUserFound, onSearch, onCancel }: TalkSearchPr
             Try Again
           </Button>
         </div>
+        <BottomNav />
       </div>
     );
   }
