@@ -352,29 +352,7 @@ const Index = () => {
         )}
       </main>
 
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-border bg-background/95 backdrop-blur-md">
-        <div className="flex items-center justify-around py-2">
-          <Link to="/" className="flex flex-col items-center gap-0.5 text-primary">
-            <Flame className="h-5 w-5" />
-            <span className="text-[10px] font-medium">Home</span>
-          </Link>
-          <Link to="/create" className="flex flex-col items-center gap-0.5 text-muted-foreground hover:text-foreground">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary -mt-5 shadow-lg shadow-primary/30">
-              <Plus className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <span className="text-[10px] font-medium">Flint</span>
-          </Link>
-          <Link to="/talk" className="flex flex-col items-center gap-0.5 text-muted-foreground hover:text-foreground">
-            <MessageCircle className="h-5 w-5" />
-            <span className="text-[10px] font-medium">Talk</span>
-          </Link>
-          <Link to="/profile" className="flex flex-col items-center gap-0.5 text-muted-foreground hover:text-foreground">
-            <User className="h-5 w-5" />
-            <span className="text-[10px] font-medium">Profile</span>
-          </Link>
-        </div>
-      </nav>
+      <BottomNav />
     </div>
   );
 };
