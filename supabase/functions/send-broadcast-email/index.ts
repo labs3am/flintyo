@@ -12,6 +12,36 @@ const FROM_ADDRESS = 'Flintyo <no-reply@flintyo.com>'
 const LOGO_URL = `${SITE_URL}/flintyo-logo.png`
 
 function buildBroadcastHtml(type: string): string {
+  if (type === 'shutdown') {
+    return `<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="background-color:#0c1222;font-family:'Space Grotesk',Arial,sans-serif;margin:0;padding:0;">
+<div style="max-width:480px;margin:0 auto;padding:40px 25px;">
+  <a href="${SITE_URL}" style="display:inline-block;margin:0 0 30px;text-decoration:none;">
+    <img src="${LOGO_URL}" alt="Flintyo" width="140" height="140" style="display:block;width:140px;height:auto;border:0;" />
+  </a>
+  <h1 style="font-size:26px;font-weight:bold;color:#e8eaed;margin:0 0 20px;">Flintyo is Shutting Down 😔</h1>
+  <p style="font-size:15px;color:#8b8fa3;line-height:1.7;margin:0 0 10px;">Hey there, anonymous one.</p>
+  <p style="font-size:15px;color:#8b8fa3;line-height:1.7;margin:0 0 10px;">We have some difficult news to share. <strong style="color:#e8eaed;">Project Flintyo is officially shutting down.</strong></p>
+  <p style="font-size:15px;color:#8b8fa3;line-height:1.7;margin:0 0 15px;">All data — including your Flints, debates, chats, profile, and account — <strong style="color:#ef4444;">will be permanently deleted within 24 hours.</strong></p>
+  <p style="font-size:15px;color:#8b8fa3;line-height:1.7;margin:0 0 5px;">This means:</p>
+  <ul style="font-size:15px;color:#8b8fa3;line-height:2;margin:0 0 20px;padding-left:20px;">
+    <li>🔥 All your Flints will be removed</li>
+    <li>⚔️ All debate history will be erased</li>
+    <li>💬 All chat conversations will be deleted</li>
+    <li>👤 Your profile and points will be wiped</li>
+    <li>📧 Your account will be permanently deleted</li>
+  </ul>
+  <p style="font-size:15px;color:#8b8fa3;line-height:1.7;margin:0 0 10px;">We want to sincerely thank you for being part of the Flintyo community. Every thought you shared, every debate you sparked, and every anonymous conversation you had — it all mattered.</p>
+  <p style="font-size:15px;color:#8b8fa3;line-height:1.7;margin:0 0 25px;">Thank you for believing in honest, anonymous expression. 🙏</p>
+  <p style="font-size:15px;color:#8b8fa3;line-height:1.7;margin:0 0 5px;">With gratitude,</p>
+  <p style="font-size:15px;color:#e8eaed;font-weight:bold;margin:0 0 20px;">The Flintyo Team</p>
+  <hr style="border:none;border-top:1px solid #1e293b;margin:30px 0 15px;" />
+  <p style="font-size:11px;color:#555770;margin:0;">You're receiving this because you're a member of <a href="${SITE_URL}" style="color:#0ea5e9;text-decoration:none;">Flintyo</a>.</p>
+</div>
+</body></html>`
+  }
+
   if (type === 'review') {
     return `<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
@@ -100,7 +130,9 @@ Deno.serve(async (req) => {
     })
 
     const html = buildBroadcastHtml(emailType)
-    const subject = emailType === 'review'
+    const subject = emailType === 'shutdown'
+      ? "Important: Flintyo is Shutting Down"
+      : emailType === 'review'
       ? "⭐ We'd love your feedback on Flintyo!"
       : "🔥 What's on your mind? Let's Flint it!"
 
