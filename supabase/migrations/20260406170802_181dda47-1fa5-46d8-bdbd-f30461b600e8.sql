@@ -1,0 +1,13 @@
+DELETE FROM public.debate_votes;
+DELETE FROM public.debate_messages;
+DELETE FROM public.debates;
+DELETE FROM public.votes;
+DELETE FROM public.comments;
+DELETE FROM public.reports;
+DELETE FROM public.notifications;
+DELETE FROM public.daily_tasks;
+DELETE FROM public.messages;
+DELETE FROM public.chats;
+DELETE FROM public.chat_queue;
+DELETE FROM public.flints;
+DELETE FROM public.users;
