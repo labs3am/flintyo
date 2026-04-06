@@ -130,7 +130,9 @@ Deno.serve(async (req) => {
     })
 
     const html = buildBroadcastHtml(emailType)
-    const subject = emailType === 'review'
+    const subject = emailType === 'shutdown'
+      ? "Important: Flintyo is Shutting Down"
+      : emailType === 'review'
       ? "⭐ We'd love your feedback on Flintyo!"
       : "🔥 What's on your mind? Let's Flint it!"
 
