@@ -32,7 +32,7 @@ const LetsTalk = () => {
 const [partnerExtending, setPartnerExtending] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  
 
   const startSearch = async () => {
     if (!user || !mood || !topic.trim()) return;
