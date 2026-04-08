@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ThumbsUp, ThumbsDown, MessageSquare, Swords, Flag, Clock, Trophy } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -102,7 +102,7 @@ const FlintCard = ({
   };
 
   // Check clash on mount
-  useState(() => { checkClash(); });
+  useEffect(() => { checkClash(); }, [id]);
 
   const handleVote = async (type: "agree" | "disagree") => {
     if (!user || voting || userVote) return;
