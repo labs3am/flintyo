@@ -18,6 +18,8 @@ export type Database = {
         Row: {
           created_at: string
           expires_at: string | null
+          extend_requested_by: string | null
+          extensions_count: number
           id: string
           mood: string | null
           status: string
@@ -28,6 +30,8 @@ export type Database = {
         Insert: {
           created_at?: string
           expires_at?: string | null
+          extend_requested_by?: string | null
+          extensions_count?: number
           id?: string
           mood?: string | null
           status?: string
@@ -38,6 +42,8 @@ export type Database = {
         Update: {
           created_at?: string
           expires_at?: string | null
+          extend_requested_by?: string | null
+          extensions_count?: number
           id?: string
           mood?: string | null
           status?: string
@@ -54,10 +60,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "chats_user_a_fkey"
+            columns: ["user_a"]
+            isOneToOne: false
+            referencedRelation: "safe_profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "chats_user_b_fkey"
             columns: ["user_b"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chats_user_b_fkey"
+            columns: ["user_b"]
+            isOneToOne: false
+            referencedRelation: "safe_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -99,6 +119,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "safe_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       debate_messages: {
@@ -138,6 +165,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "debate_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "safe_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       debate_votes: {
@@ -175,6 +209,13 @@ export type Database = {
             columns: ["voter_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "debate_votes_voter_id_fkey"
+            columns: ["voter_id"]
+            isOneToOne: false
+            referencedRelation: "safe_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -235,8 +276,29 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "debates_user_a_fkey"
+            columns: ["user_a"]
+            isOneToOne: false
+            referencedRelation: "safe_profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "debates_user_b_fkey"
             columns: ["user_b"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "debates_user_b_fkey"
+            columns: ["user_b"]
+            isOneToOne: false
+            referencedRelation: "safe_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "debates_winner_fkey"
+            columns: ["winner"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -245,7 +307,7 @@ export type Database = {
             foreignKeyName: "debates_winner_fkey"
             columns: ["winner"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "safe_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -298,6 +360,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "flints_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "safe_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       messages: {
@@ -335,6 +404,13 @@ export type Database = {
             columns: ["sender_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "safe_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -415,6 +491,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "reports_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "safe_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       user_roles: {
@@ -472,11 +555,50 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "user_votes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "safe_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
     }
     Views: {
-      [_ in never]: never
+      safe_profiles: {
+        Row: {
+          country: string | null
+          created_at: string | null
+          debates_won: number | null
+          id: string | null
+          labs_id: string | null
+          points: number | null
+          posts_count: number | null
+          rank: string | null
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string | null
+          debates_won?: number | null
+          id?: string | null
+          labs_id?: string | null
+          points?: number | null
+          posts_count?: number | null
+          rank?: string | null
+        }
+        Update: {
+          country?: string | null
+          created_at?: string | null
+          debates_won?: number | null
+          id?: string | null
+          labs_id?: string | null
+          points?: number | null
+          posts_count?: number | null
+          rank?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       calculate_rank: { Args: { p: number }; Returns: string }
@@ -488,6 +610,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      request_chat_extension: { Args: { p_chat_id: string }; Returns: Json }
       vote_on_flint: {
         Args: { p_flint_id: string; p_vote_type: string }
         Returns: undefined
