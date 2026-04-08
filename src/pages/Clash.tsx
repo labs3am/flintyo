@@ -130,11 +130,13 @@ const Clash = () => {
     setHasVoted(true);
 
     // Update counts
-    const updates: Record<string, number> = {};
-    if (votedFor === "user_a") updates.votes_a = (debate.votes_a || 0) + 1;
-    else if (votedFor === "user_b") updates.votes_b = (debate.votes_b || 0) + 1;
-    else updates.votes_draw = (debate.votes_draw || 0) + 1;
-    await supabase.from("debates").update(updates).eq("id", debate.id);
+    if (votedFor === "user_a") {
+      await supabase.from("debates").update({ votes_a: (debate.votes_a || 0) + 1 }).eq("id", debate.id);
+    } else if (votedFor === "user_b") {
+      await supabase.from("debates").update({ votes_b: (debate.votes_b || 0) + 1 }).eq("id", debate.id);
+    } else {
+      await supabase.from("debates").update({ votes_draw: (debate.votes_draw || 0) + 1 }).eq("id", debate.id);
+    }
 
     toast.success("Vote cast!");
 
