@@ -1,0 +1,1 @@
+ALTER FUNCTION public.protect_profile_system_columns() SET search_path = public;
