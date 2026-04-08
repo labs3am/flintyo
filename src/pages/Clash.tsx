@@ -130,8 +130,11 @@ const Clash = () => {
     setHasVoted(true);
 
     // Update counts
-    const updateField = votedFor === "user_a" ? "votes_a" : votedFor === "user_b" ? "votes_b" : "votes_draw";
-    await supabase.from("debates").update({ [updateField]: (debate[updateField] || 0) + 1 }).eq("id", debate.id);
+    const updates: Record<string, number> = {};
+    if (votedFor === "user_a") updates.votes_a = (debate.votes_a || 0) + 1;
+    else if (votedFor === "user_b") updates.votes_b = (debate.votes_b || 0) + 1;
+    else updates.votes_draw = (debate.votes_draw || 0) + 1;
+    await supabase.from("debates").update(updates).eq("id", debate.id);
 
     toast.success("Vote cast!");
 
