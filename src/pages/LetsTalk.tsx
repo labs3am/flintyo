@@ -95,6 +95,26 @@ const [partnerExtending, setPartnerExtending] = useState(false);
     return () => { channel.unsubscribe(); };
   }, [chatId, stage]);
 
+  // Subscribe to chat updates for mutual extension
+  useEffect(() => {
+    if (!chatId || stage !== "chat" || !user) return;
+    const channel = supabase.channel(`chat-extend-${chatId}`)
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "chats", filter: `id=eq.${chatId}` }, async () => {
+        const { data } = await supabase.from("chats").select("expires_at, extend_requested_by").eq("id", chatId).single();
+        if (data) {
+          if (data.expires_at) setExpiresAt(data.expires_at);
+          if (data.extend_requested_by && data.extend_requested_by !== user.id) {
+            setPartnerExtending(true);
+          } else {
+            setPartnerExtending(false);
+          }
+          if (!data.extend_requested_by) setExtending(false);
+        }
+      })
+      .subscribe();
+    return () => { channel.unsubscribe(); };
+  }, [chatId, stage, user]);
+
   // Timer
   useEffect(() => {
     if (!expiresAt || stage !== "chat") return;
