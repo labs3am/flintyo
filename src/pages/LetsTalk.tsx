@@ -117,27 +117,30 @@ const [partnerExtending, setPartnerExtending] = useState(false);
     setNewMessage("");
   };
 
-  const handleExtendHold = useCallback(() => {
-    if (!chatId || !expiresAt) return;
+  const handleExtendRequest = useCallback(async () => {
+    if (!chatId) return;
     setExtending(true);
-    // In a full implementation, we'd use realtime presence for both users holding
-    // Simplified: extend immediately if timeLeft < 30
-    holdTimerRef.current = setTimeout(async () => {
-      const newExpires = new Date(new Date(expiresAt).getTime() + 10 * 60 * 1000).toISOString();
-      await supabase.from("chats").update({ expires_at: newExpires }).eq("id", chatId);
-      setExpiresAt(newExpires);
+    const { data, error } = await supabase.rpc("request_chat_extension", { p_chat_id: chatId });
+    if (error) {
+      toast.error("Could not request extension");
       setExtending(false);
-      toast.success("Chat extended by 10 minutes!");
-    }, 2000);
-  }, [chatId, expiresAt]);
-
-  const handleExtendRelease = () => {
-    setExtending(false);
-    if (holdTimerRef.current) {
-      clearTimeout(holdTimerRef.current);
-      holdTimerRef.current = null;
+      return;
     }
-  };
+    const result = data as { success: boolean; status?: string; reason?: string };
+    if (result.success && result.status === "extended") {
+      toast.success("Chat extended by 10 minutes!");
+      // Refresh chat data
+      const { data: updated } = await supabase.from("chats").select("expires_at").eq("id", chatId).single();
+      if (updated) setExpiresAt(updated.expires_at);
+      setExtending(false);
+      setPartnerExtending(false);
+    } else if (result.success && result.status === "waiting_for_other") {
+      toast.info("Extension requested — waiting for partner to agree");
+    } else {
+      toast.error(result.reason || "Cannot extend");
+      setExtending(false);
+    }
+  }, [chatId]);
 
   const handleReport = async () => {
     if (!user || !chatId) return;
@@ -276,20 +279,20 @@ const [partnerExtending, setPartnerExtending] = useState(false);
         <div ref={messagesEndRef} />
       </main>
 
-      {/* Hold to extend when < 30s */}
+      {/* Extend when < 30s */}
       {timeLeft <= 30 && timeLeft > 0 && (
         <div className="px-4 py-2 bg-card border-t border-border">
+          {partnerExtending && !extending && (
+            <p className="text-xs text-muted-foreground text-center mb-1">Your partner wants to extend!</p>
+          )}
           <button
-            onMouseDown={handleExtendHold}
-            onMouseUp={handleExtendRelease}
-            onMouseLeave={handleExtendRelease}
-            onTouchStart={handleExtendHold}
-            onTouchEnd={handleExtendRelease}
+            onClick={handleExtendRequest}
+            disabled={extending}
             className={`w-full py-3 rounded-lg text-sm font-medium transition-all ${
-              extending ? "bg-primary text-primary-foreground scale-95" : "bg-secondary text-secondary-foreground hover:bg-accent"
+              extending ? "bg-primary text-primary-foreground opacity-70" : "bg-secondary text-secondary-foreground hover:bg-accent"
             }`}
           >
-            {extending ? "Hold to extend..." : "🤝 Hold to Extend (+10 min)"}
+            {extending ? "⏳ Waiting for partner..." : "🤝 Extend Chat (+10 min)"}
           </button>
         </div>
       )}
