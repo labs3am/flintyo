@@ -32,6 +32,7 @@ const AppRoutes = () => (
   <Routes>
     <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
     <Route path="/signup" element={<PublicRoute><Signup /></PublicRoute>} />
+    <Route path="/reset-password" element={<ResetPassword />} />
     <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
     <Route path="/flint" element={<ProtectedRoute><CreateFlint /></ProtectedRoute>} />
     <Route path="/flint/:id" element={<ProtectedRoute><FlintDetail /></ProtectedRoute>} />
