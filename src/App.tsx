@@ -10,6 +10,7 @@ import FlintDetail from "./pages/FlintDetail";
 import Profile from "./pages/Profile";
 import LetsTalk from "./pages/LetsTalk";
 import Clash from "./pages/Clash";
+import ResetPassword from "./pages/ResetPassword";
 
 const queryClient = new QueryClient();
 

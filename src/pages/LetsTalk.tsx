@@ -29,12 +29,10 @@ const LetsTalk = () => {
   const [timeLeft, setTimeLeft] = useState(600);
   const [expiresAt, setExpiresAt] = useState<string | null>(null);
   const [extending, setExtending] = useState(false);
-  const [partnerExtending, setPartnerExtending] = useState(false);
+const [partnerExtending, setPartnerExtending] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
-  const [incomingChat, setIncomingChat] = useState<any>(null);
-  const [incomingTimer, setIncomingTimer] = useState(5);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const holdTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const startSearch = async () => {
     if (!user || !mood || !topic.trim()) return;
