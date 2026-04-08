@@ -1,9 +1,16 @@
 import { useState } from "react";
-import { ThumbsUp, ThumbsDown, MessageSquare, Swords, Flag, Clock } from "lucide-react";
+import { ThumbsUp, ThumbsDown, MessageSquare, Swords, Flag, Clock, Trophy } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 interface FlintCardProps {
   id: string;
@@ -19,14 +26,15 @@ interface FlintCardProps {
   userVote?: string | null;
   commentCount?: number;
   onVote?: () => void;
+  clashWinner?: { labsId: string; totalVotes: number } | null;
 }
 
 const getRankColor = (rank?: string) => {
   switch (rank) {
-    case "Copper": return "text-[hsl(var(--rank-copper))]";
-    case "Cobalt": return "text-[hsl(var(--rank-cobalt))]";
-    case "Amethyst": return "text-[hsl(var(--rank-amethyst))]";
-    default: return "text-[hsl(var(--rank-lead))]";
+    case "Copper": return "text-rank-copper";
+    case "Cobalt": return "text-rank-cobalt";
+    case "Amethyst": return "text-rank-amethyst";
+    default: return "text-rank-lead";
   }
 };
 
@@ -50,13 +58,51 @@ const categoryColors: Record<string, string> = {
   Other: "bg-zinc-500/20 text-zinc-400",
 };
 
+const reportReasons = [
+  { value: "harassment", label: "Harassment" },
+  { value: "hate_speech", label: "Hate Speech" },
+  { value: "threats", label: "Threats" },
+  { value: "spam", label: "Spam" },
+];
+
 const FlintCard = ({
   id, authorLabsId, authorId, content, category, agreeCount, disagreeCount,
-  createdAt, expiresAt, isSaved, userVote, commentCount = 0, onVote,
+  createdAt, expiresAt, isSaved, userVote, commentCount = 0, onVote, clashWinner,
 }: FlintCardProps) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [voting, setVoting] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [finishedClash, setFinishedClash] = useState<any>(null);
+
+  // Fetch finished clash for this flint (lazy, once)
+  const [clashChecked, setClashChecked] = useState(false);
+  const checkClash = async () => {
+    if (clashChecked) return;
+    setClashChecked(true);
+    const { data } = await supabase
+      .from("debates")
+      .select("winner, votes_a, votes_b, votes_draw")
+      .eq("flint_id", id)
+      .eq("status", "finished")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (data && data.winner) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("labs_id")
+        .eq("id", data.winner)
+        .single();
+      setFinishedClash({
+        winnerLabsId: profile?.labs_id || "Unknown",
+        totalVotes: (data.votes_a || 0) + (data.votes_b || 0) + (data.votes_draw || 0),
+      });
+    }
+  };
+
+  // Check clash on mount
+  useState(() => { checkClash(); });
 
   const handleVote = async (type: "agree" | "disagree") => {
     if (!user || voting || userVote) return;
@@ -69,11 +115,12 @@ const FlintCard = ({
     setVoting(false);
   };
 
-  const handleReport = async () => {
+  const handleReport = async (reason: string) => {
     if (!user) return;
-    const { error } = await supabase.from("reports").insert({ flint_id: id, reported_by: user.id, reason: "inappropriate" });
+    const { error } = await supabase.from("reports").insert({ flint_id: id, reported_by: user.id, reason });
     if (error) toast.error("Report failed");
-    else toast.success("Reported");
+    else toast.success("Reported — thank you");
+    setReportOpen(false);
   };
 
   const handleClash = () => {
@@ -83,6 +130,16 @@ const FlintCard = ({
 
   return (
     <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+      {/* Clash ended banner */}
+      {finishedClash && (
+        <div className="flex items-center gap-2 bg-primary/10 rounded-lg px-3 py-1.5 -mt-1">
+          <Trophy size={12} className="text-primary" />
+          <span className="text-[10px] text-primary font-medium">
+            Clash ended — {finishedClash.winnerLabsId} won ({finishedClash.totalVotes} votes)
+          </span>
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className={`text-xs font-mono font-medium ${getRankColor()}`}>{authorLabsId}</span>
@@ -96,7 +153,7 @@ const FlintCard = ({
               <Swords size={14} />
             </button>
           )}
-          <button onClick={handleReport} className="text-muted-foreground hover:text-destructive transition-colors p-1" title="Report">
+          <button onClick={() => setReportOpen(true)} className="text-muted-foreground hover:text-destructive transition-colors p-1" title="Report">
             <Flag size={12} />
           </button>
         </div>
@@ -136,6 +193,27 @@ const FlintCard = ({
           <span className="text-[10px]">{getTimeRemaining(expiresAt)}</span>
         </div>
       </div>
+
+      {/* Report dialog */}
+      <Dialog open={reportOpen} onOpenChange={setReportOpen}>
+        <DialogContent className="max-w-xs">
+          <DialogHeader>
+            <DialogTitle>Report this Flint</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2 pt-2">
+            {reportReasons.map((r) => (
+              <Button
+                key={r.value}
+                variant="outline"
+                className="w-full justify-start"
+                onClick={() => handleReport(r.value)}
+              >
+                {r.label}
+              </Button>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

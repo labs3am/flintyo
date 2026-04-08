@@ -1,18 +1,26 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import BottomNav from "@/components/BottomNav";
-import { MessageCircle, Send, Loader2, Clock, ArrowLeft } from "lucide-react";
+import { MessageCircle, Send, Loader2, Clock, ArrowLeft, Flag, Star } from "lucide-react";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const moods = ["Need Advice", "Debate Me", "Deep Talk", "Random Chat", "Relationships", "Real World"];
 
+type Stage = "setup" | "searching" | "incoming" | "chat" | "feedback";
+
 const LetsTalk = () => {
   const { user } = useAuth();
-  const [stage, setStage] = useState<"setup" | "searching" | "chat">("setup");
+  const [stage, setStage] = useState<Stage>("setup");
   const [mood, setMood] = useState("");
   const [topic, setTopic] = useState("");
   const [chatId, setChatId] = useState<string | null>(null);
@@ -20,13 +28,16 @@ const LetsTalk = () => {
   const [newMessage, setNewMessage] = useState("");
   const [timeLeft, setTimeLeft] = useState(600);
   const [expiresAt, setExpiresAt] = useState<string | null>(null);
+  const [extending, setExtending] = useState(false);
+const [partnerExtending, setPartnerExtending] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const startSearch = async () => {
     if (!user || !mood || !topic.trim()) return;
     setStage("searching");
 
-    // Check for waiting chat with similar mood
     const { data: waiting } = await supabase
       .from("chats")
       .select("*")
@@ -51,7 +62,6 @@ const LetsTalk = () => {
 
       if (newChat) {
         setChatId(newChat.id);
-        // Subscribe to changes
         const channel = supabase.channel(`chat-wait-${newChat.id}`)
           .on("postgres_changes", { event: "UPDATE", schema: "public", table: "chats", filter: `id=eq.${newChat.id}` }, (payload) => {
             if (payload.new.status === "active") {
@@ -68,7 +78,6 @@ const LetsTalk = () => {
   // Subscribe to messages
   useEffect(() => {
     if (!chatId || stage !== "chat") return;
-
     const fetchMessages = async () => {
       const { data } = await supabase
         .from("messages")
@@ -80,9 +89,7 @@ const LetsTalk = () => {
     fetchMessages();
 
     const channel = supabase.channel(`chat-msgs-${chatId}`)
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: `chat_id=eq.${chatId}` }, () => {
-        fetchMessages();
-      })
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: `chat_id=eq.${chatId}` }, () => fetchMessages())
       .subscribe();
 
     return () => { channel.unsubscribe(); };
@@ -95,10 +102,8 @@ const LetsTalk = () => {
       const diff = Math.max(0, Math.floor((new Date(expiresAt).getTime() - Date.now()) / 1000));
       setTimeLeft(diff);
       if (diff === 0) {
-        supabase.from("chats").update({ status: "ended" }).eq("id", chatId!);
         clearInterval(interval);
-        toast.info("Chat ended");
-        setStage("setup");
+        setStage("feedback");
       }
     }, 1000);
     return () => clearInterval(interval);
@@ -112,7 +117,68 @@ const LetsTalk = () => {
     setNewMessage("");
   };
 
+  const handleExtendHold = useCallback(() => {
+    if (!chatId || !expiresAt) return;
+    setExtending(true);
+    // In a full implementation, we'd use realtime presence for both users holding
+    // Simplified: extend immediately if timeLeft < 30
+    holdTimerRef.current = setTimeout(async () => {
+      const newExpires = new Date(new Date(expiresAt).getTime() + 10 * 60 * 1000).toISOString();
+      await supabase.from("chats").update({ expires_at: newExpires }).eq("id", chatId);
+      setExpiresAt(newExpires);
+      setExtending(false);
+      toast.success("Chat extended by 10 minutes!");
+    }, 2000);
+  }, [chatId, expiresAt]);
+
+  const handleExtendRelease = () => {
+    setExtending(false);
+    if (holdTimerRef.current) {
+      clearTimeout(holdTimerRef.current);
+      holdTimerRef.current = null;
+    }
+  };
+
+  const handleReport = async () => {
+    if (!user || !chatId) return;
+    await supabase.from("reports").insert({ reported_by: user.id, reason: "inappropriate_chat" });
+    toast.success("Reported");
+    setReportOpen(false);
+  };
+
+  const handleNewChat = () => {
+    setChatId(null);
+    setMessages([]);
+    setExpiresAt(null);
+    setTimeLeft(600);
+    setMood("");
+    setTopic("");
+    setStage("setup");
+  };
+
   const formatTime = (s: number) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
+
+  // Feedback stage
+  if (stage === "feedback") {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-6 px-6">
+        <MessageCircle className="text-primary" size={40} />
+        <h2 className="text-foreground text-lg font-bold">Chat Ended</h2>
+        <p className="text-muted-foreground text-sm text-center">How was the conversation?</p>
+        <div className="flex gap-2">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <button key={star} onClick={() => toast.success("Thanks for the feedback!")} className="text-muted-foreground hover:text-warning transition-colors">
+              <Star size={24} />
+            </button>
+          ))}
+        </div>
+        <div className="space-y-2 w-full max-w-xs">
+          <Button onClick={handleNewChat} className="w-full">Talk to Someone New</Button>
+          <Button variant="ghost" onClick={() => setStage("setup")} className="w-full">Back to Home</Button>
+        </div>
+      </div>
+    );
+  }
 
   if (stage === "setup") {
     return (
@@ -169,22 +235,30 @@ const LetsTalk = () => {
       <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4">
         <Loader2 className="animate-spin text-primary" size={32} />
         <p className="text-muted-foreground text-sm">Looking for someone...</p>
-        <Button variant="ghost" onClick={() => setStage("setup")}>Cancel</Button>
+        <Button variant="ghost" onClick={handleNewChat}>Cancel</Button>
       </div>
     );
   }
 
+  // Active chat
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-sm border-b border-border px-4 py-3">
         <div className="flex items-center justify-between max-w-lg mx-auto">
-          <button onClick={() => setStage("setup")} className="text-muted-foreground hover:text-foreground">
+          <button onClick={handleNewChat} className="text-muted-foreground hover:text-foreground">
             <ArrowLeft size={20} />
           </button>
           <span className="text-sm text-muted-foreground font-mono">{mood}</span>
-          <div className="flex items-center gap-1 text-muted-foreground">
-            <Clock size={14} />
-            <span className="text-sm font-mono">{formatTime(timeLeft)}</span>
+          <div className="flex items-center gap-2">
+            <button onClick={() => setReportOpen(true)} className="text-muted-foreground hover:text-destructive">
+              <Flag size={14} />
+            </button>
+            <div className="flex items-center gap-1 text-muted-foreground">
+              <Clock size={14} />
+              <span className={`text-sm font-mono ${timeLeft <= 30 ? "text-destructive animate-pulse" : ""}`}>
+                {formatTime(timeLeft)}
+              </span>
+            </div>
           </div>
         </div>
       </header>
@@ -202,6 +276,24 @@ const LetsTalk = () => {
         <div ref={messagesEndRef} />
       </main>
 
+      {/* Hold to extend when < 30s */}
+      {timeLeft <= 30 && timeLeft > 0 && (
+        <div className="px-4 py-2 bg-card border-t border-border">
+          <button
+            onMouseDown={handleExtendHold}
+            onMouseUp={handleExtendRelease}
+            onMouseLeave={handleExtendRelease}
+            onTouchStart={handleExtendHold}
+            onTouchEnd={handleExtendRelease}
+            className={`w-full py-3 rounded-lg text-sm font-medium transition-all ${
+              extending ? "bg-primary text-primary-foreground scale-95" : "bg-secondary text-secondary-foreground hover:bg-accent"
+            }`}
+          >
+            {extending ? "Hold to extend..." : "🤝 Hold to Extend (+10 min)"}
+          </button>
+        </div>
+      )}
+
       <div className="border-t border-border px-4 py-2 bg-background">
         <div className="max-w-lg mx-auto flex gap-2">
           <Input
@@ -216,6 +308,26 @@ const LetsTalk = () => {
           </Button>
         </div>
       </div>
+
+      <Dialog open={reportOpen} onOpenChange={setReportOpen}>
+        <DialogContent className="max-w-xs">
+          <DialogHeader>
+            <DialogTitle>Report this conversation</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2 pt-2">
+            {["Harassment", "Hate Speech", "Threats", "Spam"].map((reason) => (
+              <Button
+                key={reason}
+                variant="outline"
+                className="w-full justify-start"
+                onClick={handleReport}
+              >
+                {reason}
+              </Button>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
