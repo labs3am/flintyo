@@ -611,6 +611,7 @@ export type Database = {
         Returns: boolean
       }
       request_chat_extension: { Args: { p_chat_id: string }; Returns: Json }
+      rismon_security_metadata: { Args: never; Returns: Json }
       vote_on_flint: {
         Args: { p_flint_id: string; p_vote_type: string }
         Returns: undefined
