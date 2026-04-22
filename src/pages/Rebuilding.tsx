@@ -72,21 +72,30 @@ const Rebuilding = () => {
 
         <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row">
           <a
-            href="mailto:hello@flintyo.com"
+            href="https://Labs3am.com"
+            target="_blank"
+            rel="noopener noreferrer"
             className="group inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition-all hover:bg-white/90"
           >
-            Get notified
+            Check out Labs3am.com
             <span className="transition-transform group-hover:translate-x-0.5">
               →
             </span>
           </a>
-          <a
-            href="https://flintyo.com"
-            className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-5 py-2.5 text-sm font-medium text-white/80 backdrop-blur transition-all hover:bg-white/10"
-          >
-            Learn more
-          </a>
         </div>
+
+        <a
+          href="https://Rismon.ai"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-8 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs text-white/70 backdrop-blur transition-all hover:bg-white/10 hover:text-white"
+        >
+          <span className="rounded-full bg-emerald-400/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-300">
+            New
+          </span>
+          Rismon.ai v2 is out — check it out
+          <span>→</span>
+        </a>
       </main>
 
       {/* Footer */}
