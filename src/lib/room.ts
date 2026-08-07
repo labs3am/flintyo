@@ -1,22 +1,9 @@
 import { supabase } from "@/integrations/supabase/client";
-
-// The generated Database types don't include the `rooms` table yet, so use an
-// untyped view of the client for room reads/writes.
-type RoomRow = { code: string; state: RoomState };
-const db = supabase as unknown as {
-  from: (table: "rooms") => {
-    insert: (v: { code: string; state: unknown }) => Promise<{ error: { message: string } | null }>;
-    select: (cols: string) => {
-      eq: (col: string, v: string) => { maybeSingle: () => Promise<{ data: RoomRow | null; error: { message: string } | null }> };
-    };
-    update: (v: { state: unknown }) => {
-      eq: (col: string, v: string) => Promise<{ error: { message: string } | null }>;
-    };
-  };
-};
+import type { RealtimeChannel } from "@supabase/supabase-js";
 import type { GameState } from "@/lib/bhabhi/engine";
 import type { ReactionPing } from "@/hooks/useReactions";
 import type { Scores } from "@/lib/bhabhi/score";
+
 
 export type Seat = { id: string; name: string; bot: boolean; char?: string; level?: "easy" | "normal" | "hard" };
 
@@ -65,6 +52,40 @@ export const makeCode = () => {
   const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   return Array.from({ length: 5 }, () => alphabet[Math.floor(Math.random() * alphabet.length)]).join("");
 };
+
+/* ------------------------------------------------------------------ *
+ * Rooms are stored in the `rooms` table and synced live via realtime.
+ * ------------------------------------------------------------------ */
+
+type RoomRow = { code: string; state: RoomState };
+const db = supabase as unknown as {
+  from: (table: "rooms") => {
+    insert: (v: { code: string; state: unknown }) => Promise<{ error: { message: string } | null }>;
+    select: (cols: string) => {
+      eq: (col: string, v: string) => { maybeSingle: () => Promise<{ data: RoomRow | null; error: { message: string } | null }> };
+    };
+    update: (v: { state: unknown }) => {
+      eq: (col: string, v: string) => Promise<{ error: { message: string } | null }>;
+    };
+  };
+};
+
+export function subscribeRoom(code: string, cb: (s: RoomState) => void): () => void {
+  const channel: RealtimeChannel = supabase
+    .channel(`room-${code}`)
+    .on(
+      "postgres_changes",
+      { event: "UPDATE", schema: "public", table: "rooms", filter: `code=eq.${code}` },
+      (payload) => {
+        const next = (payload.new as { state?: RoomState }).state;
+        if (next) cb(next);
+      },
+    )
+    .subscribe();
+  return () => {
+    void supabase.removeChannel(channel);
+  };
+}
 
 export async function createRoom(host: Seat): Promise<string> {
   for (let attempt = 0; attempt < 5; attempt++) {

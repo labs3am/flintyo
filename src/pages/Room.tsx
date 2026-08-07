@@ -8,9 +8,8 @@ import { CharacterAvatar } from "@/components/game/Character";
 import { createGame, playCard } from "@/lib/bhabhi/engine";
 import { chooseCard, botDelay, type Difficulty } from "@/lib/bhabhi/ai";
 import { CHARACTERS, getCharacter } from "@/lib/characters";
-import { supabase } from "@/integrations/supabase/client";
 import { RoomChat } from "@/components/game/RoomChat";
-import { fetchRoom, getIdentity, mutateRoom, shareRoom, whatsappUrl, type ChatMsg, type RoomState } from "@/lib/room";
+import { fetchRoom, getIdentity, mutateRoom, shareRoom, subscribeRoom, whatsappUrl, type ChatMsg, type RoomState } from "@/lib/room";
 import { applyResult } from "@/lib/bhabhi/score";
 import { ScoreBoard } from "@/components/game/ScoreBoard";
 import { useReactions } from "@/hooks/useReactions";
@@ -80,26 +79,18 @@ export default function RoomPage() {
   }, [code, me.id, me.name, me.char, refresh]);
 
   useEffect(() => {
-    const channel = supabase
-      .channel(`room-${code}`)
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "rooms", filter: `code=eq.${code}` },
-        (payload) => {
-          const next = (payload.new as { state?: RoomState }).state;
-          if (next) {
-            setRoom(next);
-            setStale(false);
-          }
-        },
-      )
-      .subscribe();
+    const off = subscribeRoom(code, (next) => {
+      setRoom(next);
+      setStale(false);
+      setLoading(false);
+    });
     const poll = setInterval(refresh, 4000);
     return () => {
-      supabase.removeChannel(channel);
+      off();
       clearInterval(poll);
     };
   }, [code, refresh]);
+
 
   const isHost = room?.hostId === me.id;
   const mySeat = room?.game ? room.game.players.findIndex((p) => p.id === me.id) : -1;
