@@ -82,7 +82,7 @@ export function PlayingCard({
       <span className="absolute bottom-[4%] right-[7%] rotate-180">{corner}</span>
 
       {/* centre */}
-      <span className="absolute inset-y-[10%] left-[27%] right-[27%] block">
+      <span className="absolute inset-y-[11%] left-[30%] right-[30%] block">
         {card.r === 14 ? (
           <Suit suit={card.s} className="absolute left-1/2 top-1/2 w-[2.1em] -translate-x-1/2 -translate-y-1/2" />
         ) : face ? (
@@ -95,7 +95,7 @@ export function PlayingCard({
             <Suit
               key={i}
               suit={card.s}
-              className="absolute w-[0.8em]"
+              className="absolute w-[0.72em]"
               style={{
                 left: `${x}%`,
                 top: `${y}%`,
