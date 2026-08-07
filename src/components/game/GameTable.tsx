@@ -313,6 +313,7 @@ export function GameTable({
                     card={c}
                     size="lg"
                     disabled={!myTurn}
+                    dimmed={myTurn && !playable.has(c.id)}
                     className={cn(
                       "min-h-[5.75rem] min-w-[4rem]",
                       foul?.id === c.id && "anim-foul ring-2 ring-destructive",
@@ -332,7 +333,11 @@ export function GameTable({
         </div>
         {myTurn && me && me.hand.length > 0 && (
           <p className="text-center text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-            Drag a card up to the table — or tap it
+            {state.leadSuit && me.hand.some((c) => c.s === state.leadSuit)
+              ? `Follow ${SUIT_NAME[state.leadSuit].toLowerCase()} — the other cards are locked`
+              : state.leadSuit
+                ? `No ${SUIT_NAME[state.leadSuit].toLowerCase()} — play anything, you'll take the pile`
+                : "You lead — drag a card up to the table, or tap it"}
           </p>
         )}
 

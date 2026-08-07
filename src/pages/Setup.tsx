@@ -1,6 +1,6 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Bot, Users, Wifi, LogIn, Loader2, Volume2, VolumeX } from "lucide-react";
+import { ArrowLeft, Bot, Users, Wifi, LogIn, Loader2, Volume2, VolumeX, BookOpen } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { CharacterPicker } from "@/components/game/CharacterPicker";
@@ -8,16 +8,26 @@ import { CharacterAvatar } from "@/components/game/Character";
 import { CHARACTERS, getCharacter } from "@/lib/characters";
 import { createRoom, getIdentity, saveIdentity } from "@/lib/room";
 import { setSoundEnabled, soundEnabled } from "@/lib/sound";
+import { LevelPicker, type Level } from "@/components/game/LevelPicker";
+import { TutorialModal } from "@/components/game/Tutorial";
 
-type Level = "easy" | "normal" | "hard";
 
-export default function Home() {
+export default function Setup() {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [char, setChar] = useState(CHARACTERS[0].id);
   const [bots, setBots] = useState(3);
   const [locals, setLocals] = useState(3);
-  const [level, setLevel] = useState<Level>("normal");
+  const [level, setLevelState] = useState<Level>("normal");
+  const [tut, setTut] = useState(false);
+  const setLevel = (l: Level) => {
+    setLevelState(l);
+    try {
+      localStorage.setItem("flintyo.level", l);
+    } catch {
+      /* ignore */
+    }
+  };
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [tab, setTab] = useState<"ai" | "online" | "pass">("ai");
@@ -28,6 +38,12 @@ export default function Home() {
     setName(id.name || "");
     if (id.char) setChar(id.char);
     setSound(soundEnabled());
+    try {
+      const saved = localStorage.getItem("flintyo.level");
+      if (saved === "easy" || saved === "hard" || saved === "normal") setLevelState(saved);
+    } catch {
+      /* ignore */
+    }
   }, []);
 
   const commit = () => {
@@ -70,7 +86,14 @@ export default function Home() {
   return (
     <main className="min-h-screen flex items-center justify-center p-3">
       <div className="w-full max-w-xl">
-        <header className="text-center mb-5 relative">
+        <header className="mb-4 flex items-center justify-between gap-2">
+          <Link to="/" className="btn-ghost px-3 py-1.5 inline-flex items-center gap-1.5 text-xs">
+            <ArrowLeft className="h-3.5 w-3.5" /> Home
+          </Link>
+          <div className="text-center leading-tight">
+            <h1 className="text-2xl font-black tracking-tight text-gradient">FLINTYO</h1>
+            <p className="text-[11px] text-muted-foreground">Who's getting the Donkey?</p>
+          </div>
           <button
             onClick={() => {
               const next = !sound;
@@ -78,22 +101,10 @@ export default function Home() {
               setSoundEnabled(next);
             }}
             aria-label={sound ? "Mute sound" : "Unmute sound"}
-            className="absolute right-0 top-0 h-9 w-9 grid place-items-center rounded-full border border-border bg-black/25 text-muted-foreground"
+            className="h-9 w-9 grid place-items-center rounded-full border border-border bg-black/25 text-muted-foreground"
           >
             {sound ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
           </button>
-          <div className="flex justify-center -space-x-3 mb-1">
-            {CHARACTERS.slice(0, 5).map((c, i) => (
-              <CharacterAvatar
-                key={c.id}
-                character={c}
-                expression={i === 2 ? "laughing" : "idle"}
-                size={i === 2 ? 62 : 50}
-              />
-            ))}
-          </div>
-          <h1 className="text-5xl font-black tracking-tight text-gradient">DONKEY</h1>
-          <p className="mt-1 text-muted-foreground text-sm">Who's getting the Donkey?</p>
         </header>
 
         <div className="panel rounded-3xl p-4 space-y-4">
@@ -133,10 +144,11 @@ export default function Home() {
             ))}
           </div>
 
+          <LevelPicker value={level} onChange={setLevel} />
+
           {tab === "ai" && (
             <div className="space-y-3">
               <Counter label="AI opponents" value={bots} setValue={setBots} min={1} max={5} />
-              <LevelPicker value={level} onChange={setLevel} />
               <button onClick={startAi} className="btn-primary w-full">
                 Deal me in
               </button>
@@ -184,40 +196,23 @@ export default function Home() {
           )}
         </div>
 
-        <details className="mt-4 panel rounded-2xl px-4 py-3 text-sm">
-          <summary className="cursor-pointer font-semibold">How to play</summary>
-          <ul className="mt-2 space-y-1.5 text-muted-foreground text-[13px] list-disc pl-4">
-            <li>The whole deck is dealt out. Whoever holds the Ace of Spades leads first.</li>
-            <li>You must follow the suit that was led if you have it.</li>
-            <li>If everyone follows, the highest card wins and the pile is thrown away.</li>
-            <li>If someone can't follow, the highest card of the led suit picks up the whole pile.</li>
-            <li>Run out of cards and you're safe. The last player still holding is the Donkey.</li>
-          </ul>
-        </details>
-      </div>
-    </main>
-  );
-}
+        <button
+          onClick={() => setTut(true)}
+          className="mt-4 btn-ghost w-full py-3 inline-flex items-center justify-center gap-2 text-sm"
+        >
+          <BookOpen className="h-4 w-4" /> How to play
+        </button>
 
-function LevelPicker({ value, onChange }: { value: Level; onChange: (l: Level) => void }) {
-  return (
-    <div className="flex items-center justify-between rounded-xl border border-border bg-black/20 px-3 py-2">
-      <span className="text-sm font-medium">AI difficulty</span>
-      <div className="flex gap-1">
-        {(["easy", "normal", "hard"] as const).map((l) => (
-          <button
-            key={l}
-            onClick={() => onChange(l)}
-            className={cn(
-              "rounded-lg px-2.5 py-1 text-[11px] font-bold capitalize transition",
-              value === l ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            {l}
-          </button>
-        ))}
+        <p className="mt-4 text-center text-[11px] text-muted-foreground">
+          From the house of{" "}
+          <a href="https://labs3am.com" target="_blank" rel="noreferrer" className="text-primary font-semibold">
+            Labs3am
+          </a>
+        </p>
       </div>
-    </div>
+
+      {tut && <TutorialModal onClose={() => setTut(false)} />}
+    </main>
   );
 }
 

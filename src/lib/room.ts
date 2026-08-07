@@ -124,14 +124,20 @@ export function roomLink(code: string) {
 }
 
 export function shareMessage(code: string) {
-  return `🫏 Come play Donkey with us!\n\nRoom: ${code}\nNo signup. Free to play.\n\n${roomLink(code)}`;
+  return [
+    "🫏 *Flintyo* — the Donkey card game",
+    "",
+    `Join my table. Room code: *${code}*`,
+    "Tap to join, no signup, free to play:",
+    roomLink(code),
+  ].join("\n");
 }
 
 export async function shareRoom(code: string): Promise<"shared" | "copied" | "failed"> {
   const text = shareMessage(code);
   if (typeof navigator !== "undefined" && navigator.share) {
     try {
-      await navigator.share({ title: "Donkey", text });
+      await navigator.share({ title: "Flintyo", text });
       return "shared";
     } catch {
       /* user cancelled or unsupported — fall through to copy */
