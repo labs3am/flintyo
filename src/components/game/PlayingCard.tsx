@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
-import { SUIT_SYMBOL, isRed, rankLabel, type Card } from "@/lib/bhabhi/engine";
+import { isRed, rankLabel, type Card } from "@/lib/bhabhi/engine";
+import { Suit } from "./Suit";
 
 type Size = "sm" | "md" | "lg";
 
@@ -9,19 +10,19 @@ const sizes: Record<Size, string> = {
   lg: "h-28 w-20 text-[21px] rounded-2xl",
 };
 
-const FACE: Record<number, string> = { 11: "J", 12: "Q", 13: "K", 14: "A" };
+const FACE: Record<number, string> = { 11: "J", 12: "Q", 13: "K" };
 
-/** Classic pip layouts — [xPercent, yPercent, flipped] per rank. */
+/** Classic pip layouts — [xPercent, yPercent] within the central column. */
 const PIPS: Record<number, [number, number][]> = {
-  2: [[50, 22], [50, 78]],
-  3: [[50, 22], [50, 50], [50, 78]],
-  4: [[30, 22], [70, 22], [30, 78], [70, 78]],
-  5: [[30, 22], [70, 22], [50, 50], [30, 78], [70, 78]],
-  6: [[30, 22], [70, 22], [30, 50], [70, 50], [30, 78], [70, 78]],
-  7: [[30, 22], [70, 22], [50, 36], [30, 50], [70, 50], [30, 78], [70, 78]],
-  8: [[30, 22], [70, 22], [50, 36], [30, 50], [70, 50], [50, 64], [30, 78], [70, 78]],
-  9: [[30, 20], [70, 20], [30, 40], [70, 40], [50, 50], [30, 60], [70, 60], [30, 80], [70, 80]],
-  10: [[30, 18], [70, 18], [50, 30], [30, 40], [70, 40], [30, 60], [70, 60], [50, 70], [30, 82], [70, 82]],
+  2: [[50, 8], [50, 92]],
+  3: [[50, 8], [50, 50], [50, 92]],
+  4: [[22, 8], [78, 8], [22, 92], [78, 92]],
+  5: [[22, 8], [78, 8], [50, 50], [22, 92], [78, 92]],
+  6: [[22, 8], [78, 8], [22, 50], [78, 50], [22, 92], [78, 92]],
+  7: [[22, 8], [78, 8], [50, 29], [22, 50], [78, 50], [22, 92], [78, 92]],
+  8: [[22, 8], [78, 8], [50, 29], [22, 50], [78, 50], [50, 71], [22, 92], [78, 92]],
+  9: [[22, 8], [78, 8], [22, 36], [78, 36], [50, 50], [22, 64], [78, 64], [22, 92], [78, 92]],
+  10: [[22, 8], [78, 8], [50, 22], [22, 36], [78, 36], [22, 64], [78, 64], [50, 78], [22, 92], [78, 92]],
 };
 
 export function PlayingCard({
@@ -47,11 +48,17 @@ export function PlayingCard({
 }) {
   const red = isRed(card.s);
   const Tag = onClick ? "button" : "div";
-  const ink = red ? "text-[oklch(0.50_0.25_27)]" : "text-[oklch(0.18_0.02_280)]";
+  const ink = red ? "text-[oklch(0.50_0.26_27)]" : "text-[oklch(0.16_0.02_280)]";
   const label = rankLabel(card.r);
-  const pip = SUIT_SYMBOL[card.s];
   const face = FACE[card.r];
   const pips = PIPS[card.r];
+
+  const corner = (
+    <span className="flex flex-col items-center leading-none">
+      <span className="font-black leading-[0.88] text-[1.15em] tracking-tighter">{label}</span>
+      <Suit suit={card.s} className="mt-[0.08em] w-[0.62em]" />
+    </span>
+  );
 
   return (
     <Tag
@@ -71,43 +78,30 @@ export function PlayingCard({
         className,
       )}
     >
-      {/* corner index — top-left */}
-      <span className="absolute top-[4%] left-[7%] flex flex-col items-center leading-none">
-        <span className="font-black leading-[0.9] text-[1.05em]">{label}</span>
-        <span className="text-[0.85em] leading-none">{pip}</span>
-      </span>
-      {/* corner index — bottom-right, mirrored like a real card */}
-      <span className="absolute bottom-[4%] right-[7%] flex flex-col items-center leading-none rotate-180">
-        <span className="font-black leading-[0.9] text-[1.05em]">{label}</span>
-        <span className="text-[0.85em] leading-none">{pip}</span>
-      </span>
+      <span className="absolute top-[4%] left-[7%]">{corner}</span>
+      <span className="absolute bottom-[4%] right-[7%] rotate-180">{corner}</span>
 
-      {/* centre — real pip layout for number cards, big letter for faces/ace */}
-      <span className="absolute inset-y-[9%] left-[26%] right-[26%]">
-        {face ? (
-          card.r === 14 ? (
-            <span className="absolute inset-0 grid place-items-center">
-              <span className="text-[2.6em] leading-none">{pip}</span>
-            </span>
-          ) : (
-            <span className="absolute inset-0 grid place-items-center">
-              <span className="text-[2.3em] leading-none opacity-15">{pip}</span>
-              <span className="absolute text-[1.5em] font-black leading-none tracking-tight">{face}</span>
-            </span>
-          )
+      {/* centre */}
+      <span className="absolute inset-y-[11%] left-[30%] right-[30%] block">
+        {card.r === 14 ? (
+          <Suit suit={card.s} className="absolute left-1/2 top-1/2 w-[2.1em] -translate-x-1/2 -translate-y-1/2" />
+        ) : face ? (
+          <span className="absolute inset-0 grid place-items-center">
+            <Suit suit={card.s} className="w-[2em] opacity-[0.18]" />
+            <span className="absolute text-[1.75em] font-black leading-none tracking-tighter">{face}</span>
+          </span>
         ) : pips ? (
           pips.map(([x, y], i) => (
-            <span
+            <Suit
               key={i}
-              className="absolute text-[0.95em] leading-none"
+              suit={card.s}
+              className="absolute w-[0.72em]"
               style={{
                 left: `${x}%`,
                 top: `${y}%`,
                 transform: `translate(-50%, -50%)${y > 55 ? " rotate(180deg)" : ""}`,
               }}
-            >
-              {pip}
-            </span>
+            />
           ))
         ) : null}
       </span>
