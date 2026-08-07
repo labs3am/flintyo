@@ -7,6 +7,8 @@ import { createGame, playCard, type GameState } from "@/lib/bhabhi/engine";
 import { chooseCard, botDelay, type Difficulty } from "@/lib/bhabhi/ai";
 import { CHARACTERS, getCharacter } from "@/lib/characters";
 import { applyResult, type Scores } from "@/lib/bhabhi/score";
+import { LevelChip, type Level } from "@/components/game/LevelPicker";
+import { TutorialModal, tutorialSeen, markTutorialSeen } from "@/components/game/Tutorial";
 import { useReactions } from "@/hooks/useReactions";
 import { EMOJI_REACTIONS } from "@/components/game/ReactionMenu";
 import { sfx } from "@/lib/sound";
@@ -46,6 +48,7 @@ export default function PlayPage() {
   const turnRef = useRef<number>(-1);
   const seqRef = useRef<number>(-1);
   const { bySeat, add } = useReactions();
+  const [tut, setTut] = useState(() => !tutorialSeen());
 
   const deal = useCallback(() => {
     setState(createGame(buildSeats(mode, players, name, char, level)));
@@ -120,7 +123,10 @@ export default function PlayPage() {
         <Link to="/" className="btn-ghost px-3 py-1.5 inline-flex items-center gap-1.5 text-xs">
           <ArrowLeft className="h-3.5 w-3.5" /> Menu
         </Link>
-        <h1 className="text-sm font-bold tracking-[0.2em] text-gradient">DONKEY</h1>
+        <div className="flex items-center gap-2">
+          <h1 className="text-sm font-bold tracking-[0.2em] text-gradient">FLINTYO</h1>
+          {state.players.some((p) => p.bot) && <LevelChip value={level as Level} />}
+        </div>
         <button onClick={deal} className="btn-ghost px-3 py-1.5 inline-flex items-center gap-1.5 text-xs">
           <RotateCcw className="h-3.5 w-3.5" /> New deal
         </button>
@@ -149,6 +155,15 @@ export default function PlayPage() {
         )}
 
         {state.phase === "over" && !counting && <DonkeyReveal state={state} onRematch={deal} />}
+
+        {tut && (
+          <TutorialModal
+            onClose={() => {
+              markTutorialSeen();
+              setTut(false);
+            }}
+          />
+        )}
       </div>
     </main>
   );
