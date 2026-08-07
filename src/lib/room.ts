@@ -127,18 +127,36 @@ export function shareMessage(code: string) {
   return `🫏 Come play Donkey with us!\n\nRoom: ${code}\nNo signup. Free to play.\n\n${roomLink(code)}`;
 }
 
-export async function shareRoom(code: string) {
+export async function shareRoom(code: string): Promise<"shared" | "copied" | "failed"> {
   const text = shareMessage(code);
   if (typeof navigator !== "undefined" && navigator.share) {
     try {
       await navigator.share({ title: "Donkey", text });
       return "shared";
     } catch {
-      /* user cancelled — fall through to copy */
+      /* user cancelled or unsupported — fall through to copy */
     }
   }
-  await navigator.clipboard?.writeText(text);
-  return "copied";
+  try {
+    await navigator.clipboard.writeText(text);
+    return "copied";
+  } catch {
+    /* clipboard blocked (insecure context / permissions) — legacy fallback */
+  }
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    return ok ? "copied" : "failed";
+  } catch {
+    return "failed";
+  }
 }
 
 export function whatsappUrl(code: string) {

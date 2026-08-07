@@ -248,15 +248,26 @@ export default function RoomPage() {
   const iAmReady = (room.ready ?? []).includes(me.id) || isHost;
 
   return (
-    <main className="min-h-screen w-full max-w-5xl mx-auto overflow-x-hidden p-2.5 md:p-5 flex flex-col gap-2.5">
-      <header className="panel rounded-2xl px-3 py-2 flex items-center justify-between gap-2">
+    <main
+      className={cn(
+        "w-full max-w-5xl mx-auto overflow-x-hidden p-2.5 md:p-4 flex flex-col gap-2",
+        room.status === "playing" && game
+          ? "h-[100dvh] max-h-[100dvh] overflow-hidden"
+          : "min-h-screen",
+      )}
+    >
+      <header className="panel shrink-0 rounded-2xl px-3 py-2 flex items-center justify-between gap-2">
         <Link to="/" className="btn-ghost px-3 py-1.5 inline-flex items-center gap-1.5 text-xs">
           <ArrowLeft className="h-3.5 w-3.5" /> Leave
         </Link>
         <button
-          onClick={() => {
-            navigator.clipboard?.writeText(code);
-            toast.success("Room code copied");
+          onClick={async () => {
+            try {
+              await navigator.clipboard.writeText(code);
+              toast.success("Room code copied");
+            } catch {
+              toast.info(`Room code: ${code}`);
+            }
           }}
           className="inline-flex items-center gap-2 text-lg font-black tracking-[0.35em] text-gradient"
           title="Copy room code"
@@ -283,7 +294,9 @@ export default function RoomPage() {
             <button
               onClick={async () => {
                 const r = await shareRoom(code);
-                toast.success(r === "shared" ? "Invite shared" : "Invite copied");
+                if (r === "shared") toast.success("Invite shared");
+                else if (r === "copied") toast.success("Invite copied");
+                else toast.info(`Share this room code: ${code}`);
               }}
               className="btn-ghost py-2.5 inline-flex items-center justify-center gap-2 text-xs"
             >
@@ -365,7 +378,7 @@ export default function RoomPage() {
           </div>
         </div>
       ) : (
-        <div className="flex-1 relative flex flex-col">
+        <div className="flex-1 min-h-0 relative flex flex-col">
           <GameTable
             state={game}
             mySeat={mySeat >= 0 ? mySeat : null}

@@ -101,13 +101,14 @@ export function PlayerSeat({
           )}
           <span
             className={cn(
-              "rounded-full border px-1.5 py-[1px] text-[10px] font-black leading-none tabular-nums",
+              "inline-flex items-center gap-1 rounded-full border px-1.5 py-[1px] text-[10px] font-black leading-none tabular-nums",
               seat.cards > 16
                 ? "border-destructive/60 bg-destructive/20 text-destructive"
-                : "border-border bg-black/40 text-foreground/80",
+                : "border-gold/50 bg-black/50 text-gold",
             )}
           >
-            {seat.cards} cards
+            <span className="h-2.5 w-[7px] rounded-[1px] card-back" />
+            {seat.cards}
           </span>
         </div>
 
