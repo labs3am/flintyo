@@ -70,7 +70,14 @@ export default function Home() {
   return (
     <main className="min-h-screen flex items-center justify-center p-3">
       <div className="w-full max-w-xl">
-        <header className="text-center mb-5 relative">
+        <header className="mb-4 flex items-center justify-between gap-2">
+          <Link to="/" className="btn-ghost px-3 py-1.5 inline-flex items-center gap-1.5 text-xs">
+            <ArrowLeft className="h-3.5 w-3.5" /> Home
+          </Link>
+          <div className="text-center leading-tight">
+            <h1 className="text-2xl font-black tracking-tight text-gradient">FLINTYO</h1>
+            <p className="text-[11px] text-muted-foreground">Who's getting the Donkey?</p>
+          </div>
           <button
             onClick={() => {
               const next = !sound;
@@ -78,22 +85,10 @@ export default function Home() {
               setSoundEnabled(next);
             }}
             aria-label={sound ? "Mute sound" : "Unmute sound"}
-            className="absolute right-0 top-0 h-9 w-9 grid place-items-center rounded-full border border-border bg-black/25 text-muted-foreground"
+            className="h-9 w-9 grid place-items-center rounded-full border border-border bg-black/25 text-muted-foreground"
           >
             {sound ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
           </button>
-          <div className="flex justify-center -space-x-3 mb-1">
-            {CHARACTERS.slice(0, 5).map((c, i) => (
-              <CharacterAvatar
-                key={c.id}
-                character={c}
-                expression={i === 2 ? "laughing" : "idle"}
-                size={i === 2 ? 62 : 50}
-              />
-            ))}
-          </div>
-          <h1 className="text-5xl font-black tracking-tight text-gradient">DONKEY</h1>
-          <p className="mt-1 text-muted-foreground text-sm">Who's getting the Donkey?</p>
         </header>
 
         <div className="panel rounded-3xl p-4 space-y-4">
