@@ -8,10 +8,9 @@ import { CharacterAvatar } from "@/components/game/Character";
 import { CHARACTERS, getCharacter } from "@/lib/characters";
 import { createRoom, getIdentity, saveIdentity } from "@/lib/room";
 import { setSoundEnabled, soundEnabled } from "@/lib/sound";
-import { LevelPicker } from "@/components/game/LevelPicker";
+import { LevelPicker, type Level } from "@/components/game/LevelPicker";
 import { TutorialModal } from "@/components/game/Tutorial";
 
-type Level = "easy" | "normal" | "hard";
 
 export default function Setup() {
   const navigate = useNavigate();
@@ -19,7 +18,16 @@ export default function Setup() {
   const [char, setChar] = useState(CHARACTERS[0].id);
   const [bots, setBots] = useState(3);
   const [locals, setLocals] = useState(3);
-  const [level, setLevel] = useState<Level>("normal");
+  const [level, setLevelState] = useState<Level>("normal");
+  const [tut, setTut] = useState(false);
+  const setLevel = (l: Level) => {
+    setLevelState(l);
+    try {
+      localStorage.setItem("flintyo.level", l);
+    } catch {
+      /* ignore */
+    }
+  };
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [tab, setTab] = useState<"ai" | "online" | "pass">("ai");
@@ -130,10 +138,12 @@ export default function Setup() {
             ))}
           </div>
 
+          {tab !== "pass" && <LevelPicker value={level} onChange={setLevel} />}
+          {tab === "pass" && <LevelPicker value={level} onChange={setLevel} />}
+
           {tab === "ai" && (
             <div className="space-y-3">
               <Counter label="AI opponents" value={bots} setValue={setBots} min={1} max={5} />
-              <LevelPicker value={level} onChange={setLevel} />
               <button onClick={startAi} className="btn-primary w-full">
                 Deal me in
               </button>
@@ -181,40 +191,23 @@ export default function Setup() {
           )}
         </div>
 
-        <details className="mt-4 panel rounded-2xl px-4 py-3 text-sm">
-          <summary className="cursor-pointer font-semibold">How to play</summary>
-          <ul className="mt-2 space-y-1.5 text-muted-foreground text-[13px] list-disc pl-4">
-            <li>The whole deck is dealt out. Whoever holds the Ace of Spades leads first.</li>
-            <li>You must follow the suit that was led if you have it.</li>
-            <li>If everyone follows, the highest card wins and the pile is thrown away.</li>
-            <li>If someone can't follow, the highest card of the led suit picks up the whole pile.</li>
-            <li>Run out of cards and you're safe. The last player still holding is the Donkey.</li>
-          </ul>
-        </details>
-      </div>
-    </main>
-  );
-}
+        <button
+          onClick={() => setTut(true)}
+          className="mt-4 btn-ghost w-full py-3 inline-flex items-center justify-center gap-2 text-sm"
+        >
+          <BookOpen className="h-4 w-4" /> How to play
+        </button>
 
-function LevelPicker({ value, onChange }: { value: Level; onChange: (l: Level) => void }) {
-  return (
-    <div className="flex items-center justify-between rounded-xl border border-border bg-black/20 px-3 py-2">
-      <span className="text-sm font-medium">AI difficulty</span>
-      <div className="flex gap-1">
-        {(["easy", "normal", "hard"] as const).map((l) => (
-          <button
-            key={l}
-            onClick={() => onChange(l)}
-            className={cn(
-              "rounded-lg px-2.5 py-1 text-[11px] font-bold capitalize transition",
-              value === l ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            {l}
-          </button>
-        ))}
+        <p className="mt-4 text-center text-[11px] text-muted-foreground">
+          From the house of{" "}
+          <a href="https://labs3am.com" target="_blank" rel="noreferrer" className="text-primary font-semibold">
+            Labs3am
+          </a>
+        </p>
       </div>
-    </div>
+
+      {tut && <TutorialModal onClose={() => setTut(false)} />}
+    </main>
   );
 }
 
