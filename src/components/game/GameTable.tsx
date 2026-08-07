@@ -116,10 +116,9 @@ export function GameTable({
   const dropReady = !!drag && drag.over;
 
   return (
-    <div className="flex flex-1 min-h-0 w-full max-w-full overflow-x-hidden flex-col gap-3">
-      {/* Opponents around the arena */}
-      <div className="flex flex-wrap justify-center gap-2 w-full max-w-full">
-
+    <div className="relative flex flex-1 min-h-0 w-full max-w-full overflow-hidden flex-col gap-2">
+      {/* Opponents row keeps a little headroom for speech bubbles */}
+      <div className="flex shrink-0 flex-nowrap justify-center gap-1.5 w-full max-w-full overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {others.map(({ p, i }) => (
           <PlayerSeat
             key={p.id}
@@ -136,8 +135,8 @@ export function GameTable({
             reaction={reactions[i]}
             says={says[i]}
             gained={gained?.seat === i ? gained.n : null}
-            size={others.length > 3 ? 60 : 74}
-            compact={others.length > 3}
+            size={others.length > 3 ? 46 : 58}
+            compact
           />
         ))}
       </div>
@@ -146,7 +145,7 @@ export function GameTable({
       <div
         ref={arenaRef}
         className={cn(
-          "felt relative flex-1 rounded-[2rem] border p-4 flex flex-col items-center justify-center gap-3 min-h-[190px] transition-all duration-200",
+          "felt relative flex-1 min-h-0 overflow-hidden rounded-[2rem] border p-3 pt-9 flex flex-col items-center justify-center gap-2 transition-all duration-200",
           dropReady
             ? "border-primary ring-2 ring-primary/70 scale-[1.01]"
             : drag
@@ -157,7 +156,7 @@ export function GameTable({
         <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
           {state.leadSuit ? `${SUIT_NAME[state.leadSuit]} led` : "New trick"}
         </div>
-        <div className="flex items-end justify-center gap-1.5 flex-wrap min-h-[6rem]">
+        <div className="flex items-end justify-center gap-1.5 flex-wrap overflow-hidden">
           {state.pile.length === 0 ? (
             <div className="flex items-center gap-2 text-muted-foreground text-xs">
               <CardBack size="md" className="opacity-40" />
@@ -182,6 +181,18 @@ export function GameTable({
             {alive} IN
           </span>
         </div>
+
+        {/* Scores toggle */}
+        <button
+          onClick={() => setTab((t) => (t === "scores" ? null : "scores"))}
+          className={cn(
+            "absolute top-3 right-3 z-20 rounded-full border px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.15em] transition active:scale-95 [touch-action:manipulation]",
+            tab === "scores" ? "border-primary bg-primary/20 text-primary" : "border-border bg-black/40 text-foreground/80",
+          )}
+        >
+          Scores
+        </button>
+
 
         {/* Turn banner */}
         <div className="absolute top-3 left-1/2 -translate-x-1/2">
@@ -220,30 +231,17 @@ export function GameTable({
         )}
       </div>
 
-      {/* Scores */}
-      <div className="flex flex-col gap-2">
-        <button
-          onClick={() => setTab((t) => (t === "scores" ? null : "scores"))}
-          className={cn(
-            "min-h-11 rounded-xl border px-3 py-2.5 text-[10px] font-black uppercase tracking-[0.18em] transition active:scale-[0.98] [touch-action:manipulation]",
-            tab === "scores" ? "border-primary bg-primary/20 text-primary" : "border-border bg-black/25 text-foreground/80",
-          )}
-        >
-          Scores
-        </button>
+      {tab === "scores" && (
+        <div className="absolute inset-x-3 top-12 z-30 fade-in" onClick={() => setTab(null)}>
+          <ScoreBoard scores={scores} players={state.players.map((p) => ({ id: p.id, name: p.name }))} />
+        </div>
+      )}
 
-        {tab === "scores" && (
-          <ScoreBoard
-            className="fade-in"
-            scores={scores}
-            players={state.players.map((p) => ({ id: p.id, name: p.name }))}
-          />
-        )}
-      </div>
 
       {/* You */}
-      <div className="panel rounded-2xl p-2.5">
+      <div className="panel shrink-0 rounded-2xl p-2">
         <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3">
+
           {me && (
             <PlayerSeat
               seat={{
@@ -259,7 +257,7 @@ export function GameTable({
               gained={gained && gained.seat === mySeat ? gained.n : null}
             reaction={mySeat != null ? reactions[mySeat] : null}
               says={mySeat != null ? says[mySeat] : null}
-              size={64}
+              size={52}
               compact
             />
           )}
@@ -281,7 +279,7 @@ export function GameTable({
           </p>
 
         </div>
-        <div className="flex gap-2 overflow-x-auto overscroll-x-contain [touch-action:pan-x] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pb-4 pt-5 px-1 snap-x snap-mandatory">
+        <div className="flex gap-2 overflow-x-auto overscroll-x-contain [touch-action:pan-x] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pb-2 pt-4 px-1 snap-x snap-mandatory">
           {me && me.hand.length > 0 ? (
             sortHand(me.hand).map((c, idx, arr) => {
               const newSuit = idx > 0 && arr[idx - 1].s !== c.s;
@@ -316,7 +314,7 @@ export function GameTable({
                     size="lg"
                     disabled={!myTurn}
                     className={cn(
-                      "min-h-[7rem] min-w-[4.5rem]",
+                      "min-h-[5.75rem] min-w-[4rem]",
                       foul?.id === c.id && "anim-foul ring-2 ring-destructive",
                       dragging && dropReady && "ring-2 ring-primary",
                     )}

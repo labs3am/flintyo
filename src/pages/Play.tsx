@@ -115,8 +115,8 @@ export default function PlayPage() {
   const handlePlay = (cardId: string) => setState((s) => (s ? playCard(s, mySeat, cardId) : s));
 
   return (
-    <main className="min-h-screen w-full max-w-5xl mx-auto overflow-x-hidden p-2.5 md:p-5 flex flex-col gap-2.5">
-      <header className="panel rounded-2xl px-3 py-2 flex items-center justify-between">
+    <main className="h-[100dvh] max-h-[100dvh] w-full max-w-5xl mx-auto overflow-hidden p-2.5 md:p-4 flex flex-col gap-2">
+      <header className="panel shrink-0 rounded-2xl px-3 py-2 flex items-center justify-between">
         <Link to="/" className="btn-ghost px-3 py-1.5 inline-flex items-center gap-1.5 text-xs">
           <ArrowLeft className="h-3.5 w-3.5" /> Menu
         </Link>
@@ -126,7 +126,7 @@ export default function PlayPage() {
         </button>
       </header>
 
-      <div className="flex-1 relative flex flex-col">
+      <div className="flex-1 min-h-0 relative flex flex-col">
         <GameTable
           state={state}
           mySeat={revealed ? mySeat : null}
