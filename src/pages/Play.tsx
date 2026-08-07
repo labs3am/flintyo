@@ -1,0 +1,173 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ArrowLeft, RotateCcw, Eye } from "lucide-react";
+import { GameTable } from "@/components/game/GameTable";
+import { Countdown, DonkeyReveal } from "@/components/game/DonkeyReveal";
+import { createGame, playCard, type GameState } from "@/lib/bhabhi/engine";
+import { chooseCard, botDelay, type Difficulty } from "@/lib/bhabhi/ai";
+import { CHARACTERS, getCharacter } from "@/lib/characters";
+import { applyResult, type Scores } from "@/lib/bhabhi/score";
+import { useReactions } from "@/hooks/useReactions";
+import { EMOJI_REACTIONS } from "@/components/game/ReactionMenu";
+import { sfx } from "@/lib/sound";
+
+type Search = { mode: "ai" | "pass"; players: number; name: string; char: string; level: Difficulty };
+
+export const Route = createFileRoute("/play")({
+  validateSearch: (search: Record<string, unknown>): Search => ({
+    mode: search.mode === "pass" ? "pass" : "ai",
+    players: Math.min(6, Math.max(2, Number(search.players) || 4)),
+    name: typeof search.name === "string" && search.name ? search.name.slice(0, 14) : "You",
+    char: typeof search.char === "string" ? search.char : CHARACTERS[0].id,
+    level: search.level === "easy" || search.level === "hard" ? search.level : "normal",
+  }),
+  head: () => ({
+    meta: [
+      { title: "Play Donkey — You vs the Characters" },
+      {
+        name: "description",
+        content: "Play a round of Donkey against expressive AI characters or pass one phone around the table.",
+      },
+      { property: "og:title", content: "Play Donkey — You vs the Characters" },
+      { property: "og:description", content: "Beat the bots or pass the phone. Don't be the last one holding cards." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
+  component: PlayPage,
+});
+
+function buildSeats(mode: "ai" | "pass", players: number, name: string, char: string, level: Difficulty) {
+  const pool = CHARACTERS.filter((c) => c.id !== char);
+  if (mode === "ai") {
+    return [
+      { id: "you", name, bot: false, char },
+      ...Array.from({ length: players - 1 }, (_, i) => {
+        const c = pool[i % pool.length];
+        return { id: `bot${i}`, name: c.name, bot: true, char: c.id, level };
+      }),
+    ];
+  }
+  return Array.from({ length: players }, (_, i) => {
+    const c = i === 0 ? getCharacter(char) : pool[(i - 1) % pool.length];
+    return { id: `p${i}`, name: i === 0 ? name : c.name, bot: false, char: c.id };
+  });
+}
+
+function PlayPage() {
+  const { mode, players, name, char, level } = Route.useSearch();
+  const [state, setState] = useState<GameState | null>(null);
+  const [revealed, setRevealed] = useState(mode === "ai");
+  const [counting, setCounting] = useState(true);
+  const [scores, setScores] = useState<Scores>({});
+  const scoredRef = useRef(false);
+  const turnRef = useRef<number>(-1);
+  const seqRef = useRef<number>(-1);
+  const { bySeat, add } = useReactions();
+
+  const deal = useCallback(() => {
+    setState(createGame(buildSeats(mode, players, name, char, level)));
+    setRevealed(mode === "ai");
+    setCounting(true);
+    turnRef.current = -1;
+    seqRef.current = -1;
+    scoredRef.current = false;
+  }, [mode, players, name, char, level]);
+
+  useEffect(() => {
+    deal();
+  }, [deal]);
+
+  // Bots take their turn on a human-ish delay.
+  useEffect(() => {
+    if (!state || counting || state.phase === "over") return;
+    const current = state.players[state.turn];
+    if (!current?.bot) return;
+    const t = setTimeout(() => {
+      setState((s) => {
+        if (!s || s.phase === "over" || !s.players[s.turn].bot) return s;
+        const card = chooseCard(s, s.turn, (s.players[s.turn].level as Difficulty) ?? "normal");
+        return card ? playCard(s, s.turn, card.id) : s;
+      });
+    }, botDelay(current.level as Difficulty));
+    return () => clearTimeout(t);
+  }, [state, counting]);
+
+  // Sound + occasional cosmetic bot reactions driven by game events.
+  useEffect(() => {
+    if (!state || state.seq === seqRef.current) return;
+    seqRef.current = state.seq;
+    const e = state.event;
+    if (e.t === "play") sfx.card();
+    if (e.t === "trick") sfx.trick();
+    if (e.t === "pickup") {
+      sfx.pickup();
+      state.players.forEach((p, i) => {
+        if (!p.bot || i === e.taker || p.out) return;
+        if (Math.random() < getCharacter(p.char).expressiveness * 0.5) {
+          add(i, EMOJI_REACTIONS[Math.floor(Math.random() * 4)]);
+        }
+      });
+    }
+  }, [state, add]);
+
+  // Tally the scoreboard once per finished round.
+  useEffect(() => {
+    if (!state || state.phase !== "over" || scoredRef.current) return;
+    scoredRef.current = true;
+    setScores((prev) => applyResult(prev, state));
+  }, [state]);
+
+  // Pass & play: hide the hand whenever the device changes hands.
+  useEffect(() => {
+    if (mode !== "pass" || !state) return;
+    if (state.turn !== turnRef.current) {
+      turnRef.current = state.turn;
+      setRevealed(false);
+    }
+  }, [state, mode]);
+
+  if (!state) return null;
+
+  const mySeat = mode === "ai" ? 0 : state.turn;
+  const handlePlay = (cardId: string) => setState((s) => (s ? playCard(s, mySeat, cardId) : s));
+
+  return (
+    <main className="min-h-screen w-full max-w-5xl mx-auto overflow-x-hidden p-2.5 md:p-5 flex flex-col gap-2.5">
+      <header className="panel rounded-2xl px-3 py-2 flex items-center justify-between">
+        <Link to="/" className="btn-ghost px-3 py-1.5 inline-flex items-center gap-1.5 text-xs">
+          <ArrowLeft className="h-3.5 w-3.5" /> Menu
+        </Link>
+        <h1 className="text-sm font-bold tracking-[0.2em] text-gradient">DONKEY</h1>
+        <button onClick={deal} className="btn-ghost px-3 py-1.5 inline-flex items-center gap-1.5 text-xs">
+          <RotateCcw className="h-3.5 w-3.5" /> New deal
+        </button>
+      </header>
+
+      <div className="flex-1 relative flex flex-col">
+        <GameTable
+          state={state}
+          mySeat={revealed ? mySeat : null}
+          onPlay={handlePlay}
+          reactions={bySeat}
+          scores={scores}
+          onReact={(emoji) => add(mySeat, emoji)}
+        />
+
+        {counting && <Countdown onDone={() => { setCounting(false); sfx.deal(); }} />}
+
+        {mode === "pass" && !revealed && !counting && state.phase === "playing" && (
+          <div className="absolute inset-0 rounded-[2rem] bg-background/88 backdrop-blur-md flex flex-col items-center justify-center gap-3 text-center p-6 fade-in z-30">
+            <p className="text-sm text-muted-foreground">Pass the device to</p>
+            <p className="text-3xl font-black text-gradient">{state.players[state.turn].name}</p>
+            <button onClick={() => setRevealed(true)} className="btn-primary inline-flex items-center gap-2">
+              <Eye className="h-4 w-4" /> Show my hand
+            </button>
+          </div>
+        )}
+
+        {state.phase === "over" && !counting && <DonkeyReveal state={state} onRematch={deal} />}
+      </div>
+    </main>
+  );
+}
