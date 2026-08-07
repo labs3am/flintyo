@@ -12,19 +12,6 @@ const sizes: Record<Size, string> = {
 
 const FACE: Record<number, string> = { 11: "J", 12: "Q", 13: "K" };
 
-/** Classic pip layouts — [xPercent, yPercent] within the central column. */
-const PIPS: Record<number, [number, number][]> = {
-  2: [[50, 8], [50, 92]],
-  3: [[50, 8], [50, 50], [50, 92]],
-  4: [[22, 8], [78, 8], [22, 92], [78, 92]],
-  5: [[22, 8], [78, 8], [50, 50], [22, 92], [78, 92]],
-  6: [[22, 8], [78, 8], [22, 50], [78, 50], [22, 92], [78, 92]],
-  7: [[22, 8], [78, 8], [50, 29], [22, 50], [78, 50], [22, 92], [78, 92]],
-  8: [[22, 8], [78, 8], [50, 29], [22, 50], [78, 50], [50, 71], [22, 92], [78, 92]],
-  9: [[22, 8], [78, 8], [22, 36], [78, 36], [50, 50], [22, 64], [78, 64], [22, 92], [78, 92]],
-  10: [[22, 8], [78, 8], [50, 22], [22, 36], [78, 36], [22, 64], [78, 64], [50, 78], [22, 92], [78, 92]],
-};
-
 export function PlayingCard({
   card,
   size = "md",
@@ -54,9 +41,8 @@ export function PlayingCard({
   const pips = PIPS[card.r];
 
   const corner = (
-    <span className="flex flex-col items-center leading-none">
-      <span className="font-black leading-[0.88] text-[1.15em] tracking-tighter">{label}</span>
-      <Suit suit={card.s} className="mt-[0.08em] w-[0.62em]" />
+    <span className="flex items-start gap-[0.12em] leading-none">
+      <span className="font-black leading-[0.85] text-[1.5em] tracking-tighter">{label}</span>
     </span>
   );
 
@@ -78,32 +64,34 @@ export function PlayingCard({
         className,
       )}
     >
-      <span className="absolute top-[4%] left-[7%]">{corner}</span>
-      <span className="absolute bottom-[4%] right-[7%] rotate-180">{corner}</span>
+      <span className="absolute top-[3%] left-[8%]">{corner}</span>
+      <span className="absolute top-[6%] right-[8%]">
+        <Suit suit={card.s} className="w-[0.95em]" />
+      </span>
 
-      {/* centre */}
-      <span className="absolute inset-y-[11%] left-[30%] right-[30%] block">
-        {card.r === 14 ? (
-          <Suit suit={card.s} className="absolute left-1/2 top-1/2 w-[2.1em] -translate-x-1/2 -translate-y-1/2" />
-        ) : face ? (
+      {/* big glossy centre symbol */}
+      <span className="absolute inset-x-[10%] bottom-[6%] top-[34%] block">
+        {face ? (
           <span className="absolute inset-0 grid place-items-center">
-            <Suit suit={card.s} className="w-[2em] opacity-[0.18]" />
-            <span className="absolute text-[1.75em] font-black leading-none tracking-tighter">{face}</span>
+            <Suit suit={card.s} className="w-[85%] opacity-25" />
+            <span className="absolute text-[2.4em] font-black leading-none tracking-tighter">{face}</span>
           </span>
-        ) : pips ? (
-          pips.map(([x, y], i) => (
-            <Suit
-              key={i}
-              suit={card.s}
-              className="absolute w-[0.72em]"
-              style={{
-                left: `${x}%`,
-                top: `${y}%`,
-                transform: `translate(-50%, -50%)${y > 55 ? " rotate(180deg)" : ""}`,
-              }}
-            />
-          ))
-        ) : null}
+        ) : (
+          <span className="absolute inset-0 grid place-items-center">
+            <span className="relative block w-[88%]">
+              <Suit suit={card.s} className="w-full drop-shadow-[0_2px_2px_rgba(0,0,0,0.25)]" />
+              <Suit
+                suit={card.s}
+                className="absolute inset-0 w-full text-white opacity-30 [clip-path:inset(0_0_58%_0)]"
+              />
+            </span>
+            {card.r >= 2 && card.r <= 10 && (
+              <span className="absolute bottom-[2%] right-[2%] text-[0.85em] font-black leading-none text-white/85 mix-blend-overlay">
+                {label}
+              </span>
+            )}
+          </span>
+        )}
       </span>
     </Tag>
   );
