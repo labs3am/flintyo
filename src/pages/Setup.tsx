@@ -1,6 +1,6 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Bot, Users, Wifi, LogIn, Loader2, Volume2, VolumeX } from "lucide-react";
+import { ArrowLeft, Bot, Users, Wifi, LogIn, Loader2, Volume2, VolumeX, BookOpen } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { CharacterPicker } from "@/components/game/CharacterPicker";
@@ -8,10 +8,12 @@ import { CharacterAvatar } from "@/components/game/Character";
 import { CHARACTERS, getCharacter } from "@/lib/characters";
 import { createRoom, getIdentity, saveIdentity } from "@/lib/room";
 import { setSoundEnabled, soundEnabled } from "@/lib/sound";
+import { LevelPicker } from "@/components/game/LevelPicker";
+import { TutorialModal } from "@/components/game/Tutorial";
 
 type Level = "easy" | "normal" | "hard";
 
-export default function Home() {
+export default function Setup() {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [char, setChar] = useState(CHARACTERS[0].id);
