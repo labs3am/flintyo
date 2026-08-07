@@ -53,26 +53,91 @@ export const makeCode = () => {
   return Array.from({ length: 5 }, () => alphabet[Math.floor(Math.random() * alphabet.length)]).join("");
 };
 
+/* ------------------------------------------------------------------ *
+ * Rooms over Supabase Realtime broadcast — no database table needed.
+ * Every connected player keeps a copy of the room state; updates are
+ * broadcast with a monotonic version and the highest version wins.
+ * A player joining an existing room asks the channel for the state.
+ * ------------------------------------------------------------------ */
+
+type Entry = {
+  ch: RealtimeChannel;
+  v: number;
+  state: RoomState | null;
+  subs: Set<(s: RoomState) => void>;
+  ready: Promise<void>;
+};
+
+const rooms = new Map<string, Entry>();
+
+function connect(code: string): Entry {
+  const existing = rooms.get(code);
+  if (existing) return existing;
+
+  const ch = supabase.channel(`room:${code}`, { config: { broadcast: { self: false } } });
+  const entry: Entry = { ch, v: 0, state: null, subs: new Set(), ready: Promise.resolve() };
+
+  ch.on("broadcast", { event: "state" }, ({ payload }) => {
+    const p = payload as { v: number; state: RoomState };
+    if (!p?.state || p.v <= entry.v) return;
+    entry.v = p.v;
+    entry.state = p.state;
+    entry.subs.forEach((f) => f(p.state));
+  });
+
+  ch.on("broadcast", { event: "req" }, () => {
+    if (entry.state) void ch.send({ type: "broadcast", event: "state", payload: { v: entry.v, state: entry.state } });
+  });
+
+  entry.ready = new Promise<void>((resolve) => {
+    ch.subscribe((status) => {
+      if (status === "SUBSCRIBED" || status === "CHANNEL_ERROR" || status === "TIMED_OUT") resolve();
+    });
+  });
+
+  rooms.set(code, entry);
+  return entry;
+}
+
+export function subscribeRoom(code: string, cb: (s: RoomState) => void) {
+  const entry = connect(code);
+  entry.subs.add(cb);
+  return () => {
+    entry.subs.delete(cb);
+  };
+}
+
 export async function createRoom(host: Seat): Promise<string> {
-  for (let attempt = 0; attempt < 5; attempt++) {
-    const code = makeCode();
-    const state: RoomState = { status: "lobby", hostId: host.id, seats: [host], game: null, reactions: [], chat: [], ready: [host.id] };
-    const { error } = await db.from("rooms").insert({ code, state: state as never });
-    if (!error) return code;
-    if (!error.message.includes("duplicate")) throw new Error(error.message);
-  }
-  throw new Error("Could not create a room. Try again.");
+  const code = makeCode();
+  const entry = connect(code);
+  await entry.ready;
+  entry.v = 1;
+  entry.state = { status: "lobby", hostId: host.id, seats: [host], game: null, reactions: [], chat: [], ready: [host.id] };
+  await entry.ch.send({ type: "broadcast", event: "state", payload: { v: entry.v, state: entry.state } });
+  return code;
 }
 
 export async function fetchRoom(code: string): Promise<RoomState | null> {
-  const { data, error } = await db.from("rooms").select("state").eq("code", code).maybeSingle();
-  if (error) throw new Error(error.message);
-  return (data?.state as RoomState | undefined) ?? null;
+  const entry = connect(code);
+  await entry.ready;
+  if (entry.state) return entry.state;
+
+  await entry.ch.send({ type: "broadcast", event: "req", payload: {} });
+  const deadline = Date.now() + 2500;
+  while (Date.now() < deadline) {
+    await new Promise((r) => setTimeout(r, 120));
+    if (entry.state) return entry.state;
+  }
+  return null;
 }
 
 export async function saveRoom(code: string, state: RoomState) {
-  const { error } = await db.from("rooms").update({ state: state as never }).eq("code", code);
-  if (error) throw new Error(error.message);
+  const entry = connect(code);
+  await entry.ready;
+  entry.v += 1;
+  entry.state = state;
+  entry.subs.forEach((f) => f(state));
+  await entry.ch.send({ type: "broadcast", event: "state", payload: { v: entry.v, state } });
 }
 
 /** Read-modify-write helper so concurrent players don't clobber each other's view. */
