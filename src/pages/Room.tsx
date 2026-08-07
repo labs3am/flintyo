@@ -84,8 +84,12 @@ export default function RoomPage() {
       setStale(false);
       setLoading(false);
     });
-    return off;
-  }, [code]);
+    const poll = setInterval(refresh, 4000);
+    return () => {
+      off();
+      clearInterval(poll);
+    };
+  }, [code, refresh]);
 
 
   const isHost = room?.hostId === me.id;
