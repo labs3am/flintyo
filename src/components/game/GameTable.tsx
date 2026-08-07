@@ -19,6 +19,7 @@ export function GameTable({
   says = {},
   scores,
   waitingLabel,
+  hints = false,
 }: {
   state: GameState;
   mySeat: number | null;
@@ -30,6 +31,8 @@ export function GameTable({
   /** Cross-round scoreboard, keyed by player id. */
   scores?: Scores;
   waitingLabel?: string;
+  /** Show beginner coaching (dimmed illegal cards + tips) for the first few turns only. */
+  hints?: boolean;
 }) {
   const me = mySeat != null ? state.players[mySeat] : null;
   const myTurn = mySeat != null && state.turn === mySeat && state.phase === "playing";
@@ -40,6 +43,17 @@ export function GameTable({
   const [foul, setFoul] = useState<{ id: string; at: number } | null>(null);
   const [tab, setTab] = useState<"scores" | null>(null);
   const [gained, setGained] = useState<{ seat: number; n: number; seq: number } | null>(null);
+  // Coaching fades out after the player's first few turns.
+  const [myTurns, setMyTurns] = useState(0);
+  const lastCounted = useRef<number>(-1);
+  useEffect(() => {
+    if (!hints || !myTurn) return;
+    if (lastCounted.current === state.seq) return;
+    lastCounted.current = state.seq;
+    setMyTurns((n) => n + 1);
+  }, [hints, myTurn, state.seq]);
+  const coaching = hints && myTurns <= 3;
+  
   
 
   useEffect(() => {
@@ -313,7 +327,7 @@ export function GameTable({
                     card={c}
                     size="lg"
                     disabled={!myTurn}
-                    dimmed={myTurn && !playable.has(c.id)}
+                    dimmed={coaching && myTurn && !playable.has(c.id)}
                     className={cn(
                       "min-h-[5.75rem] min-w-[4rem]",
                       foul?.id === c.id && "anim-foul ring-2 ring-destructive",
@@ -331,7 +345,7 @@ export function GameTable({
             <span className="text-sm text-muted-foreground py-6">No cards left — you're safe! 🎉</span>
           )}
         </div>
-        {myTurn && me && me.hand.length > 0 && (
+        {coaching && myTurn && me && me.hand.length > 0 && (
           <p className="text-center text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
             {state.leadSuit && me.hand.some((c) => c.s === state.leadSuit)
               ? `Follow ${SUIT_NAME[state.leadSuit].toLowerCase()} — the other cards are locked`
