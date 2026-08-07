@@ -70,7 +70,7 @@ export function PlayingCard({
       </span>
 
       {/* big glossy centre symbol */}
-      <span className="absolute inset-x-[10%] bottom-[6%] top-[34%] block">
+      <span className="absolute inset-x-[14%] bottom-[10%] top-[32%] block">
         {face ? (
           <span className="absolute inset-0 grid place-items-center">
             <Suit suit={card.s} className="w-[85%] opacity-25" />
