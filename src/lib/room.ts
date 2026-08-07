@@ -1,4 +1,19 @@
 import { supabase } from "@/integrations/supabase/client";
+
+// The generated Database types don't include the `rooms` table yet, so use an
+// untyped view of the client for room reads/writes.
+type RoomRow = { code: string; state: RoomState };
+const db = supabase as unknown as {
+  from: (table: "rooms") => {
+    insert: (v: { code: string; state: unknown }) => Promise<{ error: { message: string } | null }>;
+    select: (cols: string) => {
+      eq: (col: string, v: string) => { maybeSingle: () => Promise<{ data: RoomRow | null; error: { message: string } | null }> };
+    };
+    update: (v: { state: unknown }) => {
+      eq: (col: string, v: string) => Promise<{ error: { message: string } | null }>;
+    };
+  };
+};
 import type { GameState } from "@/lib/bhabhi/engine";
 import type { ReactionPing } from "@/hooks/useReactions";
 import type { Scores } from "@/lib/bhabhi/score";
