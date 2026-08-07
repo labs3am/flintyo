@@ -15,6 +15,7 @@ import { ScoreBoard } from "@/components/game/ScoreBoard";
 import { useReactions } from "@/hooks/useReactions";
 import { sfx } from "@/lib/sound";
 import { cn } from "@/lib/utils";
+import { LevelPicker, LEVEL_LABEL, type Level } from "@/components/game/LevelPicker";
 
 export default function RoomPage() {
   const { code = "" } = useParams<{ code: string }>();
@@ -32,6 +33,14 @@ export default function RoomPage() {
   const [chatOpen, setChatOpen] = useState(false);
   const [seenChat, setSeenChat] = useState(0);
   const [tick, setTick] = useState(0);
+  const [botLevel, setBotLevel] = useState<Level>(() => {
+    try {
+      const v = localStorage.getItem("flintyo.level");
+      return v === "easy" || v === "hard" ? v : "normal";
+    } catch {
+      return "normal";
+    }
+  });
   const { bySeat, add } = useReactions(room?.reactions);
 
   const refresh = useCallback(async () => {
@@ -112,9 +121,23 @@ export default function RoomPage() {
       const c = CHARACTERS.find((x) => !taken.has(x.id)) ?? CHARACTERS[0];
       return {
         ...s,
-        seats: [...s.seats, { id: `bot-${Math.random().toString(36).slice(2, 6)}`, name: c.name, bot: true, char: c.id, level: "normal" }],
+        seats: [...s.seats, { id: `bot-${Math.random().toString(36).slice(2, 6)}`, name: c.name, bot: true, char: c.id, level: botLevel }],
       };
     });
+
+  const changeBotLevel = (l: Level) => {
+    setBotLevel(l);
+    try {
+      localStorage.setItem("flintyo.level", l);
+    } catch {
+      /* ignore */
+    }
+    void push((s) =>
+      s.seats.some((x) => x.bot)
+        ? { ...s, seats: s.seats.map((x) => (x.bot ? { ...x, level: l } : x)) }
+        : null,
+    );
+  };
 
   const start = () =>
     push((s) => (s.seats.length < 2 ? null : { ...s, status: "playing", game: createGame(s.seats), reactions: [] }));
@@ -319,7 +342,7 @@ export default function RoomPage() {
                 <span className="text-[11px] font-bold truncate max-w-full px-1">{s.name}</span>
                 <span className="text-[9px] text-muted-foreground">
                   {s.bot
-                    ? "AI"
+                    ? `AI · ${LEVEL_LABEL[(s.level as Level) ?? "normal"]}`
                     : s.id === room.hostId
                       ? "HOST"
                       : (room.ready ?? []).includes(s.id)
@@ -333,6 +356,7 @@ export default function RoomPage() {
           </div>
 
           <div className="space-y-2">
+            {isHost && <LevelPicker value={botLevel} onChange={changeBotLevel} />}
             {isHost && (
               <button onClick={addBot} className="btn-ghost w-full py-2.5 inline-flex items-center justify-center gap-2 text-xs">
                 <Bot className="h-4 w-4" /> Add AI player
