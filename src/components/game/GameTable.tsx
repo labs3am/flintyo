@@ -327,7 +327,7 @@ export function GameTable({
                     card={c}
                     size="lg"
                     disabled={!myTurn}
-                    dimmed={myTurn && !playable.has(c.id)}
+                    dimmed={coaching && myTurn && !playable.has(c.id)}
                     className={cn(
                       "min-h-[5.75rem] min-w-[4rem]",
                       foul?.id === c.id && "anim-foul ring-2 ring-destructive",
@@ -345,7 +345,7 @@ export function GameTable({
             <span className="text-sm text-muted-foreground py-6">No cards left — you're safe! 🎉</span>
           )}
         </div>
-        {myTurn && me && me.hand.length > 0 && (
+        {coaching && myTurn && me && me.hand.length > 0 && (
           <p className="text-center text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
             {state.leadSuit && me.hand.some((c) => c.s === state.leadSuit)
               ? `Follow ${SUIT_NAME[state.leadSuit].toLowerCase()} — the other cards are locked`
