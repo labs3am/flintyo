@@ -85,11 +85,6 @@ export function PlayingCard({
                 className="absolute inset-0 w-full text-white opacity-30 [clip-path:inset(0_0_58%_0)]"
               />
             </span>
-            {card.r >= 2 && card.r <= 10 && (
-              <span className="absolute bottom-[2%] right-[2%] text-[0.85em] font-black leading-none text-white/85 mix-blend-overlay">
-                {label}
-              </span>
-            )}
           </span>
         )}
       </span>
