@@ -80,26 +80,14 @@ export default function RoomPage() {
   }, [code, me.id, me.name, me.char, refresh]);
 
   useEffect(() => {
-    const channel = supabase
-      .channel(`room-${code}`)
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "rooms", filter: `code=eq.${code}` },
-        (payload) => {
-          const next = (payload.new as { state?: RoomState }).state;
-          if (next) {
-            setRoom(next);
-            setStale(false);
-          }
-        },
-      )
-      .subscribe();
-    const poll = setInterval(refresh, 4000);
-    return () => {
-      supabase.removeChannel(channel);
-      clearInterval(poll);
-    };
-  }, [code, refresh]);
+    const off = subscribeRoom(code, (next) => {
+      setRoom(next);
+      setStale(false);
+      setLoading(false);
+    });
+    return off;
+  }, [code]);
+
 
   const isHost = room?.hostId === me.id;
   const mySeat = room?.game ? room.game.players.findIndex((p) => p.id === me.id) : -1;
