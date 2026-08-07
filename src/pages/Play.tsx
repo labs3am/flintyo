@@ -7,7 +7,6 @@ import { createGame, playCard, type GameState } from "@/lib/bhabhi/engine";
 import { chooseCard, botDelay, type Difficulty } from "@/lib/bhabhi/ai";
 import { CHARACTERS, getCharacter } from "@/lib/characters";
 import { applyResult, type Scores } from "@/lib/bhabhi/score";
-import { LevelChip, type Level } from "@/components/game/LevelPicker";
 import { TutorialModal, tutorialSeen, markTutorialSeen } from "@/components/game/Tutorial";
 import { useReactions } from "@/hooks/useReactions";
 import { EMOJI_REACTIONS } from "@/components/game/ReactionMenu";
@@ -119,16 +118,20 @@ export default function PlayPage() {
 
   return (
     <main className="h-[100dvh] max-h-[100dvh] w-full max-w-5xl mx-auto overflow-hidden p-2.5 md:p-4 flex flex-col gap-2">
-      <header className="panel shrink-0 rounded-2xl px-3 py-2 flex items-center justify-between">
+      <header className="panel shrink-0 rounded-2xl px-2.5 py-1.5 flex items-center justify-between gap-2">
         <Link to="/" className="btn-ghost px-3 py-1.5 inline-flex items-center gap-1.5 text-xs">
           <ArrowLeft className="h-3.5 w-3.5" /> Menu
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 flex-col items-center leading-tight">
           <h1 className="text-sm font-bold tracking-[0.2em] text-gradient">FLINTYO</h1>
-          {state.players.some((p) => p.bot) && <LevelChip value={level as Level} />}
+          {state.players.some((p) => p.bot) && (
+            <span className="text-[9px] font-black uppercase tracking-[0.14em] text-muted-foreground">
+              AI · {level}
+            </span>
+          )}
         </div>
         <button onClick={deal} className="btn-ghost px-3 py-1.5 inline-flex items-center gap-1.5 text-xs">
-          <RotateCcw className="h-3.5 w-3.5" /> New deal
+          <RotateCcw className="h-3.5 w-3.5" /> <span className="hidden xs:inline">New </span>Deal
         </button>
       </header>
 
