@@ -313,6 +313,7 @@ export function GameTable({
                     card={c}
                     size="lg"
                     disabled={!myTurn}
+                    dimmed={myTurn && !legalIds.has(c.id)}
                     className={cn(
                       "min-h-[5.75rem] min-w-[4rem]",
                       foul?.id === c.id && "anim-foul ring-2 ring-destructive",
@@ -332,7 +333,7 @@ export function GameTable({
         </div>
         {myTurn && me && me.hand.length > 0 && (
           <p className="text-center text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-            Drag a card up to the table — or tap it
+            {legalHint}
           </p>
         )}
 
