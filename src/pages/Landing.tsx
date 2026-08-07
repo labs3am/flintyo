@@ -3,11 +3,8 @@ import { useState } from "react";
 import { Bot, Users, Wifi, Play, BookOpen } from "lucide-react";
 import { CharacterAvatar } from "@/components/game/Character";
 import { CHARACTERS } from "@/lib/characters";
-import { PlayingCard } from "@/components/game/PlayingCard";
+import { LandingDemo } from "@/components/game/LandingDemo";
 import { TutorialDeck, TutorialModal } from "@/components/game/Tutorial";
-import type { Card } from "@/lib/bhabhi/engine";
-
-const card = (r: number, s: Card["s"]): Card => ({ id: `${r}${s}`, r, s });
 
 const MODES = [
   {
@@ -60,11 +57,8 @@ export default function Landing() {
             </button>
           </div>
 
-          <div className="mt-10 flex items-end justify-center gap-2">
-            <PlayingCard card={card(14, "S")} size="lg" className="-rotate-12 translate-y-2" />
-            <PlayingCard card={card(13, "H")} size="lg" className="-rotate-3" />
-            <PlayingCard card={card(12, "C")} size="lg" className="rotate-3" />
-            <PlayingCard card={card(2, "D")} size="lg" className="rotate-12 translate-y-2" />
+          <div className="mt-8">
+            <LandingDemo />
           </div>
         </div>
       </section>
