@@ -70,7 +70,7 @@ export async function createRoom(host: Seat): Promise<string> {
   for (let attempt = 0; attempt < 5; attempt++) {
     const code = makeCode();
     const state: RoomState = { status: "lobby", hostId: host.id, seats: [host], game: null, reactions: [], chat: [], ready: [host.id] };
-    const { error } = await supabase.from("rooms").insert({ code, state: state as never });
+    const { error } = await db.from("rooms").insert({ code, state: state as never });
     if (!error) return code;
     if (!error.message.includes("duplicate")) throw new Error(error.message);
   }
@@ -78,13 +78,13 @@ export async function createRoom(host: Seat): Promise<string> {
 }
 
 export async function fetchRoom(code: string): Promise<RoomState | null> {
-  const { data, error } = await supabase.from("rooms").select("state").eq("code", code).maybeSingle();
+  const { data, error } = await db.from("rooms").select("state").eq("code", code).maybeSingle();
   if (error) throw new Error(error.message);
   return (data?.state as RoomState | undefined) ?? null;
 }
 
 export async function saveRoom(code: string, state: RoomState) {
-  const { error } = await supabase.from("rooms").update({ state: state as never }).eq("code", code);
+  const { error } = await db.from("rooms").update({ state: state as never }).eq("code", code);
   if (error) throw new Error(error.message);
 }
 
