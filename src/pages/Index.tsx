@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Bot, Users, Wifi, LogIn, Loader2, Volume2, VolumeX } from "lucide-react";
 import { toast } from "sonner";
@@ -9,30 +9,9 @@ import { CHARACTERS, getCharacter } from "@/lib/characters";
 import { createRoom, getIdentity, saveIdentity } from "@/lib/room";
 import { setSoundEnabled, soundEnabled } from "@/lib/sound";
 
-export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Donkey — Who's Getting the Donkey?" },
-      {
-        name: "description",
-        content:
-          "Pick a character, grab your friends and play Donkey — a fast, funny multiplayer card game with expressive characters, live reactions and smart AI opponents.",
-      },
-      { property: "og:title", content: "Donkey — Who's Getting the Donkey?" },
-      {
-        property: "og:description",
-        content: "Choose your player, share a room code and find out who ends up holding the Donkey.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
-  component: Home,
-});
-
 type Level = "easy" | "normal" | "hard";
 
-function Home() {
+export default function Home() {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [char, setChar] = useState(CHARACTERS[0].id);
@@ -58,16 +37,16 @@ function Home() {
   };
 
   const startAi = () =>
-    navigate({ to: "/play", search: { mode: "ai", players: bots + 1, name: commit(), char, level } });
+    navigate(`/play?mode=ai&players=${bots + 1}&name=${encodeURIComponent(commit())}&char=${char}&level=${level}`);
   const startPass = () =>
-    navigate({ to: "/play", search: { mode: "pass", players: locals + 1, name: commit(), char, level } });
+    navigate(`/play?mode=pass&players=${locals + 1}&name=${encodeURIComponent(commit())}&char=${char}&level=${level}`);
 
   const host = async () => {
     setBusy(true);
     try {
       const me = getIdentity();
       const roomCode = await createRoom({ id: me.id, name: commit(), bot: false, char });
-      navigate({ to: "/room/$code", params: { code: roomCode } });
+      navigate(`/room/${roomCode}`);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Could not create the room");
     } finally {
@@ -79,7 +58,7 @@ function Home() {
     const c = code.trim().toUpperCase();
     if (c.length < 4) return toast.error("Enter the 5-letter room code");
     commit();
-    navigate({ to: "/room/$code", params: { code: c } });
+    navigate(`/room/${c}`);
   };
 
   return (

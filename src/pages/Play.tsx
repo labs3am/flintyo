@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link, useSearchParams } from "react-router-dom";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowLeft, RotateCcw, Eye } from "lucide-react";
 import { GameTable } from "@/components/game/GameTable";
@@ -12,30 +12,6 @@ import { EMOJI_REACTIONS } from "@/components/game/ReactionMenu";
 import { sfx } from "@/lib/sound";
 
 type Search = { mode: "ai" | "pass"; players: number; name: string; char: string; level: Difficulty };
-
-export const Route = createFileRoute("/play")({
-  validateSearch: (search: Record<string, unknown>): Search => ({
-    mode: search.mode === "pass" ? "pass" : "ai",
-    players: Math.min(6, Math.max(2, Number(search.players) || 4)),
-    name: typeof search.name === "string" && search.name ? search.name.slice(0, 14) : "You",
-    char: typeof search.char === "string" ? search.char : CHARACTERS[0].id,
-    level: search.level === "easy" || search.level === "hard" ? search.level : "normal",
-  }),
-  head: () => ({
-    meta: [
-      { title: "Play Donkey — You vs the Characters" },
-      {
-        name: "description",
-        content: "Play a round of Donkey against expressive AI characters or pass one phone around the table.",
-      },
-      { property: "og:title", content: "Play Donkey — You vs the Characters" },
-      { property: "og:description", content: "Beat the bots or pass the phone. Don't be the last one holding cards." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
-  component: PlayPage,
-});
 
 function buildSeats(mode: "ai" | "pass", players: number, name: string, char: string, level: Difficulty) {
   const pool = CHARACTERS.filter((c) => c.id !== char);
@@ -54,8 +30,14 @@ function buildSeats(mode: "ai" | "pass", players: number, name: string, char: st
   });
 }
 
-function PlayPage() {
-  const { mode, players, name, char, level } = Route.useSearch();
+export default function PlayPage() {
+  const [params] = useSearchParams();
+  const mode: Search["mode"] = params.get("mode") === "pass" ? "pass" : "ai";
+  const players = Math.min(6, Math.max(2, Number(params.get("players")) || 4));
+  const name = (params.get("name") || "You").slice(0, 14);
+  const char = params.get("char") || CHARACTERS[0].id;
+  const levelParam = params.get("level");
+  const level: Difficulty = levelParam === "easy" || levelParam === "hard" ? levelParam : "normal";
   const [state, setState] = useState<GameState | null>(null);
   const [revealed, setRevealed] = useState(mode === "ai");
   const [counting, setCounting] = useState(true);

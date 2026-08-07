@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowLeft, Bot, Check, Copy, Loader2, MessageSquare, Play, Share2, Users, MessageCircle, X } from "lucide-react";
 import { toast } from "sonner";
@@ -17,25 +17,8 @@ import { useReactions } from "@/hooks/useReactions";
 import { sfx } from "@/lib/sound";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/room/$code")({
-  head: () => ({
-    meta: [
-      { title: "Donkey Room — Play With Friends" },
-      {
-        name: "description",
-        content: "Join a live Donkey card game room with a 5-letter code, pick your character and play with friends in real time.",
-      },
-      { property: "og:title", content: "Donkey Room — Play With Friends" },
-      { property: "og:description", content: "Share the code, deal the cards, and dodge being the Donkey." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
-  component: RoomPage,
-});
-
-function RoomPage() {
-  const { code } = Route.useParams();
+export default function RoomPage() {
+  const { code = "" } = useParams<{ code: string }>();
   const navigate = useNavigate();
   const [me] = useState(() => getIdentity());
   const [room, setRoom] = useState<RoomState | null>(null);
@@ -260,7 +243,7 @@ function RoomPage() {
       <main className="min-h-screen grid place-items-center p-6 text-center">
         <div className="panel rounded-2xl p-6 space-y-3">
           <p className="text-lg font-bold">{error ?? "Room unavailable"}</p>
-          <button onClick={() => navigate({ to: "/" })} className="btn-primary">
+          <button onClick={() => navigate("/")} className="btn-primary">
             Back to menu
           </button>
         </div>
