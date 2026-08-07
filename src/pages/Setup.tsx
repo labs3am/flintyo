@@ -38,6 +38,12 @@ export default function Setup() {
     setName(id.name || "");
     if (id.char) setChar(id.char);
     setSound(soundEnabled());
+    try {
+      const saved = localStorage.getItem("flintyo.level");
+      if (saved === "easy" || saved === "hard" || saved === "normal") setLevelState(saved);
+    } catch {
+      /* ignore */
+    }
   }, []);
 
   const commit = () => {
@@ -138,8 +144,7 @@ export default function Setup() {
             ))}
           </div>
 
-          {tab !== "pass" && <LevelPicker value={level} onChange={setLevel} />}
-          {tab === "pass" && <LevelPicker value={level} onChange={setLevel} />}
+          <LevelPicker value={level} onChange={setLevel} />
 
           {tab === "ai" && (
             <div className="space-y-3">
