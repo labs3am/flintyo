@@ -48,7 +48,13 @@ export default function Home() {
       const roomCode = await createRoom({ id: me.id, name: commit(), bot: false, char });
       navigate(`/room/${roomCode}`);
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Could not create the room");
+      const msg = e instanceof Error ? e.message : "";
+      toast.error(
+        /rooms|schema|relation|permission/i.test(msg)
+          ? "Online rooms aren't set up yet — play vs bots or pass & play for now."
+          : msg || "Could not create the room",
+      );
+
     } finally {
       setBusy(false);
     }
