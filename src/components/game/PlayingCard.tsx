@@ -5,7 +5,7 @@ type Size = "sm" | "md" | "lg";
 
 const sizes: Record<Size, string> = {
   sm: "h-16 w-11 text-[13px] rounded-lg",
-  md: "h-22 w-16 text-[17px] rounded-xl",
+  md: "h-[5.5rem] w-16 text-[17px] rounded-xl",
   lg: "h-28 w-20 text-[21px] rounded-2xl",
 };
 
