@@ -48,6 +48,8 @@ export default function PlayPage() {
   const seqRef = useRef<number>(-1);
   const { bySeat, add } = useReactions();
   const [tut, setTut] = useState(() => !tutorialSeen());
+  // Coaching hints only for a brand-new player's first game.
+  const [hintsOn] = useState(() => !tutorialSeen());
 
   const deal = useCallback(() => {
     setState(createGame(buildSeats(mode, players, name, char, level)));
@@ -143,6 +145,7 @@ export default function PlayPage() {
           reactions={bySeat}
           scores={scores}
           onReact={(emoji) => add(mySeat, emoji)}
+          hints={hintsOn}
         />
 
         {counting && <Countdown onDone={() => { setCounting(false); sfx.deal(); }} />}
