@@ -38,7 +38,7 @@ export function PlayingCard({
   const ink = red ? "text-[oklch(0.50_0.26_27)]" : "text-[oklch(0.16_0.02_280)]";
   const label = rankLabel(card.r);
   const face = FACE[card.r];
-  const pips = PIPS[card.r];
+  
 
   const corner = (
     <span className="flex items-start gap-[0.12em] leading-none">
