@@ -125,7 +125,9 @@ export default function PlayPage() {
           <ArrowLeft className="h-3.5 w-3.5" /> Menu
         </Link>
         <div className="flex min-w-0 flex-col items-center leading-tight">
-          <h1 className="text-sm font-bold tracking-[0.2em] text-gradient">FLINTYO</h1>
+          <h1 className="text-sm font-bold tracking-[0.2em] text-gradient">
+            FLINTYO<span className="sr-only"> — playing the Donkey card game</span>
+          </h1>
           {state.players.some((p) => p.bot) && (
             <span className="text-[9px] font-black uppercase tracking-[0.14em] text-muted-foreground">
               AI · {level}

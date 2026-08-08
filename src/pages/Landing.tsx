@@ -79,7 +79,7 @@ export default function Landing() {
 
           <p className="eyebrow text-primary">From the house of Labs3am</p>
           <h1 className="mt-2 text-6xl sm:text-8xl font-black tracking-tight text-gradient anim-shine inline-block px-2">
-            FLINTYO
+            FLINTYO<span className="sr-only"> — the multiplayer Donkey card game</span>
           </h1>
           <p className="mt-1 text-sm sm:text-base font-bold text-gold uppercase tracking-[0.25em]">
             The Donkey card game
@@ -102,6 +102,12 @@ export default function Landing() {
             >
               <BookOpen className="h-4 w-4" /> How to play
             </button>
+            <Link
+              to="/rules"
+              className="btn-ghost w-full sm:w-auto px-6 py-3.5 inline-flex items-center justify-center gap-2 text-sm"
+            >
+              Full rules
+            </Link>
           </div>
 
           <div className="mt-8">
@@ -240,9 +246,14 @@ export default function Landing() {
               Labs3am
             </a>
           </p>
-          <Link to="/start" className="text-xs text-muted-foreground hover:text-primary">
-            Start a game →
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link to="/rules" className="text-xs text-muted-foreground hover:text-primary">
+              Donkey card game rules
+            </Link>
+            <Link to="/start" className="text-xs text-muted-foreground hover:text-primary">
+              Start a game →
+            </Link>
+          </div>
           <p className="text-[11px] text-muted-foreground/70">© {new Date().getFullYear()} Labs3am. All rights reserved.</p>
         </div>
       </footer>
