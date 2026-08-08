@@ -231,7 +231,9 @@ export default function Landing() {
               <Link to="/start" className="btn-ghost w-full sm:w-auto px-6 py-3.5 inline-flex items-center justify-center gap-2 text-sm">
                 <Share2 className="h-4 w-4" /> Create a room code
               </Link>
+              <InstallButton />
             </div>
+
           </div>
         </Reveal>
       </section>
