@@ -64,6 +64,52 @@ export function GameTable({
     return () => window.clearTimeout(t);
   }, [state.seq, state.event]);
 
+  // Everyone gets a beat to see the cards that just resolved before they vanish.
+  const [reveal, setReveal] = useState<GameState["lastTrick"]>(null);
+  useEffect(() => {
+    if (!state.lastTrick) {
+      setReveal(null);
+      return;
+    }
+    setReveal(state.lastTrick);
+    const t = window.setTimeout(() => setReveal(null), 3000);
+    return () => window.clearTimeout(t);
+  }, [state.seq, state.lastTrick]);
+
+  // Fullscreen + UNO-ish parallax tilt of the table.
+  const [full, setFull] = useState(false);
+  useEffect(() => {
+    const on = () => setFull(!!document.fullscreenElement);
+    document.addEventListener("fullscreenchange", on);
+    return () => document.removeEventListener("fullscreenchange", on);
+  }, []);
+  const toggleFull = () => {
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    else document.documentElement.requestFullscreen?.().catch(() => {});
+  };
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  useEffect(() => {
+    if (!full) {
+      setTilt({ x: 0, y: 0 });
+      return;
+    }
+    const clamp = (v: number) => Math.max(-9, Math.min(9, v));
+    const onOrient = (e: DeviceOrientationEvent) =>
+      setTilt({ x: clamp(((e.beta ?? 0) - 35) * 0.25), y: clamp((e.gamma ?? 0) * 0.25) });
+    const onMove = (e: PointerEvent) =>
+      setTilt({
+        x: clamp((0.5 - e.clientY / window.innerHeight) * 16),
+        y: clamp((e.clientX / window.innerWidth - 0.5) * 16),
+      });
+    window.addEventListener("deviceorientation", onOrient);
+    window.addEventListener("pointermove", onMove);
+    return () => {
+      window.removeEventListener("deviceorientation", onOrient);
+      window.removeEventListener("pointermove", onMove);
+    };
+  }, [full]);
+
+
   const others = state.players.map((p, i) => ({ p, i })).filter(({ i }) => i !== mySeat);
   const turnName = state.players[state.turn]?.name ?? "";
   const alive = state.players.filter((p) => !p.out).length;
@@ -166,16 +212,51 @@ export function GameTable({
               ? "border-primary/50 border-dashed"
               : "border-border/60",
         )}
+        style={
+          full
+            ? {
+                transform: `perspective(900px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
+                transition: "transform 220ms ease-out",
+                transformStyle: "preserve-3d",
+              }
+            : undefined
+        }
       >
+        <button
+          onClick={toggleFull}
+          aria-label={full ? "Exit full screen" : "Full screen"}
+          className="absolute bottom-3 left-3 z-20 rounded-full border border-border bg-black/40 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.15em] text-foreground/80 transition active:scale-95 [touch-action:manipulation]"
+        >
+          {full ? "Exit" : "Full"}
+        </button>
         <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
           {state.leadSuit ? `${SUIT_NAME[state.leadSuit]} led` : "New trick"}
         </div>
+
         <div className="flex items-end justify-center gap-1.5 flex-wrap overflow-hidden">
           {state.pile.length === 0 ? (
-            <div className="flex items-center gap-2 text-muted-foreground text-xs">
-              <CardBack size="md" className="opacity-40" />
-              <span>Waiting for the lead card…</span>
-            </div>
+            reveal ? (
+              reveal.cards.map(({ p, card }) => (
+                <div key={card.id} className="flex flex-col items-center gap-1">
+                  <PlayingCard
+                    card={card}
+                    size="md"
+                    className={cn(
+                      "transition",
+                      reveal.who === p ? "ring-2 ring-gold" : "opacity-70",
+                    )}
+                  />
+                  <span className="text-[9px] text-muted-foreground max-w-[4rem] truncate">
+                    {state.players[p].name}
+                  </span>
+                </div>
+              ))
+            ) : (
+              <div className="flex items-center gap-2 text-muted-foreground text-xs">
+                <CardBack size="md" className="opacity-40" />
+                <span>Waiting for the lead card…</span>
+              </div>
+            )
           ) : (
             state.pile.map(({ p, card }) => (
               <div key={card.id} className="anim-deal flex flex-col items-center gap-1">
@@ -187,6 +268,13 @@ export function GameTable({
             ))
           )}
         </div>
+        {reveal && state.pile.length === 0 && (
+          <span className="rounded-full border border-gold/50 bg-black/50 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-[0.2em] text-gold">
+            {reveal.kind === "pickup"
+              ? `${state.players[reveal.who].name} picks these up`
+              : `${state.players[reveal.who].name} takes the trick`}
+          </span>
+        )}
         <p className="text-xs text-center text-foreground/90 min-h-[1rem] px-2">{state.lastEvent}</p>
 
         {/* Live standings */}

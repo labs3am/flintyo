@@ -1,0 +1,16 @@
+{
+  "name": "Flintyo — Donkey Card Game",
+  "short_name": "Flintyo",
+  "description": "Play the Donkey (Bhabhi) card game free with friends or AI.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#171514",
+  "theme_color": "#171514",
+  "icons": [
+    { "src": "/favicon.png", "sizes": "64x64", "type": "image/png" },
+    { "src": "/flintyo-logo.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/flintyo-logo.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

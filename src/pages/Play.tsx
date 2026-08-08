@@ -75,7 +75,7 @@ export default function PlayPage() {
         const card = chooseCard(s, s.turn, (s.players[s.turn].level as Difficulty) ?? "normal");
         return card ? playCard(s, s.turn, card.id) : s;
       });
-    }, botDelay(current.level as Difficulty));
+    }, botDelay(current.level as Difficulty) + (state.lastTrick ? 1500 : 0));
     return () => clearTimeout(t);
   }, [state, counting]);
 

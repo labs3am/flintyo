@@ -197,7 +197,7 @@ export default function RoomPage() {
         const card = chooseCard(s.game, s.game.turn, (s.game.players[s.game.turn].level as Difficulty) ?? "normal");
         return card ? { ...s, game: playCard(s.game, s.game.turn, card.id) } : null;
       });
-    }, botDelay(level));
+    }, botDelay(level) + (game.lastTrick ? 1500 : 0));
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [room?.game?.seq, room?.game?.turn, isHost]);
