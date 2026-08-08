@@ -128,7 +128,10 @@ export function PlayerSeat({
         </span>
       )}
       {seat.active && !seat.isYou && (
-        <span className="absolute -bottom-2 text-[9px] font-black tracking-widest text-turn bg-background/90 px-1.5 rounded-full border border-turn/50">
+        <span
+          className="absolute -bottom-2 text-[9px] font-black tracking-widest text-turn bg-background/90 px-1.5 rounded-full border"
+          style={{ borderColor: "var(--turn)" }}
+        >
           TURN
         </span>
       )}
