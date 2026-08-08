@@ -307,9 +307,10 @@ export default function RoomPage() {
     >
       <h1 className="sr-only">Flintyo game room {code} — play the Donkey card game online</h1>
       <header className="panel shrink-0 rounded-2xl px-3 py-2 flex items-center justify-between gap-2">
-        <Link to="/" className="btn-ghost px-3 py-1.5 inline-flex items-center gap-1.5 text-xs">
+        <button onClick={leave} className="btn-ghost px-3 py-1.5 inline-flex items-center gap-1.5 text-xs">
           <ArrowLeft className="h-3.5 w-3.5" /> Leave
-        </Link>
+        </button>
+
         <button
           onClick={async () => {
             try {
