@@ -60,13 +60,16 @@
 
 @layer base {
   * { border-color: var(--border); }
-  html, body, #root { height: 100%; }
+  html, body, #root { min-height: 100%; }
   html, body {
     width: 100%;
     max-width: 100%;
     overflow-x: hidden;
-    overscroll-behavior: none;
+    /* allow native pull-to-refresh vertically, block horizontal bounce */
+    overscroll-behavior-x: none;
+    overscroll-behavior-y: auto;
     touch-action: pan-y;
+    background-color: var(--background);
   }
   body {
     position: relative;
