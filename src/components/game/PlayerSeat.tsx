@@ -118,8 +118,17 @@ export function PlayerSeat({
         </div>
 
       )}
+      {seat.active && !seat.out && (
+        <span
+          key={`t${turnKey ?? 0}`}
+          className="turn-timer mt-1 h-1 w-12 overflow-hidden rounded-full bg-black/40"
+          style={{ ["--turn-dur" as string]: `${turnSeconds}s` }}
+        >
+          <i />
+        </span>
+      )}
       {seat.active && !seat.isYou && (
-        <span className="absolute -bottom-2 text-[9px] font-black tracking-widest text-primary bg-background/90 px-1.5 rounded-full border border-primary/50">
+        <span className="absolute -bottom-2 text-[9px] font-black tracking-widest text-turn bg-background/90 px-1.5 rounded-full border border-turn/50">
           TURN
         </span>
       )}
