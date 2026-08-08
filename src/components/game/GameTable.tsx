@@ -77,15 +77,29 @@ export function GameTable({
   }, [state.seq, state.lastTrick]);
 
   // Fullscreen + UNO-ish parallax tilt of the table.
+  // Native fullscreen is blocked inside some embeds (e.g. the editor preview iframe),
+  // so we always keep a CSS "immersive" fallback that fills the viewport.
   const [full, setFull] = useState(false);
+  const rootRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
-    const on = () => setFull(!!document.fullscreenElement);
+    const on = () => {
+      if (!document.fullscreenElement) setFull(false);
+    };
     document.addEventListener("fullscreenchange", on);
     return () => document.removeEventListener("fullscreenchange", on);
   }, []);
   const toggleFull = () => {
-    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
-    else document.documentElement.requestFullscreen?.().catch(() => {});
+    const el = rootRef.current;
+    if (full) {
+      setFull(false);
+      if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+      return;
+    }
+    setFull(true);
+    const req =
+      el?.requestFullscreen ??
+      (el as unknown as { webkitRequestFullscreen?: () => Promise<void> })?.webkitRequestFullscreen;
+    req?.call(el).catch(() => {});
   };
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   useEffect(() => {
@@ -176,7 +190,15 @@ export function GameTable({
   const dropReady = !!drag && drag.over;
 
   return (
-    <div className="relative flex flex-1 min-h-0 w-full max-w-full overflow-hidden flex-col gap-2">
+    <div
+      ref={rootRef}
+      className={cn(
+        "relative flex min-h-0 w-full max-w-full overflow-hidden flex-col gap-2",
+        full
+          ? "fixed inset-0 z-50 h-[100dvh] bg-background p-2 pb-3"
+          : "flex-1",
+      )}
+    >
       {/* Opponents row keeps a little headroom for speech bubbles */}
       <div className="flex shrink-0 flex-nowrap justify-center gap-1.5 w-full max-w-full overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {others.map(({ p, i }) => (
