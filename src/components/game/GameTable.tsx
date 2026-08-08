@@ -88,11 +88,14 @@ export function GameTable({
     document.addEventListener("fullscreenchange", on);
     return () => document.removeEventListener("fullscreenchange", on);
   }, []);
+  const exitFull = () => {
+    setFull(false);
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+  };
   const toggleFull = () => {
     const el = rootRef.current;
     if (full) {
-      setFull(false);
-      if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+      exitFull();
       return;
     }
     setFull(true);
@@ -101,6 +104,16 @@ export function GameTable({
       (el as unknown as { webkitRequestFullscreen?: () => Promise<void> })?.webkitRequestFullscreen;
     req?.call(el).catch(() => {});
   };
+  // Escape always gets you out, even when native fullscreen was blocked.
+  useEffect(() => {
+    if (!full) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") exitFull();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [full]);
+
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   useEffect(() => {
     if (!full) {
