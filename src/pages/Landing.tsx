@@ -165,7 +165,7 @@ export default function Landing() {
           <Reveal>
             <h2 className="text-center text-3xl font-black">Three ways to play</h2>
             <p className="mt-1 text-center text-sm text-muted-foreground">
-              Same game, same rules — pick whoever you want to humiliate.
+              Same rules in every mode. Pick the one that suits who you're with.
             </p>
           </Reveal>
           <div className="mt-6 grid gap-3 sm:grid-cols-3">
@@ -190,7 +190,7 @@ export default function Landing() {
         <div className="mx-auto max-w-4xl">
           <Reveal>
             <h2 className="text-center text-3xl font-black">How a round works</h2>
-            <p className="mt-1 text-center text-sm text-muted-foreground">Four beats. That's the whole game.</p>
+            <p className="mt-1 text-center text-sm text-muted-foreground">The full rules, in four steps.</p>
           </Reveal>
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
             {STEPS.map((s, i) => (
@@ -218,7 +218,7 @@ export default function Landing() {
           <Reveal>
             <h2 className="text-center text-3xl font-black">Pick your player</h2>
             <p className="mt-1 text-center text-sm text-muted-foreground">
-              Ten characters, each with their own table manners.
+              Ten characters to play as. They only change the face at the table, not the rules.
             </p>
           </Reveal>
         </div>
@@ -248,13 +248,39 @@ export default function Landing() {
         </Reveal>
       </section>
 
+      {/* FAQ */}
+      <section className="px-4 pb-16">
+        <div className="mx-auto max-w-2xl">
+          <Reveal>
+            <h2 className="text-center text-3xl font-black">Questions people ask</h2>
+          </Reveal>
+          <div className="mt-6 space-y-3">
+            {FAQ.map((f, i) => (
+              <Reveal key={f.q} delay={i * 60}>
+                <details className="panel rounded-2xl p-4 group">
+                  <summary className="cursor-pointer list-none font-bold text-sm flex items-center justify-between gap-3">
+                    {f.q}
+                    <span className="text-primary shrink-0 group-open:rotate-45 transition-transform">+</span>
+                  </summary>
+                  <p className="mt-2 text-sm text-muted-foreground">{f.a}</p>
+                </details>
+              </Reveal>
+            ))}
+          </div>
+          <p className="mt-4 text-center text-sm text-muted-foreground">
+            Want the full rulebook, including common house variations?{" "}
+            <Link to="/rules" className="text-primary font-bold hover:underline">Read the Donkey rules</Link>.
+          </p>
+        </div>
+      </section>
+
       {/* Final CTA */}
       <section className="px-4 pb-16">
         <Reveal>
           <div className="mx-auto max-w-2xl panel rounded-3xl p-8 text-center anim-shine">
             <h2 className="text-3xl sm:text-4xl font-black">Somebody has to be the Donkey.</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Make sure it isn't you. Start a table and send the code to the group chat.
+              Start a table, send the room code to your group chat, and deal in under a minute.
             </p>
             <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link to="/start" className="btn-gold w-full sm:w-auto px-8 py-3.5 inline-flex items-center justify-center gap-2">
