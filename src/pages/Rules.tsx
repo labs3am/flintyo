@@ -14,9 +14,8 @@ export default function Rules() {
           Donkey card game rules
         </h1>
         <p className="mt-3 text-muted-foreground">
-          Donkey — also called Bhabhi — is a simple shedding card game for 2–6 players with a
-          standard 52-card deck. Empty your hand and you're safe. The last player still holding
-          cards is the Donkey.
+          Donkey is a simple shedding card game for 2–6 players with a standard 52-card deck. Empty
+          your hand and you're safe. The last player still holding cards is the Donkey.
         </p>
 
         <section className="mt-8">
