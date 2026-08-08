@@ -79,8 +79,14 @@ export default function Landing() {
           </div>
 
           <p className="eyebrow text-primary">From the house of Labs3am</p>
-          <h1 className="mt-2 text-6xl sm:text-8xl font-black tracking-tight text-gradient anim-shine inline-block px-2">
-            FLINTYO<span className="sr-only"> — the multiplayer Donkey card game</span>
+          <h1 className="mt-2 flex justify-center">
+            <img
+              src="/flintyo-logo.png"
+              alt="Flintyo — the multiplayer Donkey card game"
+              width={320}
+              height={320}
+              className="h-44 sm:h-60 w-auto object-contain anim-float-slow"
+            />
           </h1>
           <p className="mt-1 text-sm sm:text-base font-bold text-gold uppercase tracking-[0.25em]">
             The Donkey card game
@@ -241,7 +247,7 @@ export default function Landing() {
 
       <footer className="border-t border-border/70 px-4 py-10">
         <div className="mx-auto max-w-4xl flex flex-col items-center gap-2 text-center">
-          <span className="text-xl font-black tracking-tight text-gradient">FLINTYO</span>
+          <img src="/flintyo-logo.png" alt="Flintyo" width={96} height={96} className="h-16 w-auto object-contain" />
           <p className="text-xs text-muted-foreground">Flintyo is the app. Donkey is the game.</p>
           <p className="text-sm text-muted-foreground">
             From the house of{" "}
