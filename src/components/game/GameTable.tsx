@@ -1,3 +1,4 @@
+import { Maximize2, Minimize2 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 import { cn } from "@/lib/utils";
@@ -221,7 +222,7 @@ export function GameTable({
           "absolute z-[60] inline-flex items-center gap-1 rounded-full border px-3 py-2 text-[10px] font-black uppercase tracking-[0.15em] transition active:scale-95 [touch-action:manipulation]",
           full
             ? "top-2 right-2 border-primary bg-primary text-primary-foreground shadow-lg"
-            : "bottom-2 right-2 border-border bg-black/60 text-foreground/80",
+            : "top-1 right-2 border-border bg-black/60 text-foreground/80",
         )}
       >
         {full ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
