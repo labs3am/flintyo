@@ -190,7 +190,15 @@ export function GameTable({
   const dropReady = !!drag && drag.over;
 
   return (
-    <div className="relative flex flex-1 min-h-0 w-full max-w-full overflow-hidden flex-col gap-2">
+    <div
+      ref={rootRef}
+      className={cn(
+        "relative flex min-h-0 w-full max-w-full overflow-hidden flex-col gap-2",
+        full
+          ? "fixed inset-0 z-50 h-[100dvh] bg-background p-2 pb-3"
+          : "flex-1",
+      )}
+    >
       {/* Opponents row keeps a little headroom for speech bubbles */}
       <div className="flex shrink-0 flex-nowrap justify-center gap-1.5 w-full max-w-full overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {others.map(({ p, i }) => (
