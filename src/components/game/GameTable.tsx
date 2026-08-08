@@ -64,6 +64,52 @@ export function GameTable({
     return () => window.clearTimeout(t);
   }, [state.seq, state.event]);
 
+  // Everyone gets a beat to see the cards that just resolved before they vanish.
+  const [reveal, setReveal] = useState<GameState["lastTrick"]>(null);
+  useEffect(() => {
+    if (!state.lastTrick) {
+      setReveal(null);
+      return;
+    }
+    setReveal(state.lastTrick);
+    const t = window.setTimeout(() => setReveal(null), 3000);
+    return () => window.clearTimeout(t);
+  }, [state.seq, state.lastTrick]);
+
+  // Fullscreen + UNO-ish parallax tilt of the table.
+  const [full, setFull] = useState(false);
+  useEffect(() => {
+    const on = () => setFull(!!document.fullscreenElement);
+    document.addEventListener("fullscreenchange", on);
+    return () => document.removeEventListener("fullscreenchange", on);
+  }, []);
+  const toggleFull = () => {
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    else document.documentElement.requestFullscreen?.().catch(() => {});
+  };
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  useEffect(() => {
+    if (!full) {
+      setTilt({ x: 0, y: 0 });
+      return;
+    }
+    const clamp = (v: number) => Math.max(-9, Math.min(9, v));
+    const onOrient = (e: DeviceOrientationEvent) =>
+      setTilt({ x: clamp(((e.beta ?? 0) - 35) * 0.25), y: clamp((e.gamma ?? 0) * 0.25) });
+    const onMove = (e: PointerEvent) =>
+      setTilt({
+        x: clamp((0.5 - e.clientY / window.innerHeight) * 16),
+        y: clamp((e.clientX / window.innerWidth - 0.5) * 16),
+      });
+    window.addEventListener("deviceorientation", onOrient);
+    window.addEventListener("pointermove", onMove);
+    return () => {
+      window.removeEventListener("deviceorientation", onOrient);
+      window.removeEventListener("pointermove", onMove);
+    };
+  }, [full]);
+
+
   const others = state.players.map((p, i) => ({ p, i })).filter(({ i }) => i !== mySeat);
   const turnName = state.players[state.turn]?.name ?? "";
   const alive = state.players.filter((p) => !p.out).length;
