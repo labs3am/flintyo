@@ -55,7 +55,7 @@ const STATS = [
 const FAQ = [
   {
     q: "What is the Donkey card game?",
-    a: "Donkey — known as Bhabhi in India — is a shedding game for 2 to 6 players using one standard 52-card deck. You follow suit when you can, dodge picking up the pile, and try not to be the last player holding cards.",
+    a: "Donkey is a shedding game for 2 to 6 players using one standard 52-card deck. You follow suit when you can, dodge picking up the pile, and try not to be the last player holding cards.",
   },
   {
     q: "Do I need to download anything or sign up?",
@@ -70,8 +70,8 @@ const FAQ = [
     a: "A full game usually runs 5 to 10 minutes depending on how many players are at the table and how often the pile gets picked up.",
   },
   {
-    q: "Is it the same as Bhabhi, Get Away or Hazari?",
-    a: "Donkey and Bhabhi are the same game under different names. Flintyo uses the common rules: Ace of Spades leads, aces high, no trumps, and the last player with cards loses.",
+    q: "Is it the same as Get Away or Hazari?",
+    a: "Donkey is known by other names in different places. Flintyo uses the common rules: Ace of Spades leads, aces high, no trumps, and the last player with cards loses.",
   },
 ];
 
