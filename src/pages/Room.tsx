@@ -9,7 +9,7 @@ import { createGame, playCard } from "@/lib/bhabhi/engine";
 import { chooseCard, botDelay, type Difficulty } from "@/lib/bhabhi/ai";
 import { CHARACTERS, getCharacter } from "@/lib/characters";
 import { RoomChat } from "@/components/game/RoomChat";
-import { fetchRoom, getIdentity, mutateRoom, shareRoom, subscribeRoom, whatsappUrl, type ChatMsg, type RoomState } from "@/lib/room";
+import { fetchRoom, getIdentity, leaveRoom, mutateRoom, shareRoom, subscribeRoom, whatsappUrl, type ChatMsg, type RoomState } from "@/lib/room";
 import { applyResult } from "@/lib/bhabhi/score";
 import { ScoreBoard } from "@/components/game/ScoreBoard";
 import { useReactions } from "@/hooks/useReactions";
