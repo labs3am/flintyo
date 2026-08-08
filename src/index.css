@@ -342,3 +342,35 @@
     letter-spacing: -0.02em;
   }
 }
+
+@layer utilities {
+  /* ---- landing life ---- */
+  .anim-float { animation: floaty 6s ease-in-out infinite; }
+  @keyframes floaty {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-10px) rotate(2deg); }
+  }
+  .anim-float-slow { animation: floaty 9s ease-in-out infinite; }
+  .anim-shine { position: relative; overflow: hidden; }
+  .anim-shine::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(115deg, transparent 35%, oklch(1 0 0 / 0.22) 50%, transparent 65%);
+    transform: translateX(-120%);
+    animation: shine 3.6s ease-in-out infinite;
+  }
+  @keyframes shine { 0%, 65% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
+  .anim-glow-pulse { animation: glow-pulse 3s ease-in-out infinite; }
+  @keyframes glow-pulse {
+    0%, 100% { box-shadow: 0 0 22px oklch(0.665 0.185 38 / 0.25); }
+    50% { box-shadow: 0 0 48px oklch(0.665 0.185 38 / 0.55); }
+  }
+  .marquee-track { display: flex; width: max-content; animation: marquee 28s linear infinite; }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s cubic-bezier(.2,.8,.3,1), transform .7s cubic-bezier(.2,.8,.3,1); }
+  .reveal.is-in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .anim-float, .anim-float-slow, .anim-shine::after, .anim-glow-pulse, .marquee-track { animation: none !important; }
+    .reveal { opacity: 1; transform: none; }
+  }
+}
