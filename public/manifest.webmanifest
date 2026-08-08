@@ -1,7 +1,7 @@
 {
   "name": "Flintyo — Donkey Card Game",
   "short_name": "Flintyo",
-  "description": "Play the Donkey (Bhabhi) card game free with friends or AI.",
+  "description": "Play Donkey free with friends or AI.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
