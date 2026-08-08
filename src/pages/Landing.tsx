@@ -6,6 +6,7 @@ import { CHARACTERS } from "@/lib/characters";
 import { LandingDemo } from "@/components/game/LandingDemo";
 import { TutorialDeck, TutorialModal } from "@/components/game/Tutorial";
 import { PlayingCard } from "@/components/game/PlayingCard";
+import { InstallButton } from "@/components/InstallButton";
 import { Reveal } from "@/components/Reveal";
 import type { Card } from "@/lib/bhabhi/engine";
 
