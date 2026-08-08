@@ -85,6 +85,11 @@ export default function Setup() {
 
   return (
     <main className="min-h-screen flex items-center justify-center p-3">
+      <Seo
+        title="Start a Donkey Game — Flintyo"
+        description="Set up a Donkey game: play against bots, pass one phone around the table, or create a room code and invite friends."
+        path="/start"
+      />
       <div className="w-full max-w-xl">
         <header className="mb-4 flex items-center justify-between gap-2">
           <Link to="/" className="btn-ghost px-3 py-1.5 inline-flex items-center gap-1.5 text-xs">
