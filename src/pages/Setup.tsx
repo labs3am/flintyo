@@ -91,7 +91,9 @@ export default function Setup() {
             <ArrowLeft className="h-3.5 w-3.5" /> Home
           </Link>
           <div className="text-center leading-tight">
-            <h1 className="text-2xl font-black tracking-tight text-gradient">FLINTYO</h1>
+            <h1 className="text-2xl font-black tracking-tight text-gradient">
+              FLINTYO<span className="sr-only"> — set up your Donkey card game</span>
+            </h1>
             <p className="text-[11px] text-muted-foreground">Who's getting the Donkey?</p>
           </div>
           <button
