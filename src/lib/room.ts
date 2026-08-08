@@ -20,7 +20,10 @@ export type RoomState = {
   ready?: string[];
   /** Cross-round scoreboard keyed by player id. */
   scores?: Scores;
+  /** Transient banner shown to everyone (e.g. a player left). */
+  notice?: { text: string; at: number };
 };
+
 
 const ID_KEY = "donkey.identity.v1";
 
