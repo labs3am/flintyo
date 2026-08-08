@@ -213,21 +213,18 @@ export function GameTable({
           : "flex-1",
       )}
     >
-      {/* Full screen toggle — kept outside the tilted arena so it's always tappable */}
-      <button
-        type="button"
-        onClick={toggleFull}
-        aria-label={full ? "Exit full screen" : "Enter full screen"}
-        className={cn(
-          "absolute z-[60] inline-flex items-center gap-1 rounded-full border px-3 py-2 text-[10px] font-black uppercase tracking-[0.15em] transition active:scale-95 [touch-action:manipulation]",
-          full
-            ? "top-2 right-2 border-primary bg-primary text-primary-foreground shadow-lg"
-            : "top-1 right-2 border-border bg-black/60 text-foreground/80",
-        )}
-      >
-        {full ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
-        {full ? "Exit" : "Full"}
-      </button>
+      {/* Exit lives outside the tilted arena so it's always tappable in full screen */}
+      {full && (
+        <button
+          type="button"
+          onClick={exitFull}
+          aria-label="Exit full screen"
+          className="absolute top-2 right-2 z-[60] inline-flex items-center gap-1 rounded-full border border-primary bg-primary px-3 py-2 text-[10px] font-black uppercase tracking-[0.15em] text-primary-foreground shadow-lg transition active:scale-95 [touch-action:manipulation]"
+        >
+          <Minimize2 className="h-3.5 w-3.5" /> Exit
+        </button>
+      )}
+
 
       {/* Opponents row keeps a little headroom for speech bubbles */}
 
