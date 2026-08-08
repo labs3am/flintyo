@@ -23,6 +23,8 @@ export function PlayerSeat({
   gained,
   size = 78,
   compact,
+  turnKey,
+  turnSeconds = 12,
 }: {
   seat: SeatView;
   expression: Expression;
@@ -32,6 +34,9 @@ export function PlayerSeat({
   gained?: number | null;
   size?: number;
   compact?: boolean;
+  /** Changes whenever a new turn starts — restarts the timer bar. */
+  turnKey?: number;
+  turnSeconds?: number;
 }) {
   const character: Character = getCharacter(seat.charId);
   const plates = ["bg-plate-1", "bg-plate-2", "bg-plate-3", "bg-plate-4", "bg-plate-5"];
@@ -40,7 +45,7 @@ export function PlayerSeat({
     <div
       className={cn(
         "relative flex flex-col items-center gap-1 rounded-2xl px-2 py-1.5 transition-all duration-300 min-w-0",
-        seat.active ? "bg-primary/12 ring-1 ring-primary glow" : "bg-black/20 ring-1 ring-border/60",
+        seat.active ? "seat-turn ring-2 ring-turn" : "bg-black/20 ring-1 ring-border/60",
         seat.out && "opacity-70",
       )}
     >
