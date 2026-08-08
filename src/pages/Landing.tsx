@@ -13,29 +13,29 @@ import type { Card } from "@/lib/bhabhi/engine";
 const MODES = [
   {
     icon: Bot,
-    title: "Play with AI",
-    body: "Ten characters with real attitude. Easy, normal or hard — the hard bots count cards and hold their aces.",
-    tag: "Solo",
+    title: "Against the computer",
+    body: "Add 1–5 bots and choose easy, normal or hard. On hard they track which suits you've run out of and hold their high cards back.",
+    tag: "1 player",
   },
   {
     icon: Wifi,
-    title: "With friends online",
-    body: "Create a room, drop the code on WhatsApp, everyone plays on their own phone. No signup, no download.",
+    title: "Online with friends",
+    body: "Create a table, send the 4-letter room code, and everyone joins from their own phone browser. No account, no app store.",
     tag: "2–6 players",
   },
   {
     icon: Users,
-    title: "One phone, pass & play",
-    body: "Gather around one screen. Each hand stays hidden until the phone reaches you.",
-    tag: "Couch mode",
+    title: "One phone, pass and play",
+    body: "Everyone plays on the same device. Your hand stays face down until you tap to reveal it, so nobody sees your cards.",
+    tag: "Same room",
   },
 ];
 
 const STEPS = [
-  { icon: Zap, title: "Follow the suit", body: "Someone leads a card. Match the suit if you can — highest card of the round picks up the whole pile." },
-  { icon: Clock, title: "Can't follow? Cut it", body: "Out of that suit? Throw anything. The round dies right there and the leader eats the pile." },
-  { icon: Trophy, title: "Empty your hand", body: "Run out of cards and you're safe. Everyone else keeps sweating." },
-  { icon: Smartphone, title: "Last one left is the Donkey", body: "One player is always holding cards at the end. That's the Donkey — and the table finds out loudly." },
+  { icon: Zap, title: "Deal the whole deck", body: "All 52 cards go out. Hands can be uneven. Whoever holds the Ace of Spades leads first." },
+  { icon: Clock, title: "Follow the suit", body: "You must play the led suit if you have it. Highest card of that suit is winning the trick so far." },
+  { icon: Trophy, title: "Out of the suit? Throw anything", body: "The round stops there and whoever played the highest card of the led suit picks up the entire pile." },
+  { icon: Smartphone, title: "Empty hand = safe", body: "Shed all your cards and you're out. The last player still holding cards is the Donkey." },
 ];
 
 const FLOATERS: { card: Card; cls: string; style: React.CSSProperties }[] = [
@@ -46,11 +46,35 @@ const FLOATERS: { card: Card; cls: string; style: React.CSSProperties }[] = [
 ];
 
 const STATS = [
-  { k: "2–6", v: "players per table" },
-  { k: "10", v: "AI characters" },
-  { k: "~5 min", v: "a full round" },
-  { k: "0", v: "signups needed" },
+  { k: "2–6", v: "players" },
+  { k: "52", v: "card deck" },
+  { k: "5–10", v: "min per game" },
+  { k: "Free", v: "no account" },
 ];
+
+const FAQ = [
+  {
+    q: "What is the Donkey card game?",
+    a: "Donkey — known as Bhabhi in India — is a shedding game for 2 to 6 players using one standard 52-card deck. You follow suit when you can, dodge picking up the pile, and try not to be the last player holding cards.",
+  },
+  {
+    q: "Do I need to download anything or sign up?",
+    a: "No. Flintyo runs in your phone or desktop browser. There is no account, no email and no download. You can optionally install it to your home screen for offline-style access.",
+  },
+  {
+    q: "How do I play with friends who aren't with me?",
+    a: "Tap Play now, choose Online, create a table and share the room code or link (WhatsApp works well). Up to 6 people can join, and you can fill empty seats with bots.",
+  },
+  {
+    q: "How long does a game take?",
+    a: "A full game usually runs 5 to 10 minutes depending on how many players are at the table and how often the pile gets picked up.",
+  },
+  {
+    q: "Is it the same as Bhabhi, Get Away or Hazari?",
+    a: "Donkey and Bhabhi are the same game under different names. Flintyo uses the common rules: Ace of Spades leads, aces high, no trumps, and the last player with cards loses.",
+  },
+];
+
 
 export default function Landing() {
   const [tut, setTut] = useState(false);
