@@ -72,7 +72,7 @@ export function GameTable({
       return;
     }
     setReveal(state.lastTrick);
-    const t = window.setTimeout(() => setReveal(null), 3000);
+    const t = window.setTimeout(() => setReveal(null), 1800);
     return () => window.clearTimeout(t);
   }, [state.seq, state.lastTrick]);
 
