@@ -212,10 +212,27 @@ export function GameTable({
               ? "border-primary/50 border-dashed"
               : "border-border/60",
         )}
+        style={
+          full
+            ? {
+                transform: `perspective(900px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
+                transition: "transform 220ms ease-out",
+                transformStyle: "preserve-3d",
+              }
+            : undefined
+        }
       >
+        <button
+          onClick={toggleFull}
+          aria-label={full ? "Exit full screen" : "Full screen"}
+          className="absolute bottom-3 left-3 z-20 rounded-full border border-border bg-black/40 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.15em] text-foreground/80 transition active:scale-95 [touch-action:manipulation]"
+        >
+          {full ? "Exit" : "Full"}
+        </button>
         <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
           {state.leadSuit ? `${SUIT_NAME[state.leadSuit]} led` : "New trick"}
         </div>
+
         <div className="flex items-end justify-center gap-1.5 flex-wrap overflow-hidden">
           {state.pile.length === 0 ? (
             reveal ? (
