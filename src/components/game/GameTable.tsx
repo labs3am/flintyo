@@ -172,10 +172,28 @@ export function GameTable({
         </div>
         <div className="flex items-end justify-center gap-1.5 flex-wrap overflow-hidden">
           {state.pile.length === 0 ? (
-            <div className="flex items-center gap-2 text-muted-foreground text-xs">
-              <CardBack size="md" className="opacity-40" />
-              <span>Waiting for the lead card…</span>
-            </div>
+            reveal ? (
+              reveal.cards.map(({ p, card }) => (
+                <div key={card.id} className="flex flex-col items-center gap-1">
+                  <PlayingCard
+                    card={card}
+                    size="md"
+                    className={cn(
+                      "transition",
+                      reveal.who === p ? "ring-2 ring-gold" : "opacity-70",
+                    )}
+                  />
+                  <span className="text-[9px] text-muted-foreground max-w-[4rem] truncate">
+                    {state.players[p].name}
+                  </span>
+                </div>
+              ))
+            ) : (
+              <div className="flex items-center gap-2 text-muted-foreground text-xs">
+                <CardBack size="md" className="opacity-40" />
+                <span>Waiting for the lead card…</span>
+              </div>
+            )
           ) : (
             state.pile.map(({ p, card }) => (
               <div key={card.id} className="anim-deal flex flex-col items-center gap-1">
@@ -187,6 +205,13 @@ export function GameTable({
             ))
           )}
         </div>
+        {reveal && state.pile.length === 0 && (
+          <span className="rounded-full border border-gold/50 bg-black/50 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-[0.2em] text-gold">
+            {reveal.kind === "pickup"
+              ? `${state.players[reveal.who].name} picks these up`
+              : `${state.players[reveal.who].name} takes the trick`}
+          </span>
+        )}
         <p className="text-xs text-center text-foreground/90 min-h-[1rem] px-2">{state.lastEvent}</p>
 
         {/* Live standings */}
