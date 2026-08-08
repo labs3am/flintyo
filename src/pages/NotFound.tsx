@@ -1,8 +1,10 @@
+import { Seo } from "@/components/Seo";
 import { Link } from "react-router-dom";
 
 export default function NotFound() {
   return (
     <main className="flex min-h-screen items-center justify-center px-4">
+      <Seo title="Page Not Found — Flintyo" description="This page does not exist. Head back to Flintyo and start a new Donkey game." path="/404" noindex />
       <div className="panel max-w-md rounded-3xl p-8 text-center">
         <h1 className="text-6xl font-black text-gradient">404</h1>
         <h2 className="mt-3 text-lg font-semibold">This table doesn't exist</h2>

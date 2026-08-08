@@ -1,9 +1,17 @@
+import { Seo } from "@/components/Seo";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Play } from "lucide-react";
 import { TutorialDeck } from "@/components/game/Tutorial";
 
 export default function Rules() {
   return (
+    <>
+      <Seo
+        title="Donkey Card Game Rules — Flintyo"
+        description="How to play Donkey: dealing, following suit, picking up the pile and how the last player holding cards becomes the Donkey."
+        path="/rules"
+        schema={{"@context": "https://schema.org", "@type": "HowTo", "name": "How to play the Donkey card game", "description": "Rules for Donkey, a shedding card game for 2-6 players with one 52-card deck.", "url": "https://flintyo.com/rules", "step": [{"@type": "HowToStep", "name": "Deal", "text": "Shuffle a full 52-card deck and deal every card between the players. Whoever holds the Ace of Spades leads first."}, {"@type": "HowToStep", "name": "Follow suit", "text": "Each player must follow the led suit if they can. Aces are high, 2 is lowest, and there are no trumps."}, {"@type": "HowToStep", "name": "Pick up the pile", "text": "A player who cannot follow suit picks up the whole trick and leads the next card."}, {"@type": "HowToStep", "name": "Win", "text": "Empty your hand to be safe. The last player still holding cards is the Donkey."}]}}
+      />
     <main className="min-h-screen px-4 py-10">
       <div className="mx-auto max-w-2xl">
         <Link to="/" className="btn-ghost px-3 py-1.5 inline-flex items-center gap-1.5 text-xs">
@@ -77,5 +85,6 @@ export default function Rules() {
         </div>
       </div>
     </main>
+    </>
   );
 }

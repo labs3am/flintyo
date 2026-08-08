@@ -1,3 +1,4 @@
+import { Seo } from "@/components/Seo";
 import { Link, useSearchParams } from "react-router-dom";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowLeft, RotateCcw, Eye } from "lucide-react";
@@ -120,6 +121,7 @@ export default function PlayPage() {
 
   return (
     <main className="h-[100dvh] max-h-[100dvh] w-full max-w-5xl mx-auto overflow-hidden p-2.5 md:p-4 flex flex-col gap-2">
+      <Seo title="Play Donkey — Flintyo" description="Play a round of Donkey against bots or on one shared phone." path="/play" noindex />
       <header className="panel shrink-0 rounded-2xl px-2.5 py-1.5 flex items-center justify-between gap-2">
         <Link to="/" className="btn-ghost px-3 py-1.5 inline-flex items-center gap-1.5 text-xs">
           <ArrowLeft className="h-3.5 w-3.5" /> Menu

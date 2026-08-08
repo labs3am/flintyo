@@ -1,3 +1,4 @@
+import { Seo } from "@/components/Seo";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Bot, Users, Wifi, Play, BookOpen, Share2, Zap, Trophy, Clock, Smartphone } from "lucide-react";
@@ -81,6 +82,13 @@ export default function Landing() {
   const marquee = [...CHARACTERS, ...CHARACTERS];
 
   return (
+    <>
+      <Seo
+        title="Flintyo — Play Donkey Online With Friends & AI"
+        description="Play Donkey free in your browser. 2-6 players online with a room code, one shared phone, or bots. Last one holding cards is the Donkey."
+        path="/"
+        schema={[{"@context": "https://schema.org", "@type": "Game", "name": "Donkey", "url": "https://flintyo.com/", "numberOfPlayers": {"@type": "QuantitativeValue", "minValue": 2, "maxValue": 6}}, {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is the Donkey card game?", "acceptedAnswer": {"@type": "Answer", "text": "Donkey is a shedding game for 2 to 6 players using one standard 52-card deck. You follow suit when you can, dodge picking up the pile, and try not to be the last player holding cards."}}, {"@type": "Question", "name": "Do I need to download anything or sign up?", "acceptedAnswer": {"@type": "Answer", "text": "No. Flintyo runs in your phone or desktop browser. There is no account, no email and no download."}}, {"@type": "Question", "name": "How do I play with friends who aren't with me?", "acceptedAnswer": {"@type": "Answer", "text": "Create a table and share the room code or link. Up to 6 people can join, and you can fill empty seats with bots."}}, {"@type": "Question", "name": "How long does a game take?", "acceptedAnswer": {"@type": "Answer", "text": "A full game usually runs 5 to 10 minutes depending on the number of players."}}]}]}
+      />
     <main className="min-h-screen overflow-hidden">
       {/* Hero */}
       <section className="relative px-4 pt-10 pb-16">
@@ -319,5 +327,6 @@ export default function Landing() {
 
       {tut && <TutorialModal onClose={() => setTut(false)} />}
     </main>
+    </>
   );
 }
