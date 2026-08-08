@@ -273,7 +273,16 @@ export function GameTable({
             : undefined
         }
       >
-        
+        {!full && (
+          <button
+            type="button"
+            onClick={toggleFull}
+            aria-label="Enter full screen"
+            className="absolute bottom-3 left-3 z-20 inline-flex items-center gap-1 rounded-full border border-border bg-black/50 px-3 py-2 text-[9px] font-black uppercase tracking-[0.15em] text-foreground/80 transition active:scale-95 [touch-action:manipulation]"
+          >
+            <Maximize2 className="h-3.5 w-3.5" /> Full
+          </button>
+        )}
 
         <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
           {state.leadSuit ? `${SUIT_NAME[state.leadSuit]} led` : "New trick"}
