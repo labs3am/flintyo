@@ -1,4 +1,4 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowLeft, Bot, Check, Copy, Loader2, MessageSquare, Play, Share2, Users, MessageCircle, X } from "lucide-react";
 import { toast } from "sonner";
@@ -9,7 +9,7 @@ import { createGame, playCard } from "@/lib/bhabhi/engine";
 import { chooseCard, botDelay, type Difficulty } from "@/lib/bhabhi/ai";
 import { CHARACTERS, getCharacter } from "@/lib/characters";
 import { RoomChat } from "@/components/game/RoomChat";
-import { fetchRoom, getIdentity, mutateRoom, shareRoom, subscribeRoom, whatsappUrl, type ChatMsg, type RoomState } from "@/lib/room";
+import { fetchRoom, getIdentity, leaveRoom, mutateRoom, shareRoom, subscribeRoom, whatsappUrl, type ChatMsg, type RoomState } from "@/lib/room";
 import { applyResult } from "@/lib/bhabhi/score";
 import { ScoreBoard } from "@/components/game/ScoreBoard";
 import { useReactions } from "@/hooks/useReactions";
@@ -93,26 +93,52 @@ export default function RoomPage() {
       setStale(false);
       setLoading(false);
     });
-    const poll = setInterval(refresh, 4000);
+    const poll = setInterval(refresh, 2500);
     return () => {
       off();
       clearInterval(poll);
     };
   }, [code, refresh]);
 
+  // Leaving the tab / closing the app frees the seat.
+  useEffect(() => {
+    const onHide = () => {
+      if (document.visibilityState === "hidden") void leaveRoom(code, me.id, me.name);
+    };
+    window.addEventListener("pagehide", onHide);
+    return () => window.removeEventListener("pagehide", onHide);
+  }, [code, me.id, me.name]);
+
+  const leave = async () => {
+    await leaveRoom(code, me.id, me.name);
+    navigate("/");
+  };
+
+  // Show the "someone left" banner once.
+  const noticeRef = useRef(0);
+  useEffect(() => {
+    const n = room?.notice;
+    if (!n || n.at === noticeRef.current) return;
+    noticeRef.current = n.at;
+    if (Date.now() - n.at < 15000) toast.info(n.text);
+  }, [room?.notice]);
 
   const isHost = room?.hostId === me.id;
   const mySeat = room?.game ? room.game.players.findIndex((p) => p.id === me.id) : -1;
 
   const push = async (fn: (s: RoomState) => RoomState | null) => {
+    // Optimistic: paint locally first so play feels instant, then persist.
+    setRoom((cur) => (cur ? (fn(cur) ?? cur) : cur));
     try {
       const next = await mutateRoom(code, fn);
       if (next) setRoom(next);
       setStale(false);
     } catch {
       setStale(true);
+      void refresh();
     }
   };
+
 
   const addBot = () =>
     push((s) => {
@@ -197,7 +223,7 @@ export default function RoomPage() {
         const card = chooseCard(s.game, s.game.turn, (s.game.players[s.game.turn].level as Difficulty) ?? "normal");
         return card ? { ...s, game: playCard(s.game, s.game.turn, card.id) } : null;
       });
-    }, botDelay(level) + (game.lastTrick ? 1500 : 0));
+    }, botDelay(level) + (game.lastTrick ? 900 : 0));
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [room?.game?.seq, room?.game?.turn, isHost]);
@@ -281,9 +307,10 @@ export default function RoomPage() {
     >
       <h1 className="sr-only">Flintyo game room {code} — play the Donkey card game online</h1>
       <header className="panel shrink-0 rounded-2xl px-3 py-2 flex items-center justify-between gap-2">
-        <Link to="/" className="btn-ghost px-3 py-1.5 inline-flex items-center gap-1.5 text-xs">
+        <button onClick={leave} className="btn-ghost px-3 py-1.5 inline-flex items-center gap-1.5 text-xs">
           <ArrowLeft className="h-3.5 w-3.5" /> Leave
-        </Link>
+        </button>
+
         <button
           onClick={async () => {
             try {

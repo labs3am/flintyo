@@ -1,3 +1,4 @@
+import { Maximize2, Minimize2 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 import { cn } from "@/lib/utils";
@@ -72,7 +73,7 @@ export function GameTable({
       return;
     }
     setReveal(state.lastTrick);
-    const t = window.setTimeout(() => setReveal(null), 3000);
+    const t = window.setTimeout(() => setReveal(null), 1800);
     return () => window.clearTimeout(t);
   }, [state.seq, state.lastTrick]);
 
@@ -88,11 +89,14 @@ export function GameTable({
     document.addEventListener("fullscreenchange", on);
     return () => document.removeEventListener("fullscreenchange", on);
   }, []);
+  const exitFull = () => {
+    setFull(false);
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+  };
   const toggleFull = () => {
     const el = rootRef.current;
     if (full) {
-      setFull(false);
-      if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+      exitFull();
       return;
     }
     setFull(true);
@@ -101,6 +105,16 @@ export function GameTable({
       (el as unknown as { webkitRequestFullscreen?: () => Promise<void> })?.webkitRequestFullscreen;
     req?.call(el).catch(() => {});
   };
+  // Escape always gets you out, even when native fullscreen was blocked.
+  useEffect(() => {
+    if (!full) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") exitFull();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [full]);
+
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   useEffect(() => {
     if (!full) {
@@ -199,7 +213,21 @@ export function GameTable({
           : "flex-1",
       )}
     >
+      {/* Exit lives outside the tilted arena so it's always tappable in full screen */}
+      {full && (
+        <button
+          type="button"
+          onClick={exitFull}
+          aria-label="Exit full screen"
+          className="absolute top-2 right-2 z-[60] inline-flex items-center gap-1 rounded-full border border-primary bg-primary px-3 py-2 text-[10px] font-black uppercase tracking-[0.15em] text-primary-foreground shadow-lg transition active:scale-95 [touch-action:manipulation]"
+        >
+          <Minimize2 className="h-3.5 w-3.5" /> Exit
+        </button>
+      )}
+
+
       {/* Opponents row keeps a little headroom for speech bubbles */}
+
       <div className="flex shrink-0 flex-nowrap justify-center gap-1.5 w-full max-w-full overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {others.map(({ p, i }) => (
           <PlayerSeat
@@ -245,13 +273,17 @@ export function GameTable({
             : undefined
         }
       >
-        <button
-          onClick={toggleFull}
-          aria-label={full ? "Exit full screen" : "Full screen"}
-          className="absolute bottom-3 left-3 z-20 rounded-full border border-border bg-black/40 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.15em] text-foreground/80 transition active:scale-95 [touch-action:manipulation]"
-        >
-          {full ? "Exit" : "Full"}
-        </button>
+        {!full && (
+          <button
+            type="button"
+            onClick={toggleFull}
+            aria-label="Enter full screen"
+            className="absolute bottom-3 left-3 z-20 inline-flex items-center gap-1 rounded-full border border-border bg-black/50 px-3 py-2 text-[9px] font-black uppercase tracking-[0.15em] text-foreground/80 transition active:scale-95 [touch-action:manipulation]"
+          >
+            <Maximize2 className="h-3.5 w-3.5" /> Full
+          </button>
+        )}
+
         <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
           {state.leadSuit ? `${SUIT_NAME[state.leadSuit]} led` : "New trick"}
         </div>

@@ -20,7 +20,10 @@ export type RoomState = {
   ready?: string[];
   /** Cross-round scoreboard keyed by player id. */
   scores?: Scores;
+  /** Transient banner shown to everyone (e.g. a player left). */
+  notice?: { text: string; at: number };
 };
+
 
 const ID_KEY = "donkey.identity.v1";
 
@@ -118,7 +121,36 @@ export async function mutateRoom(code: string, fn: (s: RoomState) => RoomState |
   return next;
 }
 
+/**
+ * Remove a player from a room. If a live game was running, it stops for
+ * everyone and the table drops back to the lobby.
+ */
+export async function leaveRoom(code: string, id: string, name: string) {
+  try {
+    await mutateRoom(code, (s) => {
+      if (!s.seats.some((x) => x.id === id)) return null;
+      const seats = s.seats.filter((x) => x.id !== id);
+      const humans = seats.filter((x) => !x.bot);
+      const wasPlaying = s.status === "playing" && !!s.game;
+      return {
+        ...s,
+        seats,
+        hostId: s.hostId === id ? (humans[0]?.id ?? s.hostId) : s.hostId,
+        ready: (s.ready ?? []).filter((x) => x !== id),
+        status: wasPlaying ? "lobby" : s.status,
+        game: wasPlaying ? null : s.game,
+        notice: wasPlaying
+          ? { text: `${name || "A player"} left — the game was stopped.`, at: Date.now() }
+          : s.notice,
+      };
+    });
+  } catch {
+    /* best effort */
+  }
+}
+
 export function roomLink(code: string) {
+
   if (typeof window === "undefined") return "";
   return `${window.location.origin}/room/${code}`;
 }
