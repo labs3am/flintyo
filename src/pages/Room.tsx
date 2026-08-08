@@ -93,26 +93,52 @@ export default function RoomPage() {
       setStale(false);
       setLoading(false);
     });
-    const poll = setInterval(refresh, 4000);
+    const poll = setInterval(refresh, 2500);
     return () => {
       off();
       clearInterval(poll);
     };
   }, [code, refresh]);
 
+  // Leaving the tab / closing the app frees the seat.
+  useEffect(() => {
+    const onHide = () => {
+      if (document.visibilityState === "hidden") void leaveRoom(code, me.id, me.name);
+    };
+    window.addEventListener("pagehide", onHide);
+    return () => window.removeEventListener("pagehide", onHide);
+  }, [code, me.id, me.name]);
+
+  const leave = async () => {
+    await leaveRoom(code, me.id, me.name);
+    navigate("/");
+  };
+
+  // Show the "someone left" banner once.
+  const noticeRef = useRef(0);
+  useEffect(() => {
+    const n = room?.notice;
+    if (!n || n.at === noticeRef.current) return;
+    noticeRef.current = n.at;
+    if (Date.now() - n.at < 15000) toast.info(n.text);
+  }, [room?.notice]);
 
   const isHost = room?.hostId === me.id;
   const mySeat = room?.game ? room.game.players.findIndex((p) => p.id === me.id) : -1;
 
   const push = async (fn: (s: RoomState) => RoomState | null) => {
+    // Optimistic: paint locally first so play feels instant, then persist.
+    setRoom((cur) => (cur ? (fn(cur) ?? cur) : cur));
     try {
       const next = await mutateRoom(code, fn);
       if (next) setRoom(next);
       setStale(false);
     } catch {
       setStale(true);
+      void refresh();
     }
   };
+
 
   const addBot = () =>
     push((s) => {
