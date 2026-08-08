@@ -258,7 +258,7 @@ export function GameTable({
             : undefined
         }
       >
-        <div className="absolute bottom-3 left-3 z-20 h-9 w-16" aria-hidden />
+        
 
         <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
           {state.leadSuit ? `${SUIT_NAME[state.leadSuit]} led` : "New trick"}
