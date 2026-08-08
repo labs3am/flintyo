@@ -104,6 +104,26 @@
     color: transparent;
   }
   .glow { box-shadow: var(--shadow-glow); }
+  .seat-turn {
+    background-color: oklch(from var(--turn) l c h / 0.22);
+    box-shadow: 0 0 26px oklch(from var(--turn) l c h / 0.35);
+    border-color: var(--turn);
+  }
+  .ring-turn { --tw-ring-color: var(--turn); }
+  .text-turn { color: var(--turn); }
+  .bg-turn { background-color: var(--turn); }
+  .turn-timer > i {
+    display: block;
+    height: 100%;
+    border-radius: 9999px;
+    background: var(--turn);
+    transform-origin: left center;
+    animation: turn-timer var(--turn-dur, 12s) linear forwards;
+  }
+  @keyframes turn-timer {
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0); }
+  }
   .panel {
     background-color: oklch(from var(--card) l c h / 0.6);
     backdrop-filter: blur(12px);
