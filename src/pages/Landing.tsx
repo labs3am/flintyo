@@ -116,8 +116,9 @@ export default function Landing() {
             The Donkey card game
           </p>
           <p className="mt-4 text-base sm:text-lg text-muted-foreground max-w-xl mx-auto">
-            Dump your cards, dodge the pile, and don't be the last one holding. The loser is the Donkey —
-            and everybody sees it.
+            Flintyo is a free browser version of Donkey (Bhabhi) — the shedding game played with one
+            52-card deck. Play 2–6 players online with a room code, on one shared phone, or against bots.
+            Last player holding cards is the Donkey.
           </p>
 
           <div className="mt-7 flex flex-col sm:flex-row items-center justify-center gap-3">
