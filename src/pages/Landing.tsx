@@ -79,8 +79,14 @@ export default function Landing() {
           </div>
 
           <p className="eyebrow text-primary">From the house of Labs3am</p>
-          <h1 className="mt-2 text-6xl sm:text-8xl font-black tracking-tight text-gradient anim-shine inline-block px-2">
-            FLINTYO<span className="sr-only"> — the multiplayer Donkey card game</span>
+          <h1 className="mt-2 flex justify-center">
+            <img
+              src="/flintyo-logo.png"
+              alt="Flintyo — the multiplayer Donkey card game"
+              width={320}
+              height={320}
+              className="h-44 sm:h-60 w-auto object-contain anim-float-slow"
+            />
           </h1>
           <p className="mt-1 text-sm sm:text-base font-bold text-gold uppercase tracking-[0.25em]">
             The Donkey card game
