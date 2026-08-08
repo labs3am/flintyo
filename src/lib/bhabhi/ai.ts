@@ -84,8 +84,8 @@ export function chooseCard(state: GameState, pi: number, level: Difficulty = "no
 
 /** Reaction timing feels human rather than instant. */
 export function botDelay(level: Difficulty = "normal") {
-  const base = level === "hard" ? 900 : level === "easy" ? 420 : 650;
-  return base + Math.random() * 550;
+  const base = level === "hard" ? 2000 : level === "easy" ? 1400 : 1700;
+  return base + Math.random() * 900;
 }
 
 export const BOT_NAMES = ["Ruby", "Milo", "Sable", "Nia", "Kofi", "Vera", "Dash"];
