@@ -47,6 +47,9 @@
   --plate-4: oklch(0.72 0.18 60);            /* orange */
   --plate-5: oklch(0.62 0.20 300);           /* violet */
 
+  --turn: oklch(0.70 0.19 148);              /* active-turn green */
+  --turn-foreground: oklch(0.18 0.03 150);
+
   --gradient-primary: linear-gradient(180deg, oklch(0.76 0.16 52), var(--primary) 55%, oklch(0.58 0.19 32));
   --gradient-gold: linear-gradient(180deg, oklch(0.90 0.12 84), var(--gold) 60%, oklch(0.72 0.14 62));
   --gradient-bg: radial-gradient(ellipse 90% 70% at 50% 40%, oklch(0.34 0.055 45 / 0.75), transparent 70%),
@@ -101,6 +104,26 @@
     color: transparent;
   }
   .glow { box-shadow: var(--shadow-glow); }
+  .seat-turn {
+    background-color: oklch(from var(--turn) l c h / 0.22);
+    box-shadow: 0 0 26px oklch(from var(--turn) l c h / 0.35);
+    border-color: var(--turn);
+  }
+  .ring-turn { --tw-ring-color: var(--turn); }
+  .text-turn { color: var(--turn); }
+  .bg-turn { background-color: var(--turn); }
+  .turn-timer > i {
+    display: block;
+    height: 100%;
+    border-radius: 9999px;
+    background: var(--turn);
+    transform-origin: left center;
+    animation: turn-timer var(--turn-dur, 12s) linear forwards;
+  }
+  @keyframes turn-timer {
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0); }
+  }
   .panel {
     background-color: oklch(from var(--card) l c h / 0.6);
     backdrop-filter: blur(12px);

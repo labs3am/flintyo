@@ -195,6 +195,7 @@ export function GameTable({
             reaction={reactions[i]}
             says={says[i]}
             gained={gained?.seat === i ? gained.n : null}
+            turnKey={state.seq}
             size={others.length > 3 ? 46 : 58}
             compact
           />
@@ -359,6 +360,7 @@ export function GameTable({
               gained={gained && gained.seat === mySeat ? gained.n : null}
             reaction={mySeat != null ? reactions[mySeat] : null}
               says={mySeat != null ? says[mySeat] : null}
+              turnKey={state.seq}
               size={52}
               compact
             />
