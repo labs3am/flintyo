@@ -247,7 +247,7 @@ export default function Landing() {
 
       <footer className="border-t border-border/70 px-4 py-10">
         <div className="mx-auto max-w-4xl flex flex-col items-center gap-2 text-center">
-          <span className="text-xl font-black tracking-tight text-gradient">FLINTYO</span>
+          <img src="/flintyo-logo.png" alt="Flintyo" width={96} height={96} className="h-16 w-auto object-contain" />
           <p className="text-xs text-muted-foreground">Flintyo is the app. Donkey is the game.</p>
           <p className="text-sm text-muted-foreground">
             From the house of{" "}
