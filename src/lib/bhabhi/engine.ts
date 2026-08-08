@@ -37,6 +37,8 @@ export type GameState = {
   loser: number | null;
   lastEvent: string;
   event: GameEvent;
+  /** Snapshot of the cards on the table when the last trick resolved (so everyone can see them). */
+  lastTrick: { cards: PlayedCard[]; kind: "trick" | "pickup"; who: number } | null;
   /** seats that went safe on the most recent resolution */
   justOut: number[];
   log: string[];
@@ -106,6 +108,7 @@ export function createGame(seats: SeatSpec[]): GameState {
     loser: null,
     lastEvent: `${players[turn].name} holds the Ace of Spades and leads.`,
     event: { t: "deal" },
+    lastTrick: null,
     justOut: [],
     log: [],
     seq: 0,
@@ -173,6 +176,7 @@ export function playCard(state: GameState, pi: number, cardId: string): GameStat
   if (!legal) return state;
 
   const [card] = player.hand.splice(idx, 1);
+  if (s.pile.length === 0) s.lastTrick = null;
   s.pile.push({ p: pi, card });
   s.seq++;
   s.justOut = [];
@@ -192,6 +196,7 @@ export function playCard(state: GameState, pi: number, cardId: string): GameStat
     );
     s.lastEvent = `${takerP.name} picks up the pile (${n} cards).`;
     s.event = { t: "pickup", taker: taker.p, cutter: pi, n };
+    s.lastTrick = { cards: s.pile, kind: "pickup", who: taker.p };
     s.pile = [];
     s.leadSuit = null;
     const over1 = settleOuts(s);
@@ -208,6 +213,7 @@ export function playCard(state: GameState, pi: number, cardId: string): GameStat
     s.log.unshift(`${winP.name} took the trick with ${cardLabel(winner.card)} — pile discarded.`);
     s.lastEvent = `${winP.name} wins the trick with ${cardLabel(winner.card)}.`;
     s.event = { t: "trick", winner: winner.p };
+    s.lastTrick = { cards: s.pile, kind: "trick", who: winner.p };
     s.discard = [...s.discard, ...s.pile];
     s.pile = [];
     s.leadSuit = null;
@@ -220,6 +226,7 @@ export function playCard(state: GameState, pi: number, cardId: string): GameStat
   }
 
   s.turn = nextActive(s, pi);
+  s.lastTrick = null;
   s.lastEvent = `${player.name} played ${cardLabel(card)}.`;
   s.event = { t: "play", actor: pi };
   return s;
