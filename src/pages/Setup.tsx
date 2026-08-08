@@ -1,3 +1,4 @@
+import { Seo } from "@/components/Seo";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { ArrowLeft, Bot, Users, Wifi, LogIn, Loader2, Volume2, VolumeX, BookOpen } from "lucide-react";

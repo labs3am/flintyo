@@ -1,3 +1,4 @@
+import { Seo } from "@/components/Seo";
 import { Link, useSearchParams } from "react-router-dom";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowLeft, RotateCcw, Eye } from "lucide-react";
