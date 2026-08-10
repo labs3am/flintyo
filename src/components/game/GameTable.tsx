@@ -203,6 +203,25 @@ export function GameTable({
 
   const dropReady = !!drag && drag.over;
 
+  // ---- hand fitting: every card visible, no horizontal scrolling ----------
+  const handRef = useRef<HTMLDivElement>(null);
+  const [handW, setHandW] = useState(0);
+  useEffect(() => {
+    const el = handRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setHandW(el.clientWidth));
+    ro.observe(el);
+    setHandW(el.clientWidth);
+    return () => ro.disconnect();
+  }, []);
+  const myCards = me ? sortHand(me.hand) : [];
+  const CARD_W = 80; // "lg" card width
+  const step =
+    myCards.length > 1 && handW > 0
+      ? Math.min(CARD_W + 8, Math.max(20, (handW - CARD_W - 8) / (myCards.length - 1)))
+      : CARD_W + 8;
+
+
   return (
     <div
       ref={rootRef}
