@@ -275,7 +275,7 @@ export function GameTable({
             says={says[i]}
             gained={gained?.seat === i ? gained.n : null}
             turnKey={state.seq}
-            size={others.length > 4 ? 40 : others.length > 3 ? 46 : 56}
+            size={(shortScreen ? 0.7 : 1) * (others.length > 4 ? 40 : others.length > 3 ? 46 : 56)}
             compact
           />
         ))}
@@ -285,7 +285,7 @@ export function GameTable({
       <div
         ref={arenaRef}
         className={cn(
-          "felt relative flex-1 min-h-0 overflow-hidden rounded-[2rem] border p-3 pt-9 flex flex-col items-center justify-center gap-2 transition-all duration-200",
+          "felt relative flex-1 min-h-0 overflow-hidden rounded-[2rem] border p-3 pt-9 [@media(max-height:520px)]:p-2 [@media(max-height:520px)]:pt-7 [@media(max-height:520px)]:gap-1 flex flex-col items-center justify-center gap-2 transition-all duration-200",
           dropReady
             ? "border-primary ring-2 ring-primary/70 scale-[1.01]"
             : drag
@@ -470,7 +470,7 @@ export function GameTable({
         <div className="flex min-w-0 flex-1 flex-col">
         <div
           ref={handRef}
-          className="relative flex w-full justify-center overflow-visible pb-1 pt-4 px-1 [touch-action:none]"
+          className="relative flex w-full justify-center overflow-visible pb-1 pt-3 px-1 [touch-action:none]"
         >
 
           {me && myCards.length > 0 ? (
