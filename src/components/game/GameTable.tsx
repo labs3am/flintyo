@@ -285,7 +285,7 @@ export function GameTable({
       <div
         ref={arenaRef}
         className={cn(
-          "felt relative flex-1 min-h-0 overflow-hidden rounded-[2rem] border p-3 pt-9 [@media(max-height:520px)]:p-2 [@media(max-height:520px)]:pt-7 [@media(max-height:520px)]:gap-1 flex flex-col items-center justify-center gap-2 transition-all duration-200",
+          "felt relative flex-1 min-h-0 overflow-hidden rounded-[2rem] border p-3 pt-9 [@media(max-height:520px)]:p-2 [@media(max-height:520px)]:pt-8 [@media(max-height:520px)]:gap-1 flex flex-col items-center justify-center gap-2 transition-all duration-200",
           dropReady
             ? "border-primary ring-2 ring-primary/70 scale-[1.01]"
             : drag
@@ -381,7 +381,7 @@ export function GameTable({
 
 
         {/* Turn banner */}
-        <div className="absolute top-3 left-1/2 -translate-x-1/2">
+        <div className="absolute top-3 [@media(max-height:520px)]:top-1 left-1/2 -translate-x-1/2">
           <span
             className={cn(
               "px-3 py-1 rounded-full text-[10px] font-black tracking-[0.2em] border",
