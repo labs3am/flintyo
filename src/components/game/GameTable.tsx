@@ -330,7 +330,7 @@ export function GameTable({
                       reveal.who === p ? "ring-2 ring-gold" : "opacity-70",
                     )}
                   />
-                  <span className="text-[9px] text-muted-foreground max-w-[4rem] truncate">
+                  <span className="text-[9px] text-muted-foreground max-w-[4rem] truncate [@media(max-height:520px)]:hidden">
                     {state.players[p].name}
                   </span>
                 </div>
@@ -345,7 +345,7 @@ export function GameTable({
             state.pile.map(({ p, card }) => (
               <div key={card.id} className="anim-deal flex flex-col items-center gap-1">
                 <PlayingCard card={card} size={shortScreen ? "sm" : "md"} />
-                <span className="text-[9px] text-muted-foreground max-w-[4rem] truncate">
+                <span className="text-[9px] text-muted-foreground max-w-[4rem] truncate [@media(max-height:520px)]:hidden">
                   {state.players[p].name}
                 </span>
               </div>
@@ -359,7 +359,7 @@ export function GameTable({
               : `${state.players[reveal.who].name} takes the trick`}
           </span>
         )}
-        <p className="text-xs text-center text-foreground/90 min-h-[1rem] px-2">{state.lastEvent}</p>
+        <p className="text-xs text-center text-foreground/90 min-h-[1rem] px-2 [@media(max-height:520px)]:text-[10px] [@media(max-height:520px)]:min-h-0">{state.lastEvent}</p>
 
         {/* Live standings */}
         <div className="absolute top-3 left-3">
