@@ -456,9 +456,12 @@ export function GameTable({
           </p>
 
         </div>
-        <div className="flex gap-2 overflow-x-auto overscroll-x-contain [touch-action:pan-x] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pb-2 pt-4 px-1 snap-x snap-mandatory">
-          {me && me.hand.length > 0 ? (
-            sortHand(me.hand).map((c, idx, arr) => {
+        <div
+          ref={handRef}
+          className="relative flex w-full justify-center overflow-visible pb-1 pt-4 px-1 [touch-action:none]"
+        >
+          {me && myCards.length > 0 ? (
+            myCards.map((c, idx, arr) => {
               const newSuit = idx > 0 && arr[idx - 1].s !== c.s;
               const dragging = drag?.id === c.id;
               return (
@@ -470,12 +473,13 @@ export function GameTable({
                   onPointerUp={endDrag}
                   onPointerCancel={endDrag}
                   className={cn(
-                    "shrink-0 snap-start select-none p-1 -m-1 will-change-transform",
-                    newSuit && "ml-3",
-                    dragging ? "relative z-40 touch-none" : "[touch-action:pan-x]",
+                    "relative shrink-0 select-none will-change-transform touch-none transition-[margin] duration-200",
+                    dragging && "z-50",
                   )}
-                  style={
-                    dragging
+                  style={{
+                    marginLeft: idx === 0 ? 0 : step - CARD_W + (newSuit ? 6 : 0),
+                    zIndex: dragging ? 50 : idx,
+                    ...(dragging
                       ? {
                           transform: `translate3d(${drag.dx}px, ${drag.dy}px, 0) scale(1.08) rotate(${Math.max(-8, Math.min(8, drag.dx * 0.05))}deg)`,
                           transition: "none",
@@ -483,8 +487,8 @@ export function GameTable({
                         }
                       : snapBack === c.id
                         ? { transform: "translate3d(0,0,0)", transition: "transform 280ms cubic-bezier(.22,1,.36,1)" }
-                        : undefined
-                  }
+                        : null),
+                  }}
                 >
                   <PlayingCard
                     card={c}
@@ -492,7 +496,6 @@ export function GameTable({
                     disabled={!myTurn}
                     dimmed={coaching && myTurn && !playable.has(c.id)}
                     className={cn(
-                      "min-h-[5.75rem] min-w-[4rem]",
                       foul?.id === c.id && "anim-foul ring-2 ring-destructive",
                       dragging && dropReady && "ring-2 ring-primary",
                     )}
@@ -508,6 +511,7 @@ export function GameTable({
             <span className="text-sm text-muted-foreground py-6">No cards left — you're safe! 🎉</span>
           )}
         </div>
+
         {coaching && myTurn && me && me.hand.length > 0 && (
           <p className="text-center text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
             {state.leadSuit && me.hand.some((c) => c.s === state.leadSuit)
