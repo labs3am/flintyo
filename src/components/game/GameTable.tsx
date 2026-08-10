@@ -425,8 +425,8 @@ export function GameTable({
 
 
       {/* You */}
-      <div className="panel shrink-0 rounded-2xl p-2">
-        <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3">
+      <div className="panel shrink-0 rounded-2xl p-2 flex items-center gap-2">
+        <div className="flex shrink-0 flex-col items-center gap-0.5 max-w-[6.5rem]">
 
           {me && (
             <PlayerSeat
@@ -444,13 +444,13 @@ export function GameTable({
             reaction={mySeat != null ? reactions[mySeat] : null}
               says={mySeat != null ? says[mySeat] : null}
               turnKey={state.seq}
-              size={52}
+              size={shortScreen ? 42 : 52}
               compact
             />
           )}
           <p
             className={cn(
-              "text-[11px] font-semibold min-w-0",
+              "text-center text-[10px] font-semibold leading-tight",
               foul ? "text-destructive" : myTurn ? "text-primary" : "text-muted-foreground",
             )}
           >
@@ -466,6 +466,7 @@ export function GameTable({
           </p>
 
         </div>
+
         <div
           ref={handRef}
           className="relative flex w-full justify-center overflow-visible pb-1 pt-4 px-1 [touch-action:none]"
