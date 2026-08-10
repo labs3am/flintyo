@@ -313,7 +313,7 @@ export function GameTable({
           </button>
         )}
 
-        <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+        <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground [@media(max-height:520px)]:hidden">
           {state.leadSuit ? `${SUIT_NAME[state.leadSuit]} led` : "New trick"}
         </div>
 
@@ -324,7 +324,7 @@ export function GameTable({
                 <div key={card.id} className="flex flex-col items-center gap-1">
                   <PlayingCard
                     card={card}
-                    size="md"
+                    size={shortScreen ? "sm" : "md"}
                     className={cn(
                       "transition",
                       reveal.who === p ? "ring-2 ring-gold" : "opacity-70",
@@ -337,14 +337,14 @@ export function GameTable({
               ))
             ) : (
               <div className="flex items-center gap-2 text-muted-foreground text-xs">
-                <CardBack size="md" className="opacity-40" />
+                <CardBack size={shortScreen ? "sm" : "md"} className="opacity-40" />
                 <span>Waiting for the lead card…</span>
               </div>
             )
           ) : (
             state.pile.map(({ p, card }) => (
               <div key={card.id} className="anim-deal flex flex-col items-center gap-1">
-                <PlayingCard card={card} size="md" />
+                <PlayingCard card={card} size={shortScreen ? "sm" : "md"} />
                 <span className="text-[9px] text-muted-foreground max-w-[4rem] truncate">
                   {state.players[p].name}
                 </span>
