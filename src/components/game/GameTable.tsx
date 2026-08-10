@@ -206,6 +206,14 @@ export function GameTable({
   // ---- hand fitting: every card visible, no horizontal scrolling ----------
   const handRef = useRef<HTMLDivElement>(null);
   const [handW, setHandW] = useState(0);
+  const [shortScreen, setShortScreen] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-height: 520px)");
+    const on = () => setShortScreen(mq.matches);
+    on();
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
   useEffect(() => {
     const el = handRef.current;
     if (!el) return;
@@ -215,11 +223,13 @@ export function GameTable({
     return () => ro.disconnect();
   }, []);
   const myCards = me ? sortHand(me.hand) : [];
-  const CARD_W = 80; // "lg" card width
+  const cardSize = shortScreen ? "md" : "lg";
+  const CARD_W = shortScreen ? 64 : 80;
   const step =
     myCards.length > 1 && handW > 0
-      ? Math.min(CARD_W + 8, Math.max(20, (handW - CARD_W - 8) / (myCards.length - 1)))
+      ? Math.min(CARD_W + 8, Math.max(18, (handW - CARD_W - 8) / (myCards.length - 1)))
       : CARD_W + 8;
+
 
 
   return (
