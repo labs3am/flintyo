@@ -534,8 +534,10 @@ export function GameTable({
                 : "You lead — drag a card up to the table, or tap it"}
           </p>
         )}
+        </div>
 
       </div>
+
     </div>
   );
 }
