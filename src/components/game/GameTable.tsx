@@ -502,7 +502,7 @@ export function GameTable({
                 >
                   <PlayingCard
                     card={c}
-                    size="lg"
+                    size={cardSize}
                     disabled={!myTurn}
                     dimmed={coaching && myTurn && !playable.has(c.id)}
                     className={cn(
