@@ -467,10 +467,12 @@ export function GameTable({
 
         </div>
 
+        <div className="flex min-w-0 flex-1 flex-col">
         <div
           ref={handRef}
           className="relative flex w-full justify-center overflow-visible pb-1 pt-4 px-1 [touch-action:none]"
         >
+
           {me && myCards.length > 0 ? (
             myCards.map((c, idx, arr) => {
               const newSuit = idx > 0 && arr[idx - 1].s !== c.s;
