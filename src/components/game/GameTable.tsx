@@ -247,7 +247,7 @@ export function GameTable({
 
       {/* Opponents row keeps a little headroom for speech bubbles */}
 
-      <div className="flex shrink-0 flex-nowrap justify-center gap-1.5 w-full max-w-full overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="flex shrink-0 flex-nowrap items-end justify-center gap-1 w-full max-w-full overflow-visible">
         {others.map(({ p, i }) => (
           <PlayerSeat
             key={p.id}
