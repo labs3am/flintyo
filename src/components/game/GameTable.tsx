@@ -265,7 +265,7 @@ export function GameTable({
             says={says[i]}
             gained={gained?.seat === i ? gained.n : null}
             turnKey={state.seq}
-            size={others.length > 3 ? 46 : 58}
+            size={others.length > 4 ? 40 : others.length > 3 ? 46 : 56}
             compact
           />
         ))}
