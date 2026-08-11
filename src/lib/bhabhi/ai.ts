@@ -50,7 +50,7 @@ export function chooseCard(state: GameState, pi: number, level: Difficulty = "no
     return pool[Math.floor(Math.random() * pool.length)];
   }
 
-  const sloppy = level === "normal" ? 0.18 : 0.04; // chance of a human-ish imperfect play
+  const sloppy = level === "normal" ? 0.2 : 0; // chance of a human-ish imperfect play
   const slip = () => Math.random() < sloppy;
 
   const seen = unseenBySuit(state, pi);
