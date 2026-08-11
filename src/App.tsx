@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import Landing from "./pages/Landing";
 import Setup from "./pages/Setup";
 import Rules from "./pages/Rules";
+import CaseStudy from "./pages/CaseStudy";
 import PlayPage from "./pages/Play";
 import RoomPage from "./pages/Room";
 import NotFound from "./pages/NotFound";
@@ -21,6 +22,7 @@ const App = () => {
         <Route path="/" element={<Landing />} />
         <Route path="/start" element={<Setup />} />
         <Route path="/rules" element={<Rules />} />
+        <Route path="/case-study" element={<CaseStudy />} />
         <Route path="/play" element={<PlayPage />} />
         <Route path="/room/:code" element={<RoomPage />} />
         <Route path="*" element={<NotFound />} />

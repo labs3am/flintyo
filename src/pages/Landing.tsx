@@ -313,9 +313,12 @@ export default function Landing() {
               Labs3am
             </a>
           </p>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 flex-wrap justify-center">
             <Link to="/rules" className="text-xs text-muted-foreground hover:text-primary">
               Donkey card game rules
+            </Link>
+            <Link to="/case-study" className="text-xs text-muted-foreground hover:text-primary">
+              Case study
             </Link>
             <Link to="/start" className="text-xs text-muted-foreground hover:text-primary">
               Start a game →
