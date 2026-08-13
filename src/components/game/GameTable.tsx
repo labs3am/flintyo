@@ -503,7 +503,8 @@ export function GameTable({
                     zIndex: dragging ? 50 : idx,
                     ...(dragging
                       ? {
-                          transform: `translate3d(${drag.dx}px, ${drag.dy}px, 0) scale(1.08) rotate(${Math.max(-8, Math.min(8, drag.dx * 0.05))}deg)`,
+                          // When the table is rotated the pointer's screen axes are swapped.
+                          transform: `translate3d(${rotated ? drag.dy : drag.dx}px, ${rotated ? -drag.dx : drag.dy}px, 0) scale(1.08)`,
                           transition: "none",
                           filter: "drop-shadow(0 18px 22px rgba(0,0,0,0.55))",
                         }
