@@ -30,7 +30,7 @@ export function LandscapeShell({ children }: { children: ReactNode }) {
   return (
     <RotatedCtx.Provider value>
       <div className="fixed inset-0 overflow-hidden bg-background">
-        <div className="absolute left-1/2 top-1/2 h-[100dvw] w-[100dvh] -translate-x-1/2 -translate-y-1/2 rotate-90 [&>*]:!h-full [&>*]:!max-h-full [&>*]:!min-h-0 [&>*]:!overflow-hidden">
+        <div className="absolute left-1/2 top-1/2 h-[100dvw] w-[100dvh] -translate-x-1/2 -translate-y-1/2 rotate-90 [&>*]:!h-full [&>*]:!max-h-full [&>*]:!min-h-0">
           {children}
         </div>
       </div>
