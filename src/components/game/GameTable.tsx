@@ -9,6 +9,7 @@ import { expressionFor } from "@/lib/bhabhi/mood";
 import { sfx } from "@/lib/sound";
 import { legalCards, sortHand, SUIT_NAME, type GameState } from "@/lib/bhabhi/engine";
 import { ScoreBoard } from "./ScoreBoard";
+import { useTableRotated } from "./LandscapeShell";
 import type { Scores } from "@/lib/bhabhi/score";
 
 export function GameTable({
@@ -206,14 +207,21 @@ export function GameTable({
   // ---- hand fitting: every card visible, no horizontal scrolling ----------
   const handRef = useRef<HTMLDivElement>(null);
   const [handW, setHandW] = useState(0);
-  const [shortScreen, setShortScreen] = useState(false);
+  const rotated = useTableRotated();
+  const [tightScreen, setTightScreen] = useState(false);
   useEffect(() => {
-    const mq = window.matchMedia("(max-height: 520px)");
-    const on = () => setShortScreen(mq.matches);
+    // When the table is rotated the usable height is the window's *width*.
+    const on = () => setTightScreen((rotated ? window.innerWidth : window.innerHeight) <= 560);
     on();
-    mq.addEventListener("change", on);
-    return () => mq.removeEventListener("change", on);
-  }, []);
+    window.addEventListener("resize", on);
+    window.addEventListener("orientationchange", on);
+    return () => {
+      window.removeEventListener("resize", on);
+      window.removeEventListener("orientationchange", on);
+    };
+  }, [rotated]);
+  const shortScreen = tightScreen;
+  const sm = (cls: string) => (shortScreen ? cls : "");
   useEffect(() => {
     const el = handRef.current;
     if (!el) return;
