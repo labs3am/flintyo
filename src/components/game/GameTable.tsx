@@ -9,6 +9,7 @@ import { expressionFor } from "@/lib/bhabhi/mood";
 import { sfx } from "@/lib/sound";
 import { legalCards, sortHand, SUIT_NAME, type GameState } from "@/lib/bhabhi/engine";
 import { ScoreBoard } from "./ScoreBoard";
+import { useTableRotated } from "./LandscapeShell";
 import type { Scores } from "@/lib/bhabhi/score";
 
 export function GameTable({
@@ -206,14 +207,21 @@ export function GameTable({
   // ---- hand fitting: every card visible, no horizontal scrolling ----------
   const handRef = useRef<HTMLDivElement>(null);
   const [handW, setHandW] = useState(0);
-  const [shortScreen, setShortScreen] = useState(false);
+  const rotated = useTableRotated();
+  const [tightScreen, setTightScreen] = useState(false);
   useEffect(() => {
-    const mq = window.matchMedia("(max-height: 520px)");
-    const on = () => setShortScreen(mq.matches);
+    // When the table is rotated the usable height is the window's *width*.
+    const on = () => setTightScreen((rotated ? window.innerWidth : window.innerHeight) <= 560);
     on();
-    mq.addEventListener("change", on);
-    return () => mq.removeEventListener("change", on);
-  }, []);
+    window.addEventListener("resize", on);
+    window.addEventListener("orientationchange", on);
+    return () => {
+      window.removeEventListener("resize", on);
+      window.removeEventListener("orientationchange", on);
+    };
+  }, [rotated]);
+  const shortScreen = tightScreen;
+  const sm = (cls: string) => (shortScreen ? cls : "");
   useEffect(() => {
     const el = handRef.current;
     if (!el) return;
@@ -225,9 +233,16 @@ export function GameTable({
   const myCards = me ? sortHand(me.hand) : [];
   const cardSize = shortScreen ? "md" : "lg";
   const CARD_W = shortScreen ? 64 : 80;
+  // Never squeeze a card down to an unreadable sliver — wrap into a second row instead.
+  const MIN_STEP = 34;
+  const perRowCap =
+    handW > 0 ? Math.max(1, Math.floor((handW - CARD_W - 8) / MIN_STEP) + 1) : myCards.length;
+  const rows = myCards.length > perRowCap ? 2 : 1;
+  const perRow = Math.ceil(myCards.length / rows) || 1;
+  const handRows = Array.from({ length: rows }, (_, r) => myCards.slice(r * perRow, (r + 1) * perRow));
   const step =
-    myCards.length > 1 && handW > 0
-      ? Math.min(CARD_W + 8, Math.max(18, (handW - CARD_W - 8) / (myCards.length - 1)))
+    perRow > 1 && handW > 0
+      ? Math.min(CARD_W + 8, Math.max(MIN_STEP, (handW - CARD_W - 8) / (perRow - 1)))
       : CARD_W + 8;
 
 
@@ -285,7 +300,8 @@ export function GameTable({
       <div
         ref={arenaRef}
         className={cn(
-          "felt relative flex-1 min-h-0 overflow-hidden rounded-[2rem] border p-3 pt-9 [@media(max-height:520px)]:p-2 [@media(max-height:520px)]:pt-8 [@media(max-height:520px)]:gap-1 flex flex-col items-center justify-center gap-2 transition-all duration-200",
+          "felt relative flex-1 min-h-0 overflow-hidden rounded-[2rem] border flex flex-col items-center justify-center transition-all duration-200",
+          shortScreen ? "p-2 pt-7 gap-1" : "p-3 pt-9 gap-2",
           dropReady
             ? "border-primary ring-2 ring-primary/70 scale-[1.01]"
             : drag
@@ -313,7 +329,7 @@ export function GameTable({
           </button>
         )}
 
-        <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground [@media(max-height:520px)]:hidden">
+        <div className={cn("text-[10px] uppercase tracking-[0.3em] text-muted-foreground", sm("hidden"))}>
           {state.leadSuit ? `${SUIT_NAME[state.leadSuit]} led` : "New trick"}
         </div>
 
@@ -330,7 +346,7 @@ export function GameTable({
                       reveal.who === p ? "ring-2 ring-gold" : "opacity-70",
                     )}
                   />
-                  <span className="text-[9px] text-muted-foreground max-w-[4rem] truncate [@media(max-height:520px)]:hidden">
+                  <span className={cn("text-[9px] text-muted-foreground max-w-[4rem] truncate", sm("hidden"))}>
                     {state.players[p].name}
                   </span>
                 </div>
@@ -345,7 +361,7 @@ export function GameTable({
             state.pile.map(({ p, card }) => (
               <div key={card.id} className="anim-deal flex flex-col items-center gap-1">
                 <PlayingCard card={card} size={shortScreen ? "sm" : "md"} />
-                <span className="text-[9px] text-muted-foreground max-w-[4rem] truncate [@media(max-height:520px)]:hidden">
+                <span className={cn("text-[9px] text-muted-foreground max-w-[4rem] truncate", sm("hidden"))}>
                   {state.players[p].name}
                 </span>
               </div>
@@ -359,7 +375,7 @@ export function GameTable({
               : `${state.players[reveal.who].name} takes the trick`}
           </span>
         )}
-        <p className="text-xs text-center text-foreground/90 min-h-[1rem] px-2 [@media(max-height:520px)]:text-[10px] [@media(max-height:520px)]:min-h-0">{state.lastEvent}</p>
+        <p className={cn("text-center text-foreground/90 px-2", shortScreen ? "text-[10px] min-h-0" : "text-xs min-h-[1rem]")}>{state.lastEvent}</p>
 
         {/* Live standings */}
         <div className="absolute top-3 left-3">
@@ -381,7 +397,7 @@ export function GameTable({
 
 
         {/* Turn banner */}
-        <div className="absolute top-3 [@media(max-height:520px)]:top-1 left-1/2 -translate-x-1/2">
+        <div className={cn("absolute left-1/2 -translate-x-1/2", shortScreen ? "top-1" : "top-3")}>
           <span
             className={cn(
               "px-3 py-1 rounded-full text-[10px] font-black tracking-[0.2em] border",
@@ -425,7 +441,7 @@ export function GameTable({
 
 
       {/* You */}
-      <div className="panel shrink-0 rounded-2xl p-2 [@media(max-height:520px)]:p-1 flex items-center gap-2">
+      <div className={cn("panel shrink-0 rounded-2xl flex items-center gap-2", shortScreen ? "p-1" : "p-2")}>
         <div className="flex shrink-0 flex-col items-center gap-0.5 max-w-[6.5rem]">
 
           {me && (
@@ -470,60 +486,65 @@ export function GameTable({
         <div className="flex min-w-0 flex-1 flex-col">
         <div
           ref={handRef}
-          className="relative flex w-full justify-center overflow-visible pb-1 pt-3 [@media(max-height:520px)]:pt-2 px-1 [touch-action:none]"
+          className={cn("relative flex w-full flex-col items-center gap-1 overflow-visible pb-1 px-1 [touch-action:none]", shortScreen ? "pt-2" : "pt-3")}
         >
-
           {me && myCards.length > 0 ? (
-            myCards.map((c, idx, arr) => {
-              const newSuit = idx > 0 && arr[idx - 1].s !== c.s;
-              const dragging = drag?.id === c.id;
-              return (
-                <div
-                  key={c.id}
-                  onDragStart={(e) => e.preventDefault()}
-                  onPointerDown={(e) => startDrag(e, c.id)}
-                  onPointerMove={moveDrag}
-                  onPointerUp={endDrag}
-                  onPointerCancel={endDrag}
-                  className={cn(
-                    "relative shrink-0 select-none will-change-transform touch-none transition-[margin] duration-200",
-                    dragging && "z-50",
-                  )}
-                  style={{
-                    marginLeft: idx === 0 ? 0 : step - CARD_W + (newSuit ? 6 : 0),
-                    zIndex: dragging ? 50 : idx,
-                    ...(dragging
-                      ? {
-                          transform: `translate3d(${drag.dx}px, ${drag.dy}px, 0) scale(1.08) rotate(${Math.max(-8, Math.min(8, drag.dx * 0.05))}deg)`,
-                          transition: "none",
-                          filter: "drop-shadow(0 18px 22px rgba(0,0,0,0.55))",
-                        }
-                      : snapBack === c.id
-                        ? { transform: "translate3d(0,0,0)", transition: "transform 280ms cubic-bezier(.22,1,.36,1)" }
-                        : null),
-                  }}
-                >
-                  <PlayingCard
-                    card={c}
-                    size={cardSize}
-                    disabled={!myTurn}
-                    dimmed={coaching && myTurn && !playable.has(c.id)}
-                    className={cn(
-                      foul?.id === c.id && "anim-foul ring-2 ring-destructive",
-                      dragging && dropReady && "ring-2 ring-primary",
-                    )}
-                    onClick={() => {
-                      if (Date.now() - draggedRef.current < 350) return;
-                      tryPlay(c.id);
-                    }}
-                  />
-                </div>
-              );
-            })
+            handRows.map((row, rowIdx) => (
+              <div key={rowIdx} className="relative flex justify-center overflow-visible">
+                {row.map((c, idx, arr) => {
+                  const newSuit = idx > 0 && arr[idx - 1].s !== c.s;
+                  const dragging = drag?.id === c.id;
+                  return (
+                    <div
+                      key={c.id}
+                      onDragStart={(e) => e.preventDefault()}
+                      onPointerDown={(e) => startDrag(e, c.id)}
+                      onPointerMove={moveDrag}
+                      onPointerUp={endDrag}
+                      onPointerCancel={endDrag}
+                      className={cn(
+                        "relative shrink-0 select-none will-change-transform touch-none transition-[margin] duration-200",
+                        dragging && "z-50",
+                      )}
+                      style={{
+                        marginLeft: idx === 0 ? 0 : step - CARD_W + (newSuit ? 6 : 0),
+                        zIndex: dragging ? 50 : idx,
+                        ...(dragging
+                          ? {
+                              // When the table is rotated the pointer's screen axes are swapped.
+                              transform: `translate3d(${rotated ? drag.dy : drag.dx}px, ${rotated ? -drag.dx : drag.dy}px, 0) scale(1.08)`,
+                              transition: "none",
+                              filter: "drop-shadow(0 18px 22px rgba(0,0,0,0.55))",
+                            }
+                          : snapBack === c.id
+                            ? { transform: "translate3d(0,0,0)", transition: "transform 280ms cubic-bezier(.22,1,.36,1)" }
+                            : null),
+                      }}
+                    >
+                      <PlayingCard
+                        card={c}
+                        size={cardSize}
+                        disabled={!myTurn}
+                        dimmed={coaching && myTurn && !playable.has(c.id)}
+                        className={cn(
+                          foul?.id === c.id && "anim-foul ring-2 ring-destructive",
+                          dragging && dropReady && "ring-2 ring-primary",
+                        )}
+                        onClick={() => {
+                          if (Date.now() - draggedRef.current < 350) return;
+                          tryPlay(c.id);
+                        }}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            ))
           ) : (
             <span className="text-sm text-muted-foreground py-6">No cards left — you're safe! 🎉</span>
           )}
         </div>
+
 
         {coaching && myTurn && me && me.hand.length > 0 && (
           <p className="text-center text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
