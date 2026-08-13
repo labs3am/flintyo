@@ -486,61 +486,65 @@ export function GameTable({
         <div className="flex min-w-0 flex-1 flex-col">
         <div
           ref={handRef}
-          className={cn("relative flex w-full justify-center overflow-visible pb-1 px-1 [touch-action:none]", shortScreen ? "pt-2" : "pt-3")}
+          className={cn("relative flex w-full flex-col items-center gap-1 overflow-visible pb-1 px-1 [touch-action:none]", shortScreen ? "pt-2" : "pt-3")}
         >
-
           {me && myCards.length > 0 ? (
-            myCards.map((c, idx, arr) => {
-              const newSuit = idx > 0 && arr[idx - 1].s !== c.s;
-              const dragging = drag?.id === c.id;
-              return (
-                <div
-                  key={c.id}
-                  onDragStart={(e) => e.preventDefault()}
-                  onPointerDown={(e) => startDrag(e, c.id)}
-                  onPointerMove={moveDrag}
-                  onPointerUp={endDrag}
-                  onPointerCancel={endDrag}
-                  className={cn(
-                    "relative shrink-0 select-none will-change-transform touch-none transition-[margin] duration-200",
-                    dragging && "z-50",
-                  )}
-                  style={{
-                    marginLeft: idx === 0 ? 0 : step - CARD_W + (newSuit ? 6 : 0),
-                    zIndex: dragging ? 50 : idx,
-                    ...(dragging
-                      ? {
-                          // When the table is rotated the pointer's screen axes are swapped.
-                          transform: `translate3d(${rotated ? drag.dy : drag.dx}px, ${rotated ? -drag.dx : drag.dy}px, 0) scale(1.08)`,
-                          transition: "none",
-                          filter: "drop-shadow(0 18px 22px rgba(0,0,0,0.55))",
-                        }
-                      : snapBack === c.id
-                        ? { transform: "translate3d(0,0,0)", transition: "transform 280ms cubic-bezier(.22,1,.36,1)" }
-                        : null),
-                  }}
-                >
-                  <PlayingCard
-                    card={c}
-                    size={cardSize}
-                    disabled={!myTurn}
-                    dimmed={coaching && myTurn && !playable.has(c.id)}
-                    className={cn(
-                      foul?.id === c.id && "anim-foul ring-2 ring-destructive",
-                      dragging && dropReady && "ring-2 ring-primary",
-                    )}
-                    onClick={() => {
-                      if (Date.now() - draggedRef.current < 350) return;
-                      tryPlay(c.id);
-                    }}
-                  />
-                </div>
-              );
-            })
+            handRows.map((row, rowIdx) => (
+              <div key={rowIdx} className="relative flex justify-center overflow-visible">
+                {row.map((c, idx, arr) => {
+                  const newSuit = idx > 0 && arr[idx - 1].s !== c.s;
+                  const dragging = drag?.id === c.id;
+                  return (
+                    <div
+                      key={c.id}
+                      onDragStart={(e) => e.preventDefault()}
+                      onPointerDown={(e) => startDrag(e, c.id)}
+                      onPointerMove={moveDrag}
+                      onPointerUp={endDrag}
+                      onPointerCancel={endDrag}
+                      className={cn(
+                        "relative shrink-0 select-none will-change-transform touch-none transition-[margin] duration-200",
+                        dragging && "z-50",
+                      )}
+                      style={{
+                        marginLeft: idx === 0 ? 0 : step - CARD_W + (newSuit ? 6 : 0),
+                        zIndex: dragging ? 50 : idx,
+                        ...(dragging
+                          ? {
+                              // When the table is rotated the pointer's screen axes are swapped.
+                              transform: `translate3d(${rotated ? drag.dy : drag.dx}px, ${rotated ? -drag.dx : drag.dy}px, 0) scale(1.08)`,
+                              transition: "none",
+                              filter: "drop-shadow(0 18px 22px rgba(0,0,0,0.55))",
+                            }
+                          : snapBack === c.id
+                            ? { transform: "translate3d(0,0,0)", transition: "transform 280ms cubic-bezier(.22,1,.36,1)" }
+                            : null),
+                      }}
+                    >
+                      <PlayingCard
+                        card={c}
+                        size={cardSize}
+                        disabled={!myTurn}
+                        dimmed={coaching && myTurn && !playable.has(c.id)}
+                        className={cn(
+                          foul?.id === c.id && "anim-foul ring-2 ring-destructive",
+                          dragging && dropReady && "ring-2 ring-primary",
+                        )}
+                        onClick={() => {
+                          if (Date.now() - draggedRef.current < 350) return;
+                          tryPlay(c.id);
+                        }}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            ))
           ) : (
             <span className="text-sm text-muted-foreground py-6">No cards left — you're safe! 🎉</span>
           )}
         </div>
+
 
         {coaching && myTurn && me && me.hand.length > 0 && (
           <p className="text-center text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
