@@ -293,7 +293,8 @@ export function GameTable({
       <div
         ref={arenaRef}
         className={cn(
-          "felt relative flex-1 min-h-0 overflow-hidden rounded-[2rem] border p-3 pt-9 [@media(max-height:520px)]:p-2 [@media(max-height:520px)]:pt-8 [@media(max-height:520px)]:gap-1 flex flex-col items-center justify-center gap-2 transition-all duration-200",
+          "felt relative flex-1 min-h-0 overflow-hidden rounded-[2rem] border flex flex-col items-center justify-center transition-all duration-200",
+          shortScreen ? "p-2 pt-7 gap-1" : "p-3 pt-9 gap-2",
           dropReady
             ? "border-primary ring-2 ring-primary/70 scale-[1.01]"
             : drag
@@ -321,7 +322,7 @@ export function GameTable({
           </button>
         )}
 
-        <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground [@media(max-height:520px)]:hidden">
+        <div className={cn("text-[10px] uppercase tracking-[0.3em] text-muted-foreground", sm("hidden"))}>
           {state.leadSuit ? `${SUIT_NAME[state.leadSuit]} led` : "New trick"}
         </div>
 
@@ -338,7 +339,7 @@ export function GameTable({
                       reveal.who === p ? "ring-2 ring-gold" : "opacity-70",
                     )}
                   />
-                  <span className="text-[9px] text-muted-foreground max-w-[4rem] truncate [@media(max-height:520px)]:hidden">
+                  <span className={cn("text-[9px] text-muted-foreground max-w-[4rem] truncate", sm("hidden"))}>
                     {state.players[p].name}
                   </span>
                 </div>
@@ -353,7 +354,7 @@ export function GameTable({
             state.pile.map(({ p, card }) => (
               <div key={card.id} className="anim-deal flex flex-col items-center gap-1">
                 <PlayingCard card={card} size={shortScreen ? "sm" : "md"} />
-                <span className="text-[9px] text-muted-foreground max-w-[4rem] truncate [@media(max-height:520px)]:hidden">
+                <span className={cn("text-[9px] text-muted-foreground max-w-[4rem] truncate", sm("hidden"))}>
                   {state.players[p].name}
                 </span>
               </div>
@@ -367,7 +368,7 @@ export function GameTable({
               : `${state.players[reveal.who].name} takes the trick`}
           </span>
         )}
-        <p className="text-xs text-center text-foreground/90 min-h-[1rem] px-2 [@media(max-height:520px)]:text-[10px] [@media(max-height:520px)]:min-h-0">{state.lastEvent}</p>
+        <p className={cn("text-center text-foreground/90 px-2", shortScreen ? "text-[10px] min-h-0" : "text-xs min-h-[1rem]")}>{state.lastEvent}</p>
 
         {/* Live standings */}
         <div className="absolute top-3 left-3">
@@ -389,7 +390,7 @@ export function GameTable({
 
 
         {/* Turn banner */}
-        <div className="absolute top-3 [@media(max-height:520px)]:top-1 left-1/2 -translate-x-1/2">
+        <div className={cn("absolute left-1/2 -translate-x-1/2", shortScreen ? "top-1" : "top-3")}>
           <span
             className={cn(
               "px-3 py-1 rounded-full text-[10px] font-black tracking-[0.2em] border",
@@ -433,7 +434,7 @@ export function GameTable({
 
 
       {/* You */}
-      <div className="panel shrink-0 rounded-2xl p-2 [@media(max-height:520px)]:p-1 flex items-center gap-2">
+      <div className={cn("panel shrink-0 rounded-2xl flex items-center gap-2", shortScreen ? "p-1" : "p-2")}>
         <div className="flex shrink-0 flex-col items-center gap-0.5 max-w-[6.5rem]">
 
           {me && (
@@ -478,7 +479,7 @@ export function GameTable({
         <div className="flex min-w-0 flex-1 flex-col">
         <div
           ref={handRef}
-          className="relative flex w-full justify-center overflow-visible pb-1 pt-3 [@media(max-height:520px)]:pt-2 px-1 [touch-action:none]"
+          className={cn("relative flex w-full justify-center overflow-visible pb-1 px-1 [touch-action:none]", shortScreen ? "pt-2" : "pt-3")}
         >
 
           {me && myCards.length > 0 ? (
