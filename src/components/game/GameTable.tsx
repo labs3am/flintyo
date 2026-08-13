@@ -233,9 +233,16 @@ export function GameTable({
   const myCards = me ? sortHand(me.hand) : [];
   const cardSize = shortScreen ? "md" : "lg";
   const CARD_W = shortScreen ? 64 : 80;
+  // Never squeeze a card down to an unreadable sliver — wrap into a second row instead.
+  const MIN_STEP = 34;
+  const perRowCap =
+    handW > 0 ? Math.max(1, Math.floor((handW - CARD_W - 8) / MIN_STEP) + 1) : myCards.length;
+  const rows = myCards.length > perRowCap ? 2 : 1;
+  const perRow = Math.ceil(myCards.length / rows) || 1;
+  const handRows = Array.from({ length: rows }, (_, r) => myCards.slice(r * perRow, (r + 1) * perRow));
   const step =
-    myCards.length > 1 && handW > 0
-      ? Math.min(CARD_W + 8, Math.max(18, (handW - CARD_W - 8) / (myCards.length - 1)))
+    perRow > 1 && handW > 0
+      ? Math.min(CARD_W + 8, Math.max(MIN_STEP, (handW - CARD_W - 8) / (perRow - 1)))
       : CARD_W + 8;
 
 
