@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowLeft, Bot, Check, Copy, Loader2, MessageSquare, Play, Share2, Users, MessageCircle, X } from "lucide-react";
 import { toast } from "sonner";
 import { GameTable } from "@/components/game/GameTable";
-import { RotateGate } from "@/components/game/RotateGate";
+import { LandscapeShell } from "@/components/game/LandscapeShell";
 import { Countdown, DonkeyReveal } from "@/components/game/DonkeyReveal";
 import { CharacterAvatar } from "@/components/game/Character";
 import { createGame, playCard } from "@/lib/bhabhi/engine";
@@ -299,6 +299,7 @@ export default function RoomPage() {
   const iAmReady = (room.ready ?? []).includes(me.id) || isHost;
 
   return (
+    <LandscapeShell>
     <main
       className={cn(
         "w-full max-w-5xl mx-auto overflow-x-hidden p-2.5 md:p-4 flex flex-col gap-2",
@@ -308,7 +309,6 @@ export default function RoomPage() {
       )}
     >
       <Seo title="Donkey Room — Flintyo" description="Join a Flintyo Donkey room with a room code and play with friends online." path="/room" noindex />
-      <RotateGate />
       <h1 className="sr-only">Flintyo game room {code} — play the Donkey card game online</h1>
       <header className="panel shrink-0 rounded-2xl px-3 py-2 flex items-center justify-between gap-2">
         <button onClick={leave} className="btn-ghost px-3 py-1.5 inline-flex items-center gap-1.5 text-xs">
@@ -481,5 +481,6 @@ export default function RoomPage() {
         </div>
       )}
     </main>
+    </LandscapeShell>
   );
 }
