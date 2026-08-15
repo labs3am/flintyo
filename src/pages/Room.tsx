@@ -1,7 +1,7 @@
 import { Seo } from "@/components/Seo";
 import { useNavigate, useParams } from "react-router-dom";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowLeft, Bot, Check, Copy, Loader2, MessageSquare, Play, Share2, Users, MessageCircle, X } from "lucide-react";
+import { ArrowLeft, Bot, Check, Copy, Loader2, LogOut, MessageSquare, Play, Share2, Users, MessageCircle, X } from "lucide-react";
 import { toast } from "sonner";
 import { GameTable } from "@/components/game/GameTable";
 import { LandscapeShell } from "@/components/game/LandscapeShell";
