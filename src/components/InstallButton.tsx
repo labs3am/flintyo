@@ -137,11 +137,14 @@ export function InstallButton({ className = "" }: { className?: string }) {
 
   if (standalone) return null;
 
+  const isPrimary = className.includes("btn-primary") || className.includes("btn-gold");
+  const base = isPrimary ? "" : "btn-ghost";
+
   return (
     <>
       <button
         onClick={() => setOpen(true)}
-        className={`btn-ghost inline-flex items-center gap-2 px-4 py-2 text-sm ${className}`}
+        className={`${base} inline-flex items-center gap-2 text-sm ${className}`}
       >
         <Download className="h-4 w-4" /> Install app
       </button>
