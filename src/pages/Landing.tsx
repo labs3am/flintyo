@@ -167,6 +167,13 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* Install prompt */}
+      <section className="px-4 pb-10">
+        <div className="mx-auto max-w-3xl">
+          <InstallBanner />
+        </div>
+      </section>
+
       {/* Modes */}
       <section className="px-4 pb-16">
         <div className="mx-auto max-w-4xl">
