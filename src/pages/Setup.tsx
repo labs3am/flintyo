@@ -208,6 +208,10 @@ export default function Setup() {
           )}
         </div>
 
+        <div className="mt-4">
+          <InlineInstallCard />
+        </div>
+
         <button
           onClick={() => setTut(true)}
           className="mt-4 btn-ghost w-full py-3 inline-flex items-center justify-center gap-2 text-sm"
