@@ -8,6 +8,7 @@ import { LandingDemo } from "@/components/game/LandingDemo";
 import { TutorialDeck, TutorialModal } from "@/components/game/Tutorial";
 import { PlayingCard } from "@/components/game/PlayingCard";
 import { InstallButton } from "@/components/InstallButton";
+import { InstallBanner } from "@/components/InstallBanner";
 import { Reveal } from "@/components/Reveal";
 import type { Card } from "@/lib/bhabhi/engine";
 
@@ -163,6 +164,13 @@ export default function Landing() {
               </Reveal>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Install prompt */}
+      <section className="px-4 pb-10">
+        <div className="mx-auto max-w-3xl">
+          <InstallBanner />
         </div>
       </section>
 

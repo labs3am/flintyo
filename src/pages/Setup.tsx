@@ -11,6 +11,7 @@ import { createRoom, getIdentity, saveIdentity } from "@/lib/room";
 import { setSoundEnabled, soundEnabled } from "@/lib/sound";
 import { LevelPicker, type Level } from "@/components/game/LevelPicker";
 import { TutorialModal } from "@/components/game/Tutorial";
+import { InlineInstallCard } from "@/components/InstallBanner";
 
 
 export default function Setup() {
@@ -205,6 +206,10 @@ export default function Setup() {
               </p>
             </div>
           )}
+        </div>
+
+        <div className="mt-4">
+          <InlineInstallCard />
         </div>
 
         <button
