@@ -1,7 +1,7 @@
 import { Seo } from "@/components/Seo";
 import { useNavigate, useParams } from "react-router-dom";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowLeft, Bot, Check, Copy, Loader2, MessageSquare, Play, Share2, Users, MessageCircle, X } from "lucide-react";
+import { ArrowLeft, Bot, Check, Copy, Loader2, LogOut, MessageSquare, Play, Share2, Users, MessageCircle, X } from "lucide-react";
 import { toast } from "sonner";
 import { GameTable } from "@/components/game/GameTable";
 import { LandscapeShell } from "@/components/game/LandscapeShell";
@@ -11,7 +11,7 @@ import { createGame, playCard } from "@/lib/bhabhi/engine";
 import { chooseCard, botDelay, type Difficulty } from "@/lib/bhabhi/ai";
 import { CHARACTERS, getCharacter } from "@/lib/characters";
 import { RoomChat } from "@/components/game/RoomChat";
-import { fetchRoom, getIdentity, leaveRoom, mutateRoom, shareRoom, subscribeRoom, whatsappUrl, type ChatMsg, type RoomState } from "@/lib/room";
+import { fetchRoom, getIdentity, leaveRoom, mutateRoom, saveIdentity, shareRoom, subscribeRoom, whatsappUrl, type ChatMsg, type RoomState } from "@/lib/room";
 import { applyResult } from "@/lib/bhabhi/score";
 import { ScoreBoard } from "@/components/game/ScoreBoard";
 import { useReactions } from "@/hooks/useReactions";
@@ -22,7 +22,8 @@ import { LevelPicker, LEVEL_LABEL, type Level } from "@/components/game/LevelPic
 export default function RoomPage() {
   const { code = "" } = useParams<{ code: string }>();
   const navigate = useNavigate();
-  const [me] = useState(() => getIdentity());
+  const [me, setMe] = useState(() => getIdentity());
+  const [nameDraft, setNameDraft] = useState(() => getIdentity().name ?? "");
   const [room, setRoom] = useState<RoomState | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -202,6 +203,16 @@ export default function RoomPage() {
       return { ...s, ready: cur.includes(me.id) ? cur.filter((x) => x !== me.id) : [...cur, me.id] };
     });
 
+  const saveName = () => {
+    const name = nameDraft.trim().slice(0, 14);
+    if (!name) return;
+    saveIdentity({ name });
+    setMe((m) => ({ ...m, name }));
+    void push((s) => ({ ...s, seats: s.seats.map((x) => (x.id === me.id ? { ...x, name } : x)) }));
+    toast.success("Name saved");
+  };
+
+
   // Keep speech bubbles ticking so they expire.
   useEffect(() => {
     const t = setInterval(() => setTick((n) => n + 1), 1000);
@@ -367,7 +378,38 @@ export default function RoomPage() {
             </a>
           </div>
 
+          <div className="space-y-1.5">
+            <label htmlFor="player-name" className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+              Your name
+            </label>
+            <div className="flex gap-2">
+              <input
+                id="player-name"
+                value={nameDraft}
+                onChange={(e) => setNameDraft(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && saveName()}
+                placeholder="Enter your name"
+                maxLength={14}
+                className="flex-1 min-w-0 rounded-xl border border-border/70 bg-black/30 px-3 py-2 text-sm outline-none focus:border-primary"
+              />
+              <button
+                onClick={saveName}
+                disabled={!nameDraft.trim() || nameDraft.trim() === me.name}
+                className="btn-ghost px-3 py-2 text-xs disabled:opacity-40"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+
+          {room.seats.length <= 1 && (
+            <p className="text-center text-xs text-muted-foreground rounded-2xl border border-dashed border-border/70 py-3 px-2">
+              No one else is in this room yet — share the code or add an AI player.
+            </p>
+          )}
+
           <div className="grid grid-cols-3 gap-2">
+
             {room.seats.map((s) => (
               <div key={s.id} className="fade-in flex flex-col items-center gap-1 rounded-2xl border border-border/70 bg-black/20 py-2">
                 <CharacterAvatar character={getCharacter(s.char)} expression="idle" size={58} />
@@ -445,6 +487,18 @@ export default function RoomPage() {
             scores={room?.scores}
             waitingLabel={mySeat < 0 ? "Spectating this round" : undefined}
           />
+
+          <button
+            onClick={() => {
+              if (window.confirm("Exit the game and leave this room?")) void leave();
+            }}
+            aria-label="Exit game"
+            className="fixed top-3 right-3 z-30 h-11 rounded-full px-3 inline-flex items-center gap-1.5 border border-border bg-black/60 backdrop-blur text-xs font-bold active:scale-90 transition"
+          >
+            <LogOut className="h-4 w-4" /> Exit
+          </button>
+
+
 
           <button
             onClick={() => {
