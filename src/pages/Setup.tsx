@@ -11,6 +11,7 @@ import { createRoom, getIdentity, saveIdentity } from "@/lib/room";
 import { setSoundEnabled, soundEnabled } from "@/lib/sound";
 import { LevelPicker, type Level } from "@/components/game/LevelPicker";
 import { TutorialModal } from "@/components/game/Tutorial";
+import { InlineInstallCard } from "@/components/InstallBanner";
 
 
 export default function Setup() {
