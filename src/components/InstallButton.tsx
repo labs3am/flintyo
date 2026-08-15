@@ -40,9 +40,9 @@ function NativeInstall({
       <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-primary/15 text-primary mb-3">
         <Download className="h-7 w-7" />
       </div>
-      <h3 className="text-lg font-black">Install Flintyo</h3>
+      <h3 className="text-lg font-black">Install Flintyo for better play</h3>
       <p className="mt-1 text-sm text-muted-foreground">
-        Add the app to your home screen for the fastest way to start a game.
+        Fullscreen cards, no browser chrome, and one-tap access from your home screen.
       </p>
       <button
         onClick={async () => {
@@ -51,7 +51,7 @@ function NativeInstall({
         }}
         className="mt-5 btn-primary w-full inline-flex items-center justify-center gap-2 px-6 py-3"
       >
-        <Download className="h-4 w-4" /> Install app
+        <Download className="h-4 w-4" /> Install now
       </button>
     </div>
   );
