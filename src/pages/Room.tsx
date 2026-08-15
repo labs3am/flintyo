@@ -22,7 +22,8 @@ import { LevelPicker, LEVEL_LABEL, type Level } from "@/components/game/LevelPic
 export default function RoomPage() {
   const { code = "" } = useParams<{ code: string }>();
   const navigate = useNavigate();
-  const [me] = useState(() => getIdentity());
+  const [me, setMe] = useState(() => getIdentity());
+  const [nameDraft, setNameDraft] = useState(() => getIdentity().name ?? "");
   const [room, setRoom] = useState<RoomState | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
