@@ -490,6 +490,18 @@ export default function RoomPage() {
 
           <button
             onClick={() => {
+              if (window.confirm("Exit the game and leave this room?")) void leave();
+            }}
+            aria-label="Exit game"
+            className="fixed top-3 right-3 z-30 h-11 rounded-full px-3 inline-flex items-center gap-1.5 border border-border bg-black/60 backdrop-blur text-xs font-bold active:scale-90 transition"
+          >
+            <LogOut className="h-4 w-4" /> Exit
+          </button>
+
+
+
+          <button
+            onClick={() => {
               setChatOpen((o) => !o);
               setSeenChat(chat.length);
             }}
