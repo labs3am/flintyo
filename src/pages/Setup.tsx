@@ -120,8 +120,10 @@ export default function Setup() {
 
           <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2">
             <CharacterAvatar character={getCharacter(char)} expression="happy" size={42} />
+            <label htmlFor="name" className="sr-only">Your nickname</label>
             <input
               id="name"
+              aria-label="Your nickname"
               value={name}
               onChange={(e) => setName(e.target.value)}
               maxLength={14}
@@ -186,6 +188,7 @@ export default function Setup() {
               </div>
               <div className="flex gap-2">
                 <input
+                  aria-label="Room code"
                   value={code}
                   onChange={(e) => setCode(e.target.value.toUpperCase())}
                   onKeyDown={(e) => e.key === "Enter" && join()}

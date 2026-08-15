@@ -87,6 +87,7 @@ export function RoomChat({
 
       <div className="flex gap-2">
         <input
+          aria-label="Message"
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && send(text)}
