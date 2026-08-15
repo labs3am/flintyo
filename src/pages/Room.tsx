@@ -203,6 +203,16 @@ export default function RoomPage() {
       return { ...s, ready: cur.includes(me.id) ? cur.filter((x) => x !== me.id) : [...cur, me.id] };
     });
 
+  const saveName = () => {
+    const name = nameDraft.trim().slice(0, 14);
+    if (!name) return;
+    saveIdentity({ name });
+    setMe((m) => ({ ...m, name }));
+    void push((s) => ({ ...s, seats: s.seats.map((x) => (x.id === me.id ? { ...x, name } : x)) }));
+    toast.success("Name saved");
+  };
+
+
   // Keep speech bubbles ticking so they expire.
   useEffect(() => {
     const t = setInterval(() => setTick((n) => n + 1), 1000);
