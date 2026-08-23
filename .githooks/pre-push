@@ -1,0 +1,24 @@
+#!/bin/sh
+# Pre-push hook: run lint + tests + production build before anything goes out.
+# Fail the push if any step fails.
+#
+# Activate once per clone with:
+#   git config core.hooksPath .githooks
+# (runs `npm run check` -- needs node_modules; see package.json "check" script.)
+
+echo ""
+echo "🔍 Running pre-push checks (lint → test → build)…"
+echo ""
+
+if ! npm run check; then
+  echo ""
+  echo "❌ Pre-push checks FAILED — push aborted."
+  echo "   Fix the issues above, then push again."
+  echo ""
+  exit 1
+fi
+
+echo ""
+echo "✅ All pre-push checks passed."
+echo ""
+exit 0
