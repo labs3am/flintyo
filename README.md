@@ -12,7 +12,7 @@ The goal is simple:
 
 ## 🎮 Play Flintyo
 
-**[Play Now](YOUR_GAME_URL)**
+**[Play Now](https://flintyo.com)**
 
 No download. No account required.
 
@@ -83,6 +83,47 @@ No cards around? Open the browser.
 * Supabase
 * Real-time multiplayer
 * AI opponents
+
+---
+
+## 💻 Local development
+
+Flintyo is built with Vite + npm. To run or preview it yourself:
+
+```bash
+# install dependencies (npm)
+npm install
+
+# local dev server with hot reload  ->  http://localhost:8080
+npm run dev
+
+# the production build exactly as Cloudflare serves  ->  http://localhost:4173
+npm run build
+npm run preview
+```
+
+Route map to test the game:
+- `http://localhost:8080/` — landing
+- `http://localhost:8080/start` — set up a game (AI / online / pass & play)
+- `http://localhost:8080/rules` — rules explainer
+- `http://localhost:8080/play?mode=ai&players=4&char=donny&level=normal` — vs bots
+- `http://localhost:8080/room/ABCDE` — join/spectate an online room
+
+### Pre-push check
+
+There is a git pre-push hook that runs the full gate automatically before **any** `git push`:
+
+```
+npm run check        # lint → test → build
+```
+
+If any step fails, the push is aborted so broken code never leaves your machine. The hook is enabled for this clone already. On a fresh clone, activate it once:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+> 🛡️ Heads-up before merging to `main`: `npm run check` must be green. The lint rule has a few harmless React-refresh warnings in the shadcn UI files, but **0 errors**.
 
 ---
 
