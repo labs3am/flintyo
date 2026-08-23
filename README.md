@@ -12,7 +12,7 @@ The goal is simple:
 
 ## 🎮 Play Flintyo
 
-**[Play Now](YOUR_GAME_URL)**
+**[Play Now](https://flintyo.com)**
 
 No download. No account required.
 
