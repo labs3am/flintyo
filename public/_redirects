@@ -1,4 +1,0 @@
-# Cloudflare Pages — SPA fallback
-# Serve index.html for any route that isn't a real file so React Router
-# handles /start, /play, /rules, /room/:code, etc.
-/* /index.html 200
