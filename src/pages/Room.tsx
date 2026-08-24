@@ -319,7 +319,7 @@ export default function RoomPage() {
           : "min-h-screen",
       )}
     >
-      <Seo title="Donkey Room — Flintyo" description="Join a Flintyo Donkey room with a room code and play with friends online." path="/room" noindex />
+      <Seo title="Donkey Room — Flintyo" description="Join a Flintyo Donkey room with a room code and play with friends online." path={`/room/${code}`} />
       <h1 className="sr-only">Flintyo game room {code} — play the Donkey card game online</h1>
       <header className="panel shrink-0 rounded-2xl px-3 py-2 flex items-center justify-between gap-2">
         <button onClick={leave} className="btn-ghost px-3 py-1.5 inline-flex items-center gap-1.5 text-xs">
