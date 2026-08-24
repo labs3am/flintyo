@@ -54,11 +54,11 @@ export function DonkeyReveal({
         )}
       </div>
 
-      <h2 className="text-2xl font-black leading-tight">
+      <h2 className="max-w-sm text-2xl font-bold leading-snug">
         {loser ? (
           <>
-            <span className="text-4xl block anim-hop">🫏</span>
-            THE DONKEY GOT {loser.name.toUpperCase()}!
+            <span className="anim-hop mr-1 inline-block text-3xl">🫏</span>The Donkey got{" "}
+            <span className="text-highlight">{loser.name}</span>!
           </>
         ) : (
           "Nobody is the Donkey!"
@@ -78,7 +78,7 @@ export function DonkeyReveal({
           .map((p) => (
             <span
               key={p.id}
-              className="text-[11px] rounded-full border border-border bg-surface/50 px-2.5 py-1 font-semibold"
+              className="rounded-md border border-border bg-surface-elevated px-2.5 py-1 text-xs font-semibold"
             >
               #{p.place} {p.name}
             </span>

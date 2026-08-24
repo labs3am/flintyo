@@ -54,13 +54,13 @@ export function RoomChat({
               <div key={m.id} className={cn("fade-in flex items-end gap-1.5", mine && "flex-row-reverse")}>
                 <CharacterAvatar character={getCharacter(m.char)} expression="idle" size={28} />
                 <div className={cn("max-w-[75%] min-w-0", mine && "text-right")}>
-                  <span className="block text-[9px] text-muted-foreground truncate">{mine ? "You" : m.name}</span>
+                  <span className="block text-[10px] text-muted-foreground truncate">{mine ? "You" : m.name}</span>
                   <span
                     className={cn(
-                      "inline-block rounded-2xl px-2.5 py-1.5 text-[12px] leading-snug break-words",
+                      "inline-block rounded-lg px-2.5 py-1.5 text-[13px] leading-snug break-words",
                       mine
                         ? "bg-primary text-primary-foreground rounded-br-sm"
-                        : "bg-surface/70 border border-border rounded-bl-sm",
+                        : "bg-surface border border-border rounded-bl-sm",
                     )}
                   >
                     {m.text}
@@ -78,7 +78,7 @@ export function RoomChat({
           <button
             key={q}
             onClick={() => send(q)}
-            className="shrink-0 rounded-full border border-border bg-surface/60 px-2.5 py-1 text-[10px] font-semibold text-muted-foreground hover:text-foreground hover:border-primary transition"
+            className="shrink-0 rounded-md border border-border bg-surface-elevated px-2.5 py-1 text-xs font-semibold text-muted-foreground hover:text-foreground hover:border-primary transition"
           >
             {q}
           </button>
@@ -93,7 +93,7 @@ export function RoomChat({
           onKeyDown={(e) => e.key === "Enter" && send(text)}
           maxLength={120}
           placeholder="Message the table…"
-          className="flex-1 min-w-0 rounded-xl bg-input/70 border border-border px-3 py-2 text-sm outline-none focus:border-primary"
+          className="flex-1 min-w-0 rounded-md bg-input border border-border px-3 py-2 text-sm outline-none focus:border-primary"
         />
         <button
           onClick={() => send(text)}

@@ -493,7 +493,7 @@ export default function RoomPage() {
               if (window.confirm("Exit the game and leave this room?")) void leave();
             }}
             aria-label="Exit game"
-            className="fixed top-3 right-3 z-30 h-11 rounded-full px-3 inline-flex items-center gap-1.5 border border-border bg-surface-elevated/80 backdrop-blur text-xs font-bold active:scale-90 transition"
+            className="fixed top-3 right-3 z-30 h-11 rounded-full px-3 inline-flex items-center gap-1.5 border border-border bg-surface-elevated text-foreground/90 text-xs font-semibold active:scale-95 transition"
           >
             <LogOut className="h-4 w-4" /> Exit
           </button>
@@ -506,7 +506,7 @@ export default function RoomPage() {
               setSeenChat(chat.length);
             }}
             aria-label="Table chat"
-            className="fixed bottom-4 left-4 z-30 h-11 w-11 rounded-full grid place-items-center border border-border bg-surface-elevated/80 backdrop-blur active:scale-90 transition"
+            className="fixed bottom-4 left-4 z-30 h-11 w-11 rounded-full grid place-items-center border border-border bg-surface-elevated active:scale-95 transition"
           >
             {chatOpen ? <X className="h-5 w-5" /> : <MessageSquare className="h-5 w-5" />}
             {unread > 0 && (
