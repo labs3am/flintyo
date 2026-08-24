@@ -102,8 +102,9 @@
   /* ---- gradients (kept subtle) ---- */
   --gradient-primary: linear-gradient(180deg, oklch(0.76 0.19 50), var(--ember) 55%, oklch(0.55 0.16 36));
   --gradient-gold: linear-gradient(180deg, oklch(0.92 0.10 84), var(--cream) 55%, oklch(0.74 0.13 62));
-  --gradient-bg: radial-gradient(ellipse 90% 70% at 50% 32%, oklch(0.28 0.03 45 / 0.45), transparent 70%),
-                 radial-gradient(ellipse 70% 50% at 50% 100%, oklch(0.16 0.02 50 / 0.6), transparent 65%);
+  --gradient-bg: radial-gradient(ellipse 90% 65% at 50% 28%, oklch(0.245 0.032 45 / 0.5), transparent 70%),
+                 radial-gradient(ellipse 80% 55% at 50% -18%, oklch(0.33 0.05 42 / 0.32), transparent 72%),
+                 radial-gradient(ellipse 95% 60% at 50% 115%, oklch(0.22 0.05 155 / 0.32), transparent 70%);
 
   /* ---- motion ---- */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -141,6 +142,45 @@
     -webkit-font-smoothing: antialiased;
     -webkit-tap-highlight-color: transparent;
   }
+
+  /* ---- midnight card-room scene --------------------------------------
+     Fixed decorative layers behind all content.
+     ::before = drifting ambient glows · ::after = card motif + grain + vignette */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: -30vh -30vw;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(42rem 42rem at 22% 18%, oklch(0.635 0.175 50 / 0.14), transparent 70%),
+      radial-gradient(48rem 40rem at 84% 34%, oklch(0.845 0.11 82 / 0.09), transparent 70%),
+      radial-gradient(52rem 44rem at 50% 108%, oklch(0.45 0.09 155 / 0.11), transparent 72%);
+    animation: bg-drift 46s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      radial-gradient(ellipse 120% 90% at 50% 42%, transparent 55%, oklch(0.08 0.01 50 / 0.38) 100%),
+      url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='180'%20height='180'%3E%3Cfilter%20id='n'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='0.8'%20numOctaves='2'%20stitchTiles='stitch'/%3E%3CfeColorMatrix%20type='saturate'%20values='0'/%3E%3C/filter%3E%3Crect%20width='100%25'%20height='100%25'%20filter='url(%23n)'%20opacity='0.5'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='140'%20height='140'%3E%3Cg%20fill='none'%20stroke='%23e6d4a8'%20stroke-opacity='0.05'%20stroke-width='1.5'%3E%3Crect%20x='18'%20y='14'%20width='44'%20height='62'%20rx='7'%20transform='rotate(-12%2040%2045)'/%3E%3Crect%20x='74'%20y='58'%20width='44'%20height='62'%20rx='7'%20transform='rotate(11%2096%2089)'/%3E%3C/g%3E%3Crect%20x='88'%20y='24'%20width='10'%20height='10'%20rx='2'%20transform='rotate(45%2093%2029)'%20fill='%23e86428'%20fill-opacity='0.07'/%3E%3C/svg%3E");
+    background-size: auto, 180px 180px, 140px 140px;
+    opacity: 0.9;
+  }
+  @keyframes bg-drift {
+    from { transform: translate3d(-1.5%, -1%, 0) rotate(-1.2deg) scale(1); }
+    50%  { transform: translate3d(1%, 1.5%, 0) rotate(0.6deg) scale(1.05); }
+    to   { transform: translate3d(2%, -1.5%, 0) rotate(1.4deg) scale(1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    body::before { animation: none; }
+  }
+
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
     font-weight: 800;
