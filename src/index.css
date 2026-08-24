@@ -186,7 +186,7 @@
     from { transform: scaleX(1); }
     to { transform: scaleX(0); }
   }
-     /* ---- glow (restrained, not a full-halos) for UI chrome like selected chars ---- */
+     /* ---- glow (restrained accent ring for selected UI chrome) ---- */
    .glow {
      box-shadow: 0 0 0 1px oklch(from var(--ember) l c h / 0.15), 0 0 14px oklch(from var(--ember) l c h / 0.18);
    }

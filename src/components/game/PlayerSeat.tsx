@@ -73,7 +73,7 @@ export function PlayerSeat({
         side === "top" && "flex-col items-center",
         side === "left" && "flex-row items-center",
         side === "right" && "flex-row-reverse items-center",
-        seat.active ? "seat-turn ring-2 ring-turn" : "bg-black/20 ring-1 ring-border/60",
+        seat.active ? "seat-turn ring-2 ring-turn" : "bg-surface/60 ring-1 ring-border/60",
         seat.out && "opacity-70",
       )}
     >
@@ -138,7 +138,7 @@ export function PlayerSeat({
                 "inline-flex items-center gap-1.5 rounded-full border px-1.5 py-[1px] text-[10px] font-black leading-none tabular-nums",
                 seat.cards > 16
                   ? "border-destructive/60 bg-destructive/20 text-destructive"
-                  : "border-gold/50 bg-black/50 text-gold",
+                  : "border-gold/50 bg-surface/60 text-gold",
               )}
             >
               <MiniDeck cards={seat.cards} />
@@ -149,7 +149,7 @@ export function PlayerSeat({
         {seat.active && !seat.out && (
           <span
             key={`t${turnKey ?? 0}`}
-            className="turn-timer h-1 w-12 overflow-hidden rounded-full bg-black/40"
+            className="turn-timer h-1 w-12 overflow-hidden rounded-full bg-surface-elevated/60"
             style={{ ["--turn-dur" as string]: `${turnSeconds}s` }}
           >
             <i />

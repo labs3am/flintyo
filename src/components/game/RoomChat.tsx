@@ -60,7 +60,7 @@ export function RoomChat({
                       "inline-block rounded-2xl px-2.5 py-1.5 text-[12px] leading-snug break-words",
                       mine
                         ? "bg-primary text-primary-foreground rounded-br-sm"
-                        : "bg-black/35 border border-border rounded-bl-sm",
+                        : "bg-surface/70 border border-border rounded-bl-sm",
                     )}
                   >
                     {m.text}
@@ -78,7 +78,7 @@ export function RoomChat({
           <button
             key={q}
             onClick={() => send(q)}
-            className="shrink-0 rounded-full border border-border bg-black/25 px-2.5 py-1 text-[10px] font-semibold text-muted-foreground hover:text-foreground hover:border-primary transition"
+            className="shrink-0 rounded-full border border-border bg-surface/60 px-2.5 py-1 text-[10px] font-semibold text-muted-foreground hover:text-foreground hover:border-primary transition"
           >
             {q}
           </button>
