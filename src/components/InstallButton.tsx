@@ -103,7 +103,7 @@ function InstallModal({ onClose }: { onClose: () => void }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 grid place-items-center bg-background/85 backdrop-blur p-4 fade-in"
+      className="fixed inset-0 z-50 grid place-items-center bg-background/95 p-4 fade-in"
       onClick={onClose}
     >
       <div

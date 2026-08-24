@@ -40,7 +40,7 @@ export function DonkeyReveal({
   const loserExpr = beat === 0 ? "confused" : beat === 1 ? "shocked" : "defeat";
 
   return (
-    <div className="absolute inset-0 rounded-[2rem] bg-background/92 backdrop-blur-md flex flex-col items-center justify-center gap-3 text-center p-5 fade-in overflow-y-auto z-40">
+    <div className="absolute inset-0 rounded-[2rem] bg-background/95 flex flex-col items-center justify-center gap-3 text-center p-5 fade-in overflow-y-auto z-40">
       <div className="flex items-end justify-center gap-2">
         {loser && (
           <div className="anim-zoom-focus">
@@ -108,7 +108,7 @@ export function Countdown({ onDone }: { onDone: () => void }) {
   }, [n, onDone]);
 
   return (
-    <div className="absolute inset-0 z-50 grid place-items-center bg-background/85 backdrop-blur-sm rounded-[2rem]">
+    <div className="absolute inset-0 z-50 grid place-items-center bg-background/95 rounded-[2rem]">
       <div key={n} className="anim-count text-7xl font-black text-gradient">
         {n === 0 ? "GO!" : n}
       </div>

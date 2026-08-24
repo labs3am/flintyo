@@ -58,8 +58,8 @@ export function LevelChip({ value, onChange }: { value: Level; onChange?: (l: Le
       onClick={onChange ? next : undefined}
       title={onChange ? "Tap to change AI difficulty" : undefined}
       className={cn(
-        "rounded-full border border-border bg-surface-elevated/70 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em]",
-        value === "hard" ? "text-primary" : value === "easy" ? "text-muted-foreground" : "text-gold",
+        "rounded-md border border-border bg-surface-elevated px-2.5 py-1 text-xs font-semibold",
+        value === "hard" ? "text-primary" : value === "easy" ? "text-muted-foreground" : "text-highlight",
         onChange && "active:scale-95 transition",
       )}
     >

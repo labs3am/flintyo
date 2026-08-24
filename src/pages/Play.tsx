@@ -133,7 +133,7 @@ export default function PlayPage() {
             FLINTYO<span className="sr-only"> — playing the Donkey card game</span>
           </h1>
           {state.players.some((p) => p.bot) && (
-            <span className="text-[9px] font-black uppercase tracking-[0.14em] text-muted-foreground">
+            <span className="text-[11px] font-semibold tracking-wide text-muted-foreground">
               AI · {level}
             </span>
           )}
@@ -157,7 +157,7 @@ export default function PlayPage() {
         {counting && <Countdown onDone={() => { setCounting(false); sfx.deal(); }} />}
 
         {mode === "pass" && !revealed && !counting && state.phase === "playing" && (
-          <div className="absolute inset-0 rounded-[2rem] bg-background/88 backdrop-blur-md flex flex-col items-center justify-center gap-3 text-center p-6 fade-in z-30">
+          <div className="absolute inset-0 rounded-[2rem] bg-background/95 flex flex-col items-center justify-center gap-3 text-center p-6 fade-in z-30">
             <p className="text-sm text-muted-foreground">Pass the device to</p>
             <p className="text-3xl font-black text-gradient">{state.players[state.turn].name}</p>
             <button onClick={() => setRevealed(true)} className="btn-primary inline-flex items-center gap-2">

@@ -75,7 +75,7 @@ export function ReactionMenu({ onSend }: { onSend: (emoji: string) => void }) {
         onClick={() => setOpen((o) => !o)}
         aria-label="Reactions"
         className={cn(
-          "h-11 w-11 rounded-full grid place-items-center border border-border bg-surface-elevated/80 backdrop-blur transition active:scale-90",
+          "h-11 w-11 rounded-full grid place-items-center border border-border bg-surface-elevated transition active:scale-90",
           open && "border-primary text-primary",
           cooling && "opacity-60",
         )}

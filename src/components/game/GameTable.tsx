@@ -342,7 +342,7 @@ export function GameTable({
           type="button"
           onClick={exitFull}
           aria-label="Exit full screen"
-          className="absolute top-2 right-2 z-[60] inline-flex items-center gap-1 rounded-full border border-primary bg-primary px-3 py-2 text-[10px] font-black uppercase tracking-[0.15em] text-primary-foreground shadow-lg transition active:scale-95 [touch-action:manipulation] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+          className="absolute top-2 right-2 z-[60] inline-flex items-center gap-1.5 rounded-lg border border-violet bg-violet px-3 py-2 text-xs font-semibold text-primary-foreground shadow-lg transition active:scale-95 [touch-action:manipulation] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
         >
           <Minimize2 className="h-3.5 w-3.5" /> Exit
         </button>
@@ -444,13 +444,13 @@ export function GameTable({
             type="button"
             onClick={toggleFull}
             aria-label="Enter full screen"
-            className="absolute bottom-3 left-3 z-20 inline-flex items-center gap-1 rounded-full border border-border bg-surface-elevated/80 px-3 py-2 text-[9px] font-black uppercase tracking-[0.15em] text-foreground/80 transition active:scale-95 [touch-action:manipulation]"
+            className="absolute bottom-3 left-3 z-20 inline-flex items-center gap-1 rounded-lg border border-border bg-surface-elevated px-2.5 py-1.5 text-[11px] font-semibold text-foreground/90 transition hover:border-ink-faint active:scale-95 [touch-action:manipulation]"
           >
             <Maximize2 className="h-3.5 w-3.5" /> Full
           </button>
         )}
 
-        <div className={cn("text-[10px] uppercase tracking-[0.3em] text-muted-foreground", sm("hidden"))}>
+        <div className={cn("text-xs font-medium text-muted-foreground", sm("hidden"))}>
           {state.leadSuit ? `${SUIT_NAME[state.leadSuit]} led` : "New trick"}
         </div>
 
@@ -468,11 +468,11 @@ export function GameTable({
                       size={shortScreen ? "sm" : "md"}
                       className={cn(
                         "transition",
-                        reveal.who === p ? "ring-2 ring-gold shadow-glow" : "opacity-75",
+                        reveal.who === p ? "ring-2 ring-highlight" : "opacity-75",
                       )}
                     />
                   </div>
-                  <span className={cn("text-[9px] text-muted-foreground max-w-[4rem] truncate", sm("hidden"))}>
+                  <span className={cn("text-[11px] text-muted-foreground max-w-[4.5rem] truncate", sm("hidden"))}>
                     {state.players[p].name}
                   </span>
                 </div>
@@ -496,7 +496,7 @@ export function GameTable({
                 >
                   <PlayingCard card={card} size={shortScreen ? "sm" : "md"} />
                 </div>
-                <span className={cn("text-[9px] text-muted-foreground max-w-[4rem] truncate", sm("hidden"))}>
+                <span className={cn("text-[11px] text-muted-foreground max-w-[4.5rem] truncate", sm("hidden"))}>
                   {state.players[p].name}
                 </span>
               </div>
@@ -504,7 +504,7 @@ export function GameTable({
           )}
         </div>
         {reveal && state.pile.length === 0 && (
-          <span className="rounded-full border border-gold/50 bg-surface/60 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-[0.2em] text-gold">
+          <span className="rounded-md border border-hairline bg-surface-elevated px-2.5 py-1 text-xs font-semibold text-highlight">
             {reveal.kind === "pickup"
               ? `${state.players[reveal.who].name} picks these up`
               : `${state.players[reveal.who].name} takes the trick`}
@@ -514,7 +514,7 @@ export function GameTable({
 
         {/* Live standings */}
         <div className="absolute top-3 left-3">
-          <span className="px-2 py-1 rounded-full text-[9px] font-black tracking-[0.15em] bg-surface-elevated/80 border border-border text-gold">
+          <span className="rounded-md border border-hairline bg-surface-elevated px-2 py-0.5 text-[11px] font-semibold text-ink-muted">
             {alive} IN
           </span>
         </div>
@@ -523,8 +523,8 @@ export function GameTable({
         <button
           onClick={() => setTab((t) => (t === "scores" ? null : "scores"))}
           className={cn(
-            "absolute top-3 right-3 z-20 rounded-full border px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.15em] transition active:scale-95 [touch-action:manipulation] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
-            tab === "scores" ? "border-primary bg-primary/20 text-primary" : "border-border bg-surface-elevated/80 text-foreground/80",
+            "absolute top-3 right-3 z-20 rounded-md border px-2.5 py-1 text-[11px] font-semibold transition active:scale-95 [touch-action:manipulation] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
+            tab === "scores" ? "border-primary bg-primary/15 text-primary" : "border-hairline bg-surface-elevated text-muted-foreground",
           )}
         >
           Scores
@@ -535,10 +535,10 @@ export function GameTable({
         <div className={cn("absolute left-1/2 -translate-x-1/2", shortScreen ? "top-1" : "top-3")}>
           <span
             className={cn(
-              "px-3 py-1 rounded-full text-[10px] font-black tracking-[0.2em] border",
+              "rounded-md border px-3 py-1 text-xs font-bold",
               myTurn
-                ? "bg-primary text-primary-foreground border-primary anim-pulse-soft"
-                : "bg-surface-elevated/80 text-muted-foreground border-border",
+                ? "bg-turn text-turn-foreground border-turn"
+                : "bg-surface-elevated text-muted-foreground border-hairline",
             )}
           >
             {state.phase === "over" ? "ROUND OVER" : myTurn ? "YOUR TURN" : `${turnName.toUpperCase()}'S TURN`}
@@ -550,10 +550,10 @@ export function GameTable({
           <div className="pointer-events-none absolute inset-0 grid place-items-center z-10">
             <span
               className={cn(
-                "rounded-full border px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] backdrop-blur transition-colors",
+                "rounded-md border px-3 py-1.5 text-xs font-bold backdrop-blur-none transition-colors",
                 dropReady
                   ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border bg-surface-elevated/80 text-muted-foreground",
+                  : "border-hairline bg-surface-elevated text-muted-foreground",
               )}
             >
               {dropReady ? "Release to play" : "Drop here"}
@@ -577,7 +577,7 @@ export function GameTable({
 
 
       {/* You */}
-      <div className={cn("panel shrink-0 rounded-2xl flex items-center gap-2", shortScreen ? "p-1" : "p-2")}>
+      <div className={cn("relative shrink-0", shortScreen ? "px-1 pb-0.5" : "px-2 pb-1")}>
         <div className="flex shrink-0 flex-col items-center gap-0.5 max-w-[6.5rem]">
 
           {me && (

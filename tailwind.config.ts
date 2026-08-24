@@ -45,6 +45,10 @@ export default {
         ember: c("ember"),
         "ember-hover": c("ember-hover"),
         cream: c("cream"),
+        violet: c("violet"),
+        "violet-hover": c("violet-hover"),
+        lavender: c("lavender"),
+        highlight: c("highlight"),
         success: c("success"),
         danger: c("danger"),
         primary: {

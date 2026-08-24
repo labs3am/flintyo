@@ -64,7 +64,7 @@ export function PlayingCard({
         onClick && disabled && "cursor-not-allowed",
         dimmed && "opacity-45 saturate-50",
         selected && "-translate-y-3 ring-2 ring-primary",
-        highlight && "ring-2 ring-primary shadow-glow",
+        highlight && "ring-2 ring-highlight",
         "transition-all duration-fast ease-out",
         className,
       )}
