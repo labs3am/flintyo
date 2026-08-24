@@ -93,7 +93,19 @@ export function GameTable({
   );
   const [foul, setFoul] = useState<{ id: string; at: number } | null>(null);
   const [tab, setTab] = useState<"scores" | null>(null);
-  const [gained, setGained] = useState<{ seat: number; n: number; seq: number } | null>(null);
+    const [gained, setGained] = useState<{ seat: number; n: number; seq: number } | null>(null);
+  // Respect the OS reduced-motion preference: disable the snap-back animation.
+  const [reduced, setReduced] = useState(
+    typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+  );
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setReduced(mq.matches);
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
   // Coaching fades out after the player's first few turns.
   const [myTurns, setMyTurns] = useState(0);
   const lastCounted = useRef<number>(-1);
@@ -330,7 +342,7 @@ export function GameTable({
           type="button"
           onClick={exitFull}
           aria-label="Exit full screen"
-          className="absolute top-2 right-2 z-[60] inline-flex items-center gap-1 rounded-full border border-primary bg-primary px-3 py-2 text-[10px] font-black uppercase tracking-[0.15em] text-primary-foreground shadow-lg transition active:scale-95 [touch-action:manipulation]"
+          className="absolute top-2 right-2 z-[60] inline-flex items-center gap-1 rounded-full border border-primary bg-primary px-3 py-2 text-[10px] font-black uppercase tracking-[0.15em] text-primary-foreground shadow-lg transition active:scale-95 [touch-action:manipulation] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
         >
           <Minimize2 className="h-3.5 w-3.5" /> Exit
         </button>
@@ -511,7 +523,7 @@ export function GameTable({
         <button
           onClick={() => setTab((t) => (t === "scores" ? null : "scores"))}
           className={cn(
-            "absolute top-3 right-3 z-20 rounded-full border px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.15em] transition active:scale-95 [touch-action:manipulation]",
+            "absolute top-3 right-3 z-20 rounded-full border px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.15em] transition active:scale-95 [touch-action:manipulation] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
             tab === "scores" ? "border-primary bg-primary/20 text-primary" : "border-border bg-black/40 text-foreground/80",
           )}
         >
@@ -641,7 +653,12 @@ export function GameTable({
                               filter: "drop-shadow(0 18px 22px rgba(0,0,0,0.55))",
                             }
                           : snapBack === c.id
-                            ? { transform: "translate3d(0,0,0)", transition: "transform 280ms cubic-bezier(.22,1,.36,1)" }
+                                                        ? {
+                                transform: "translate3d(0,0,0)",
+                                transition: reduced
+                                  ? "transform 0.001ms"
+                                  : "transform 280ms cubic-bezier(.22,1,.36,1)",
+                              }
                             : null),
                       }}
                     >

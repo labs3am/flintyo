@@ -51,6 +51,7 @@ export function PlayingCard({
 
   return (
     <Tag
+            type={onClick ? "button" : undefined}
       onClick={onClick}
       disabled={onClick ? disabled : undefined}
       aria-label={`${label} of ${card.s}`}
@@ -58,12 +59,13 @@ export function PlayingCard({
         "card-face relative shrink-0 select-none overflow-hidden",
         sizes[size],
         ink,
-        onClick && !disabled && "cursor-pointer hover:-translate-y-3 active:-translate-y-1.5",
+                onClick && !disabled &&
+          "cursor-pointer hover:-translate-y-3 active:-translate-y-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
         onClick && disabled && "cursor-not-allowed",
         dimmed && "opacity-45 saturate-50",
         selected && "-translate-y-3 ring-2 ring-primary",
         highlight && "ring-2 ring-primary shadow-glow",
-        "transition-all duration-150",
+        "transition-all duration-fast ease-out",
         className,
       )}
     >
