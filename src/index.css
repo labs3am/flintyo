@@ -13,50 +13,105 @@
 }
 
 :root {
-  --radius: 0.75rem;
-  /* Flintyo — charcoal table, ember accents */
-  --background: oklch(0.165 0.004 60);
-  --foreground: oklch(0.97 0.004 60);
-  --card: oklch(0.235 0.005 60);
-  --card-foreground: oklch(0.97 0.004 60);
-  --popover: oklch(0.215 0.005 60);
-  --popover-foreground: oklch(0.97 0.004 60);
+  /* ==================================================================
+     FLINTYO DESIGN TOKENS — v2 foundation
+     Warm charcoal tabletop · one ember accent · one cream accent
+     A game first, a website second.
+     ================================================================== */
 
-  --primary: oklch(0.665 0.185 38);          /* ember */
-  --primary-foreground: oklch(0.16 0.02 40);
-  --primary-glow: oklch(0.76 0.155 52);
+  /* ---- surfaces (warm charcoal scale) ---- */
+  --background: oklch(0.155 0.006 55);         /* app canvas */
+  --surface: oklch(0.205 0.010 55);             /* flat surface */
+  --surface-elevated: oklch(0.245 0.012 55);    /* raised surface */
+  --surface-hover: oklch(0.285 0.014 55);
+  --table-surface: oklch(0.175 0.02 38);         /* deep warm felt */
+  --card-white: oklch(0.985 0.004 90);           /* card face base */
 
-  --gold: oklch(0.82 0.135 72);
-  --gold-foreground: oklch(0.24 0.05 60);
+  /* ---- text hierarchy ---- */
+  --ink: oklch(0.965 0.005 55);
+  --ink-muted: oklch(0.72 0.012 55);
+  --ink-faint: oklch(0.56 0.012 55);
 
-  --secondary: oklch(0.30 0.005 60);
-  --secondary-foreground: oklch(0.97 0.004 60);
-  --muted: oklch(0.30 0.005 60);
-  --muted-foreground: oklch(0.745 0.008 60);
-  --accent: oklch(0.79 0.135 76);            /* warm amber */
-  --accent-foreground: oklch(0.22 0.04 60);
-  --destructive: oklch(0.60 0.225 22);
-  --destructive-foreground: oklch(0.99 0.01 0);
-  --border: oklch(0.345 0.006 60);
-  --input: oklch(0.255 0.005 60);
-  --ring: oklch(0.665 0.185 38);
+  /* ---- accents ---- */
+  --ember: oklch(0.635 0.175 50);                /* primary accent */
+  --ember-hover: oklch(0.735 0.19 46);
+  --ember-soft: oklch(0.70 0.16 42);
+  --ember-ink: oklch(0.17 0.04 40);
+  --cream: oklch(0.845 0.11 82);                 /* secondary accent */
+  --cream-ink: oklch(0.25 0.05 60);
 
-  --plate-1: oklch(0.62 0.20 258);           /* blue */
-  --plate-2: oklch(0.63 0.24 340);           /* pink */
-  --plate-3: oklch(0.66 0.21 145);           /* green */
-  --plate-4: oklch(0.72 0.18 60);            /* orange */
-  --plate-5: oklch(0.62 0.20 300);           /* violet */
+  /* ---- semantic ---- */
+  --success: oklch(0.72 0.18 152);
+  --success-ink: oklch(0.17 0.04 150);
+  --danger: oklch(0.58 0.22 27);
+  --danger-ink: oklch(0.99 0.01 0);
 
-  --turn: oklch(0.70 0.19 148);              /* active-turn green */
-  --turn-foreground: oklch(0.18 0.03 150);
+  /* ---- lines ---- */
+  --hairline: oklch(0.30 0.012 55);
 
-  --gradient-primary: linear-gradient(180deg, oklch(0.76 0.16 52), var(--primary) 55%, oklch(0.58 0.19 32));
-  --gradient-gold: linear-gradient(180deg, oklch(0.90 0.12 84), var(--gold) 60%, oklch(0.72 0.14 62));
-  --gradient-bg: radial-gradient(ellipse 90% 70% at 50% 40%, oklch(0.34 0.055 45 / 0.75), transparent 70%),
-                 radial-gradient(ellipse 70% 50% at 50% 100%, oklch(0.19 0.02 40 / 0.9), transparent 65%);
-  --shadow-glow: 0 0 34px oklch(0.665 0.185 38 / 0.35);
-  --shadow-elegant: 0 12px 40px -12px oklch(0 0 0 / 0.75);
-  --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  /* ---- legacy aliases (kept so existing components keep working) ---- */
+  --foreground: var(--ink);
+  --card: var(--surface);
+  --card-foreground: var(--ink);
+  --popover: var(--surface-elevated);
+  --popover-foreground: var(--ink);
+  --primary: var(--ember);
+  --primary-foreground: var(--ember-ink);
+  --primary-glow: var(--ember-soft);
+  --gold: var(--cream);
+  --gold-foreground: var(--cream-ink);
+  --secondary: oklch(0.21 0.012 55);
+  --secondary-foreground: var(--ink);
+  --muted: oklch(0.24 0.012 55);
+  --muted-foreground: var(--ink-muted);
+  --accent: oklch(0.30 0.02 60);
+  --accent-foreground: var(--ink);
+  --destructive: var(--danger);
+  --destructive-foreground: var(--danger-ink);
+  --border: var(--hairline);
+  --input: oklch(0.19 0.012 55);
+  --ring: var(--ember);
+
+  /* ---- per-character plates (Phase 2 will soften seat colour) ---- */
+  --plate-1: oklch(0.55 0.13 250);
+  --plate-2: oklch(0.55 0.15 340);
+  --plate-3: oklch(0.58 0.14 150);
+  --plate-4: oklch(0.60 0.14 65);
+  --plate-5: oklch(0.55 0.15 305);
+
+  /* ---- turn (only semantic success used at the table) ---- */
+  --turn: var(--success);
+  --turn-foreground: var(--success-ink);
+
+  /* ---- radius scale ---- */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-2xl: 2rem;
+  --radius: var(--radius-md);                    /* shadcn default */
+
+  /* ---- shadow scale (restrained, physical) ---- */
+  --shadow-1: 0 1px 2px oklch(0 0 0 / 0.28), 0 4px 12px -6px oklch(0 0 0 / 0.5);
+  --shadow-2: 0 4px 12px -4px oklch(0 0 0 / 0.5), 0 16px 32px -16px oklch(0 0 0 / 0.65);
+  --shadow-3: 0 24px 60px -20px oklch(0 0 0 / 0.7);
+  --shadow-card: 0 1px 0 -1px oklch(0 0 0 / 0.5), 0 6px 14px -6px oklch(0 0 0 / 0.6);
+  --shadow-glow: 0 0 0 1px oklch(0.85 0.16 50 / 0.12), 0 0 28px oklch(0.71 0.18 58 / 0.28);
+  --shadow-elegant: var(--shadow-2);
+
+  /* ---- gradients (kept subtle) ---- */
+  --gradient-primary: linear-gradient(180deg, oklch(0.76 0.19 50), var(--ember) 55%, oklch(0.55 0.16 36));
+  --gradient-gold: linear-gradient(180deg, oklch(0.92 0.10 84), var(--cream) 55%, oklch(0.74 0.13 62));
+  --gradient-bg: radial-gradient(ellipse 90% 70% at 50% 32%, oklch(0.28 0.03 45 / 0.45), transparent 70%),
+                 radial-gradient(ellipse 70% 50% at 50% 100%, oklch(0.16 0.02 50 / 0.6), transparent 65%);
+
+  /* ---- motion ---- */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --dur-fast: 140ms;
+  --dur-base: 240ms;
+  --dur-slow: 480ms;
+  --transition-smooth: all var(--dur-base) var(--ease-out);
 }
 
 
@@ -93,6 +148,13 @@
   }
   button { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.01em; }
   button, a, [role="button"] { touch-action: manipulation; }
+
+  :focus-visible {
+    outline: 2px solid var(--ember);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+  ::selection { background: oklch(from var(--ember) l c h / 0.35); }
 }
 
 
@@ -125,9 +187,10 @@
     to { transform: scaleX(0); }
   }
   .panel {
-    background-color: oklch(from var(--card) l c h / 0.6);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--border);
+    background-color: oklch(from var(--surface-elevated) l c h / 0.65);
+    backdrop-filter: blur(14px);
+    border: 1px solid var(--hairline);
+    box-shadow: var(--shadow-1);
   }
   .pulse-dot {
     animation: pulse-dot 1.4s ease-in-out infinite;
@@ -146,36 +209,36 @@
 }
 
 @layer utilities {
+  /* ---- tabletop: a physical felt, not a glowing rectangle ---- */
   .felt {
     background:
-      radial-gradient(ellipse 80% 80% at 50% 38%, oklch(0.36 0.075 45 / 0.95), transparent 72%),
-      linear-gradient(170deg, oklch(0.275 0.012 55), oklch(0.195 0.008 50));
-    box-shadow: inset 0 0 90px oklch(0.10 0.01 40 / 0.9), inset 0 0 0 2px oklch(0.665 0.185 38 / 0.22);
+      radial-gradient(ellipse 85% 75% at 50% 30%, oklch(0.22 0.03 42 / 0.9), transparent 72%),
+      linear-gradient(175deg, var(--table-surface), oklch(0.14 0.015 35));
+    box-shadow:
+      inset 0 0 70px oklch(0.08 0.01 35 / 0.85),
+      inset 0 0 0 1px oklch(1 0 0 / 0.04);
   }
   .card-face {
-    background: linear-gradient(180deg, oklch(1 0 0) 0%, oklch(0.985 0.004 80) 55%, oklch(0.935 0.008 80) 100%);
-    border: 2px solid oklch(1 0 0);
-    box-shadow:
-      inset 0 2px 0 oklch(1 0 0),
-      0 5px 0 -1px oklch(0.40 0.05 45 / 0.6),
-      0 10px 20px -8px oklch(0 0 0 / 0.85);
+    background: linear-gradient(180deg, oklch(1 0 0) 0%, var(--card-white) 58%, oklch(0.945 0.006 92) 100%);
+    border: 1px solid oklch(0.90 0.008 90);
+    box-shadow: var(--shadow-card), inset 0 1px 0 oklch(1 0 0);
   }
   .card-back {
     background:
-      radial-gradient(70% 55% at 50% 42%, oklch(0.62 0.17 40 / 0.85), transparent 72%),
-      repeating-linear-gradient(45deg, oklch(0.34 0.03 50) 0 5px, oklch(0.245 0.015 50) 5px 10px);
-    border: 2px solid oklch(0.82 0.135 72 / 0.7);
-    box-shadow: 0 4px 0 -1px oklch(0.24 0.02 45 / 0.8), 0 8px 16px -8px oklch(0 0 0 / 0.9);
+      radial-gradient(70% 55% at 50% 42%, oklch(0.58 0.17 50 / 0.8), transparent 72%),
+      repeating-linear-gradient(45deg, oklch(0.32 0.03 45) 0 4px, oklch(0.235 0.02 45) 4px 8px);
+    border: 1.5px solid oklch(from var(--gold) l c h / 0.75);
+    box-shadow: var(--shadow-card);
   }
 
   .plate {
-    border-radius: 0.6rem;
+    border-radius: var(--radius-sm);
     padding: 0.1rem 0.5rem;
     font-family: var(--font-display);
     font-weight: 800;
     color: oklch(0.99 0 0);
-    text-shadow: 0 1px 0 oklch(0 0 0 / 0.45);
-    box-shadow: 0 3px 0 -1px oklch(0 0 0 / 0.45);
+    text-shadow: 0 1px 0 oklch(0 0 0 / 0.35);
+    box-shadow: 0 1px 2px oklch(0 0 0 / 0.35);
   }
   .text-gold { color: var(--gold); }
   .gradient-gold {
@@ -184,52 +247,100 @@
     background-clip: text;
     color: transparent;
   }
+  /* ---- buttons: one shared base, three real levels ---- */
+  .btn,
+  .btn-primary,
+  .btn-secondary,
+  .btn-gold,
+  .btn-ghost,
+  .btn-step {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: var(--radius-md);
+    padding: 0.7rem 1.1rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.875rem;
+    line-height: 1;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: background-color var(--dur-fast) var(--ease-out),
+                border-color var(--dur-fast) var(--ease-out),
+                color var(--dur-fast) var(--ease-out),
+                transform var(--dur-fast) var(--ease-out),
+                box-shadow var(--dur-fast) var(--ease-out);
+    will-change: transform;
+  }
+  .btn:active, .btn-primary:active, .btn-secondary:active,
+  .btn-gold:active, .btn-ghost:active, .btn-step:active { transform: translateY(1px); }
+
+  /* Primary: the single loud action (PLAY NOW / DEAL ME IN) */
   .btn-primary {
     background: var(--gradient-primary);
     color: var(--primary-foreground);
-    border-radius: 0.85rem;
-    padding: 0.7rem 1.1rem;
-    font-weight: 700;
-    font-size: 0.875rem;
-    border: 2px solid oklch(1 0 0 / 0.55);
-    box-shadow: 0 5px 0 -1px oklch(0.45 0.12 60 / 0.85), 0 12px 22px -10px oklch(0 0 0 / 0.8);
+    box-shadow: 0 1px 0 -1px oklch(0.35 0.1 40 / 0.9), var(--shadow-2);
     text-transform: uppercase;
-    letter-spacing: 0.04em;
-    transition: var(--transition-smooth);
+    letter-spacing: 0.05em;
   }
-  .btn-primary:hover { filter: brightness(1.08); transform: translateY(-1px); }
-  .btn-primary:active { transform: translateY(1px) scale(0.98); }
+  .btn-primary:hover { filter: brightness(1.07); transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(1px); }
+
+  /* Secondary: the tonal next-best action */
+  .btn-secondary {
+    background: var(--surface-elevated);
+    color: var(--foreground);
+    border-color: var(--hairline);
+    box-shadow: var(--shadow-1);
+  }
+  .btn-secondary:hover { background: var(--surface-hover); border-color: oklch(from var(--ember) l c h / 0.5); }
+
+  /* Quiet: text-level action, no box */
+  .btn-ghost {
+    background: transparent;
+    color: var(--ink-muted);
+    border-color: transparent;
+  }
+  .btn-ghost:hover { color: var(--foreground); background: oklch(from var(--surface) l c h / 0.6); }
+
+  /* Gold keeps its special wins moment (Donkey-victory CTA only). */
   .btn-gold {
     background: var(--gradient-gold);
     color: var(--gold-foreground);
-    border-radius: 0.85rem;
-    padding: 0.7rem 1.1rem;
-    font-weight: 800;
-    font-size: 0.875rem;
-    border: 2px solid oklch(1 0 0 / 0.55);
-    box-shadow: 0 5px 0 -1px oklch(0.45 0.12 60 / 0.85), 0 12px 22px -10px oklch(0 0 0 / 0.8);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    transition: var(--transition-smooth);
+    box-shadow: 0 1px 0 -1px oklch(0.35 0.1 60 / 0.9), var(--shadow-2);
   }
   .btn-gold:hover { filter: brightness(1.06); transform: translateY(-1px); }
-  .btn-gold:active { transform: translateY(1px) scale(0.98); }
+  .btn-gold:active { transform: translateY(1px); }
 
-  .btn-ghost {
-    border: 1px solid var(--border);
-    border-radius: 0.85rem;
-    font-weight: 600;
-    font-size: 0.875rem;
-    color: var(--foreground);
-    transition: var(--transition-smooth);
-  }
-  .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
   .btn-step {
-    height: 1.75rem; width: 1.75rem; border-radius: 0.5rem;
-    border: 1px solid var(--border);
+    height: 1.75rem; width: 1.75rem; border-radius: var(--radius-sm);
+    border: 1px solid var(--hairline);
     line-height: 1; font-weight: 700;
+    background: var(--surface);
+    color: var(--foreground);
   }
-  .btn-step:hover { border-color: var(--primary); color: var(--primary); }
+  .btn-step:hover { border-color: oklch(from var(--ember) l c h / 0.6); color: var(--ember); }
+
+  /* ---- surfaces ---- */
+  .surface { background: var(--surface); }
+  .surface-elevated { background: var(--surface-elevated); box-shadow: var(--shadow-1); }
+  .hairline { border: 1px solid var(--hairline); }
+
+  /* ---- status chip: small inline fact, not a box ---- */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border-radius: 999px;
+    padding: 0.15rem 0.55rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--ink-muted);
+    background: oklch(from var(--surface) l c h / 0.7);
+    border: 1px solid var(--hairline);
+  }
 }
 
 @layer utilities {
@@ -303,6 +414,44 @@
     50% { transform: scale(1.04); box-shadow: 0 0 0 8px oklch(0.85 0.165 88 / 0); }
   }
 
+  /* ---- table surround (v2) ----
+     Directional caret that points at whoever's turn it is.
+     A triangle sits on the seat edge nearest the table.
+  */
+  .seat-caret {
+    position: absolute;
+    z-index: 5;
+    pointer-events: none;
+    animation: caret-blink 1.15s ease-in-out infinite;
+  }
+  .seat-caret > i {
+    display: block;
+    width: 0;
+    height: 0;
+    border: 0 solid transparent;
+  }
+  .seat-caret--down { top: 100%; left: 50%; margin-top: 2px; transform: translateX(-50%); }
+  .seat-caret--down > i { border-top: 9px solid var(--turn); border-right: 6px solid transparent; border-left: 6px solid transparent; }
+  .seat-caret--right { top: 50%; left: 100%; margin-left: 2px; transform: translateY(-50%); }
+  .seat-caret--right > i { border-top: 6px solid transparent; border-bottom: 6px solid transparent; border-left: 9px solid var(--turn); }
+  .seat-caret--left { top: 50%; right: 100%; margin-right: 2px; transform: translateY(-50%); }
+  .seat-caret--left > i { border-top: 6px solid transparent; border-bottom: 6px solid transparent; border-right: 9px solid var(--turn); }
+  @keyframes caret-blink {
+    0%, 100% { opacity: 0.45; }
+    50% { opacity: 1; }
+  }
+
+  /* Soft edge vignette over the felt so the centre of play pops. */
+  .arena-vignette { position: relative; }
+  .arena-vignette::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    background: radial-gradient(ellipse 120% 100% at 50% 45%, transparent 55%, oklch(0.10 0.01 70 / 0.5) 100%);
+  }
+
   /* ---- characters on the move ---- */
   .anim-step { animation: char-step 0.85s ease-in-out infinite; }
   @keyframes char-step {
@@ -342,14 +491,54 @@
   }
   @media (prefers-reduced-motion: reduce) {
     .anim-idle, .anim-hop, .anim-shake, .anim-wobble, .anim-blink, .anim-pulse-soft, .anim-drip,
-    .anim-step, .anim-lean-in, .anim-sway, .anim-cheer { animation: none !important; }
+    .anim-step, .anim-lean-in, .anim-sway, .anim-cheer, .seat-caret { animation: none !important; }
   }
 }
 
 
 @layer utilities {
-  /* ---- typography system ---- */
+  /* ---- typography system ----
+     Shared scale: display → title → subhead → body → caption.
+     Hierarchy lives in size/weight/colour, not boxes.
+  */
   .font-game { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.02em; }
+
+  .text-display {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2.5rem, 7vw, 4.25rem);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
+  .text-title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+  }
+  .text-subhead {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.15rem;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+  }
+  .text-body { font-size: 0.95rem; line-height: 1.55; font-weight: 400; }
+  .text-caption { font-size: 0.8125rem; line-height: 1.4; font-weight: 500; color: var(--ink-muted); }
+
+  /* One restrained kicker for the few moments that deserve UPPERCASE. */
+  .kicker {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  /* legacy helper kept for existing screens; prefer .kicker going forward */
   .eyebrow {
     font-family: var(--font-display);
     font-weight: 700;

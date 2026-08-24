@@ -1,6 +1,6 @@
 import { Maximize2, Minimize2 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { PointerEvent as ReactPointerEvent } from "react";
+import type { CSSProperties, PointerEvent as ReactPointerEvent } from "react";
 import { cn } from "@/lib/utils";
 import { CardBack, PlayingCard } from "./PlayingCard";
 import { PlayerSeat } from "./PlayerSeat";
@@ -11,6 +11,55 @@ import { legalCards, sortHand, SUIT_NAME, type GameState } from "@/lib/bhabhi/en
 import { ScoreBoard } from "./ScoreBoard";
 import { useTableRotated } from "./LandscapeShell";
 import type { Scores } from "@/lib/bhabhi/score";
+import type { SeatSide } from "./PlayerSeat";
+
+/**
+ * Where each opponent sits around the table, expressed as anchor points over
+ * the table area. `x`/`y` are percentages; `side` picks the PlayerSeat layout.
+ * - Narrow screens: all opponents along a tidy top strip (evenly spread).
+ * - Wide screens: opponents truly surround the felt (top corners + left/right
+ *   flanks for 5-6 player games).
+ */
+type SeatSlot = { x: number; y: number; side: SeatSide };
+function seatSlots(count: number, wide: boolean): SeatSlot[] {
+  if (!wide) {
+    return Array.from({ length: count }, (_, i) => ({
+      x: (100 / (count + 1)) * (i + 1),
+      y: 0,
+      side: "top" as const,
+    }));
+  }
+  switch (count) {
+    case 1:
+      return [{ x: 50, y: 0, side: "top" }];
+    case 2:
+      return [
+        { x: 26, y: 0, side: "top" },
+        { x: 74, y: 0, side: "top" },
+      ];
+    case 3:
+      return [
+        { x: 14, y: 0, side: "top" },
+        { x: 50, y: 0, side: "top" },
+        { x: 86, y: 0, side: "top" },
+      ];
+    case 4:
+      return [
+        { x: 15, y: 0, side: "top" },
+        { x: 85, y: 0, side: "top" },
+        { x: 3, y: 42, side: "left" },
+        { x: 97, y: 42, side: "right" },
+      ];
+    default:
+      return [
+        { x: 13, y: 0, side: "top" },
+        { x: 50, y: 0, side: "top" },
+        { x: 87, y: 0, side: "top" },
+        { x: 3, y: 42, side: "left" },
+        { x: 97, y: 42, side: "right" },
+      ];
+  }
+}
 
 export function GameTable({
   state,
@@ -209,9 +258,18 @@ export function GameTable({
   const [handW, setHandW] = useState(0);
   const rotated = useTableRotated();
   const [tightScreen, setTightScreen] = useState(false);
+  const [wideScreen, setWideScreen] = useState(false);
   useEffect(() => {
-    // When the table is rotated the usable height is the window's *width*.
-    const on = () => setTightScreen((rotated ? window.innerWidth : window.innerHeight) <= 560);
+    // When the table is rotated the usable dimensions swap: the container is
+    // 100dvw tall and 100dvh wide, so height == innerWidth and width == innerHeight.
+    const on = () => {
+      setTightScreen((rotated ? window.innerWidth : window.innerHeight) <= 560);
+      // Surround seating needs real room in BOTH axes: a rotated phone is wide
+      // but short, so forcing flanks there would squash the felt.
+      const w = rotated ? window.innerHeight : window.innerWidth;
+      const h = rotated ? window.innerWidth : window.innerHeight;
+      setWideScreen(w >= 768 && h >= 480);
+    };
     on();
     window.addEventListener("resize", on);
     window.addEventListener("orientationchange", on);
@@ -222,6 +280,15 @@ export function GameTable({
   }, [rotated]);
   const shortScreen = tightScreen;
   const sm = (cls: string) => (shortScreen ? cls : "");
+
+  // ---- seat layout: opponents surround the table --------------------------
+  // Wide screens seat opponents around the felt (top corners + flanks for big
+  // games); narrow/rotated-phone screens keep everyone as a tidy top strip.
+  const opponentCount = others.length;
+  const surround = wideScreen;
+  const slots = seatSlots(opponentCount, surround);
+  const opponentSize = shortScreen ? 36 : opponentCount >= 5 ? 44 : opponentCount >= 4 ? 50 : 54;
+  const flankSize = Math.round(opponentSize * 1.15);
   useEffect(() => {
     const el = handRef.current;
     if (!el) return;
@@ -270,37 +337,79 @@ export function GameTable({
       )}
 
 
-      {/* Opponents row keeps a little headroom for speech bubbles */}
+      {/* Opponent seats — surround the felt on wide screens, strip on narrow */}
+      <div
+        className={cn(
+          "relative min-h-0 flex-1",
+          surround ? "w-full" : "flex w-full flex-col gap-2",
+        )}
+      >
+        {surround ? (
+          others.map(({ p, i }, idx) => {
+            const slot = slots[idx];
+            const style: CSSProperties =
+              slot.side === "top"
+                ? { left: `${slot.x}%`, top: 2, transform: "translateX(-50%)" }
+                : slot.side === "left"
+                  ? { left: 4, top: `${slot.y}%`, transform: "translateY(-50%)" }
+                  : { right: 4, top: `${slot.y}%`, transform: "translateY(-50%)" };
+            return (
+              <div key={p.id} className="absolute z-20" style={style}>
+                <PlayerSeat
+                  seat={{
+                    name: p.name,
+                    charId: p.char,
+                    bot: p.bot,
+                    cards: p.hand.length,
+                    out: p.out,
+                    place: p.place,
+                    active: state.turn === i && state.phase === "playing",
+                  }}
+                  expression={expressionFor(state, i)}
+                  reaction={reactions[i]}
+                  says={says[i]}
+                  gained={gained?.seat === i ? gained.n : null}
+                  turnKey={state.seq}
+                  size={slot.side === "top" ? opponentSize : flankSize}
+                  side={slot.side}
+                  compact
+                />
+              </div>
+            );
+          })
+        ) : (
+          <div className="flex shrink-0 flex-wrap items-center justify-center gap-1.5 w-full max-w-full overflow-visible">
+            {others.map(({ p, i }) => (
+              <PlayerSeat
+                key={p.id}
+                seat={{
+                  name: p.name,
+                  charId: p.char,
+                  bot: p.bot,
+                  cards: p.hand.length,
+                  out: p.out,
+                  place: p.place,
+                  active: state.turn === i && state.phase === "playing",
+                }}
+                expression={expressionFor(state, i)}
+                reaction={reactions[i]}
+                says={says[i]}
+                gained={gained?.seat === i ? gained.n : null}
+                turnKey={state.seq}
+                size={opponentSize}
+                side="top"
+                compact
+              />
+            ))}
+          </div>
+        )}
 
-      <div className="flex shrink-0 flex-nowrap items-end justify-center gap-1 w-full max-w-full overflow-visible">
-        {others.map(({ p, i }) => (
-          <PlayerSeat
-            key={p.id}
-            seat={{
-              name: p.name,
-              charId: p.char,
-              bot: p.bot,
-              cards: p.hand.length,
-              out: p.out,
-              place: p.place,
-              active: state.turn === i && state.phase === "playing",
-            }}
-            expression={expressionFor(state, i)}
-            reaction={reactions[i]}
-            says={says[i]}
-            gained={gained?.seat === i ? gained.n : null}
-            turnKey={state.seq}
-            size={(shortScreen ? 0.58 : 1) * (others.length > 4 ? 40 : others.length > 3 ? 46 : 56)}
-            compact
-          />
-        ))}
-      </div>
-
-      {/* Arena */}
+        {/* Arena */}
       <div
         ref={arenaRef}
         className={cn(
-          "felt relative flex-1 min-h-0 overflow-hidden rounded-[2rem] border flex flex-col items-center justify-center transition-all duration-200",
+          "felt arena-vignette overflow-hidden rounded-[2rem] border flex flex-col items-center justify-center transition-all duration-200",
+          surround ? "absolute inset-x-2 bottom-2 top-[112px]" : "relative flex-1 min-h-0",
           shortScreen ? "p-2 pt-7 gap-1" : "p-3 pt-9 gap-2",
           dropReady
             ? "border-primary ring-2 ring-primary/70 scale-[1.01]"
@@ -333,19 +442,24 @@ export function GameTable({
           {state.leadSuit ? `${SUIT_NAME[state.leadSuit]} led` : "New trick"}
         </div>
 
-        <div className="flex items-end justify-center gap-1.5 flex-wrap overflow-hidden">
+        <div className="flex items-end justify-center gap-1.5 flex-wrap overflow-visible pt-1">
           {state.pile.length === 0 ? (
             reveal ? (
-              reveal.cards.map(({ p, card }) => (
-                <div key={card.id} className="flex flex-col items-center gap-1">
-                  <PlayingCard
-                    card={card}
-                    size={shortScreen ? "sm" : "md"}
-                    className={cn(
-                      "transition",
-                      reveal.who === p ? "ring-2 ring-gold" : "opacity-70",
-                    )}
-                  />
+              reveal.cards.map(({ p, card }, idx, arr) => (
+                <div key={card.id} className="flex flex-col items-center gap-1" style={{ zIndex: idx }}>
+                  <div
+                    className="transition-transform"
+                    style={{ transform: `rotate(${(idx - (arr.length - 1) / 2) * 6}deg) translateY(${-Math.abs(idx - (arr.length - 1) / 2) * 4}px)` }}
+                  >
+                    <PlayingCard
+                      card={card}
+                      size={shortScreen ? "sm" : "md"}
+                      className={cn(
+                        "transition",
+                        reveal.who === p ? "ring-2 ring-gold shadow-glow" : "opacity-75",
+                      )}
+                    />
+                  </div>
                   <span className={cn("text-[9px] text-muted-foreground max-w-[4rem] truncate", sm("hidden"))}>
                     {state.players[p].name}
                   </span>
@@ -358,9 +472,18 @@ export function GameTable({
               </div>
             )
           ) : (
-            state.pile.map(({ p, card }) => (
-              <div key={card.id} className="anim-deal flex flex-col items-center gap-1">
-                <PlayingCard card={card} size={shortScreen ? "sm" : "md"} />
+            state.pile.map(({ p, card }, idx, arr) => (
+              <div
+                key={card.id}
+                className="anim-deal flex flex-col items-center gap-1"
+                style={{ animationDelay: `${idx * 90}ms`, zIndex: idx }}
+              >
+                <div
+                  className="transition-transform"
+                  style={{ transform: `rotate(${(idx - (arr.length - 1) / 2) * 6}deg) translateY(${-Math.abs(idx - (arr.length - 1) / 2) * 4}px)` }}
+                >
+                  <PlayingCard card={card} size={shortScreen ? "sm" : "md"} />
+                </div>
                 <span className={cn("text-[9px] text-muted-foreground max-w-[4rem] truncate", sm("hidden"))}>
                   {state.players[p].name}
                 </span>
@@ -431,6 +554,7 @@ export function GameTable({
             <ReactionMenu onSend={onReact} />
           </div>
         )}
+      </div>
       </div>
 
       {tab === "scores" && (

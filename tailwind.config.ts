@@ -32,6 +32,18 @@ export default {
         ring: c("ring"),
         background: c("background"),
         foreground: c("foreground"),
+        surface: c("surface"),
+        "surface-elevated": c("surface-elevated"),
+        "surface-hover": c("surface-hover"),
+        table: c("table-surface"),
+        ink: c("ink"),
+        "ink-muted": c("ink-muted"),
+        "ink-faint": c("ink-faint"),
+        ember: c("ember"),
+        "ember-hover": c("ember-hover"),
+        cream: c("cream"),
+        success: c("success"),
+        danger: c("danger"),
         primary: {
           DEFAULT: c("primary"),
           foreground: c("primary-foreground"),
@@ -80,6 +92,10 @@ export default {
       boxShadow: {
         glow: "var(--shadow-glow)",
         elegant: "var(--shadow-elegant)",
+        card: "var(--shadow-card)",
+        "shadow-1": "var(--shadow-1)",
+        "shadow-2": "var(--shadow-2)",
+        "shadow-3": "var(--shadow-3)",
       },
       keyframes: {
         "accordion-down": {
