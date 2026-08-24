@@ -19,26 +19,26 @@
      A game first, a website second.
      ================================================================== */
 
-  /* ---- surfaces (warm charcoal scale) ---- */
-  --background: oklch(0.155 0.006 55);         /* app canvas */
-  --surface: oklch(0.205 0.010 55);             /* flat surface */
-  --surface-elevated: oklch(0.245 0.012 55);    /* raised surface */
-  --surface-hover: oklch(0.285 0.014 55);
-  --table-surface: oklch(0.175 0.02 38);         /* deep warm felt */
-  --card-white: oklch(0.985 0.004 90);           /* card face base */
+  /* ---- surfaces (sunny cream scale) ---- */
+  --background: oklch(0.968 0.022 85);          /* cream paper canvas */
+  --surface: oklch(0.985 0.012 85);             /* flat surface */
+  --surface-elevated: oklch(0.995 0.008 90);    /* raised surface */
+  --surface-hover: oklch(0.942 0.028 88);
+  --table-surface: oklch(0.700 0.095 168);      /* chill mint felt */
+  --card-white: oklch(0.995 0.003 95);          /* card face base */
 
   /* ---- text hierarchy ---- */
-  --ink: oklch(0.965 0.005 55);
-  --ink-muted: oklch(0.72 0.012 55);
-  --ink-faint: oklch(0.56 0.012 55);
+  --ink: oklch(0.300 0.045 50);
+  --ink-muted: oklch(0.480 0.035 50);
+  --ink-faint: oklch(0.600 0.030 50);
 
   /* ---- accents ---- */
-  --ember: oklch(0.635 0.175 50);                /* primary accent */
-  --ember-hover: oklch(0.735 0.19 46);
-  --ember-soft: oklch(0.70 0.16 42);
-  --ember-ink: oklch(0.17 0.04 40);
-  --cream: oklch(0.845 0.11 82);                 /* secondary accent */
-  --cream-ink: oklch(0.25 0.05 60);
+  --ember: oklch(0.665 0.190 45);                /* primary accent */
+  --ember-hover: oklch(0.740 0.185 43);
+  --ember-soft: oklch(0.720 0.170 42);
+  --ember-ink: oklch(0.240 0.05 40);
+  --cream: oklch(0.800 0.130 78);                /* secondary accent (honey) */
+  --cream-ink: oklch(0.320 0.060 70);
 
   /* ---- semantic ---- */
   --success: oklch(0.72 0.18 152);
@@ -47,7 +47,7 @@
   --danger-ink: oklch(0.99 0.01 0);
 
   /* ---- lines ---- */
-  --hairline: oklch(0.30 0.012 55);
+  --hairline: oklch(0.88 0.020 80);
 
   /* ---- legacy aliases (kept so existing components keep working) ---- */
   --foreground: var(--ink);
@@ -60,11 +60,11 @@
   --primary-glow: var(--ember-soft);
   --gold: var(--cream);
   --gold-foreground: var(--cream-ink);
-  --secondary: oklch(0.21 0.012 55);
+  --secondary: oklch(0.930 0.025 85);
   --secondary-foreground: var(--ink);
-  --muted: oklch(0.24 0.012 55);
+  --muted: oklch(0.940 0.020 85);
   --muted-foreground: var(--ink-muted);
-  --accent: oklch(0.30 0.02 60);
+  --accent: oklch(0.900 0.045 75);
   --accent-foreground: var(--ink);
   --destructive: var(--danger);
   --destructive-foreground: var(--danger-ink);
@@ -72,12 +72,12 @@
   --input: oklch(0.19 0.012 55);
   --ring: var(--ember);
 
-    /* ---- per-character plates (muted tints, not badges) ---- */
-  --plate-1: oklch(0.60 0.06 250);
-  --plate-2: oklch(0.60 0.07 340);
-  --plate-3: oklch(0.62 0.06 150);
-  --plate-4: oklch(0.63 0.06 65);
-  --plate-5: oklch(0.60 0.07 305);
+    /* ---- per-character plates (playful pastels) ---- */
+  --plate-1: oklch(0.62 0.09 250);
+  --plate-2: oklch(0.62 0.10 340);
+  --plate-3: oklch(0.64 0.09 150);
+  --plate-4: oklch(0.65 0.10 65);
+  --plate-5: oklch(0.62 0.10 305);
 
   /* ---- turn (only semantic success used at the table) ---- */
   --turn: var(--success);
@@ -91,20 +91,20 @@
   --radius-2xl: 2rem;
   --radius: var(--radius-md);                    /* shadcn default */
 
-  /* ---- shadow scale (restrained, physical) ---- */
-  --shadow-1: 0 1px 2px oklch(0 0 0 / 0.28), 0 4px 12px -6px oklch(0 0 0 / 0.5);
-  --shadow-2: 0 4px 12px -4px oklch(0 0 0 / 0.5), 0 16px 32px -16px oklch(0 0 0 / 0.65);
-  --shadow-3: 0 24px 60px -20px oklch(0 0 0 / 0.7);
-  --shadow-card: 0 1px 0 -1px oklch(0 0 0 / 0.5), 0 6px 14px -6px oklch(0 0 0 / 0.6);
-  --shadow-glow: 0 0 0 1px oklch(0.85 0.16 50 / 0.12), 0 0 28px oklch(0.71 0.18 58 / 0.28);
+  /* ---- shadow scale (soft, warm, physical) ---- */
+  --shadow-1: 0 1px 2px oklch(0.45 0.06 60 / 0.10), 0 4px 12px -6px oklch(0.45 0.06 60 / 0.14);
+  --shadow-2: 0 4px 12px -4px oklch(0.45 0.06 60 / 0.12), 0 16px 32px -16px oklch(0.45 0.06 60 / 0.18);
+  --shadow-3: 0 24px 60px -20px oklch(0.45 0.06 60 / 0.22);
+  --shadow-card: 0 1px 0 -1px oklch(0.45 0.06 60 / 0.14), 0 6px 14px -6px oklch(0.45 0.06 60 / 0.16);
+  --shadow-glow: 0 0 0 1px oklch(0.66 0.19 45 / 0.22), 0 0 24px oklch(0.72 0.17 55 / 0.30);
   --shadow-elegant: var(--shadow-2);
 
   /* ---- gradients (kept subtle) ---- */
   --gradient-primary: linear-gradient(180deg, oklch(0.76 0.19 50), var(--ember) 55%, oklch(0.55 0.16 36));
   --gradient-gold: linear-gradient(180deg, oklch(0.92 0.10 84), var(--cream) 55%, oklch(0.74 0.13 62));
-  --gradient-bg: radial-gradient(ellipse 90% 65% at 50% 28%, oklch(0.245 0.032 45 / 0.5), transparent 70%),
-                 radial-gradient(ellipse 80% 55% at 50% -18%, oklch(0.33 0.05 42 / 0.32), transparent 72%),
-                 radial-gradient(ellipse 95% 60% at 50% 115%, oklch(0.22 0.05 155 / 0.32), transparent 70%);
+  --gradient-bg: radial-gradient(ellipse 90% 65% at 50% 26%, oklch(0.995 0.03 90 / 0.85), transparent 70%),
+                 radial-gradient(ellipse 80% 55% at 50% -18%, oklch(0.88 0.075 55 / 0.55), transparent 72%),
+                 radial-gradient(ellipse 95% 60% at 50% 115%, oklch(0.90 0.06 168 / 0.50), transparent 70%);
 
   /* ---- motion ---- */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -153,9 +153,9 @@
     z-index: -1;
     pointer-events: none;
     background:
-      radial-gradient(42rem 42rem at 22% 18%, oklch(0.635 0.175 50 / 0.14), transparent 70%),
-      radial-gradient(48rem 40rem at 84% 34%, oklch(0.845 0.11 82 / 0.09), transparent 70%),
-      radial-gradient(52rem 44rem at 50% 108%, oklch(0.45 0.09 155 / 0.11), transparent 72%);
+      radial-gradient(42rem 42rem at 22% 18%, oklch(0.70 0.17 50 / 0.16), transparent 70%),
+      radial-gradient(48rem 40rem at 84% 34%, oklch(0.84 0.11 82 / 0.13), transparent 70%),
+      radial-gradient(52rem 44rem at 50% 108%, oklch(0.72 0.10 168 / 0.14), transparent 72%);
     animation: bg-drift 46s ease-in-out infinite alternate;
     will-change: transform;
   }
@@ -166,11 +166,11 @@
     z-index: -1;
     pointer-events: none;
     background-image:
-      radial-gradient(ellipse 120% 90% at 50% 42%, transparent 55%, oklch(0.08 0.01 50 / 0.38) 100%),
-      url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='180'%20height='180'%3E%3Cfilter%20id='n'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='0.8'%20numOctaves='2'%20stitchTiles='stitch'/%3E%3CfeColorMatrix%20type='saturate'%20values='0'/%3E%3C/filter%3E%3Crect%20width='100%25'%20height='100%25'%20filter='url(%23n)'%20opacity='0.5'/%3E%3C/svg%3E"),
-      url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='140'%20height='140'%3E%3Cg%20fill='none'%20stroke='%23e6d4a8'%20stroke-opacity='0.05'%20stroke-width='1.5'%3E%3Crect%20x='18'%20y='14'%20width='44'%20height='62'%20rx='7'%20transform='rotate(-12%2040%2045)'/%3E%3Crect%20x='74'%20y='58'%20width='44'%20height='62'%20rx='7'%20transform='rotate(11%2096%2089)'/%3E%3C/g%3E%3Crect%20x='88'%20y='24'%20width='10'%20height='10'%20rx='2'%20transform='rotate(45%2093%2029)'%20fill='%23e86428'%20fill-opacity='0.07'/%3E%3C/svg%3E");
+      radial-gradient(ellipse 120% 90% at 50% 42%, transparent 60%, oklch(0.72 0.03 75 / 0.20) 100%),
+      url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='180'%20height='180'%3E%3Cfilter%20id='n'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='0.8'%20numOctaves='2'%20stitchTiles='stitch'/%3E%3CfeColorMatrix%20type='saturate'%20values='0'/%3E%3C/filter%3E%3Crect%20width='100%25'%20height='100%25'%20filter='url(%23n)'%20opacity='0.32'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='140'%20height='140'%3E%3Cg%20fill='none'%20stroke='%236b543a'%20stroke-opacity='0.07'%20stroke-width='1.5'%3E%3Crect%20x='18'%20y='14'%20width='44'%20height='62'%20rx='7'%20transform='rotate(-12%2040%2045)'/%3E%3Crect%20x='74'%20y='58'%20width='44'%20height='62'%20rx='7'%20transform='rotate(11%2096%2089)'/%3E%3C/g%3E%3Crect%20x='88'%20y='24'%20width='10'%20height='10'%20rx='2'%20transform='rotate(45%2093%2029)'%20fill='%23e86428'%20fill-opacity='0.12'/%3E%3C/svg%3E");
     background-size: auto, 180px 180px, 140px 140px;
-    opacity: 0.9;
+    opacity: 0.75;
   }
   @keyframes bg-drift {
     from { transform: translate3d(-1.5%, -1%, 0) rotate(-1.2deg) scale(1); }
