@@ -123,7 +123,7 @@ export default function PlayPage() {
   return (
     <LandscapeShell>
     <main className="h-[100dvh] max-h-[100dvh] w-full max-w-5xl mx-auto overflow-hidden p-2.5 md:p-4 flex flex-col gap-2">
-      <Seo title="Play Donkey — Flintyo" description="Play a round of Donkey against bots or on one shared phone." path="/play" noindex />
+      <Seo title="Play Donkey — Flintyo" description="Play a round of Donkey against bots or on one shared phone." path="/play" />
       <header className="panel shrink-0 rounded-2xl px-2.5 py-1.5 [@media(max-height:520px)]:py-0.5 flex items-center justify-between gap-2">
         <Link to="/" className="btn-ghost px-3 py-1.5 inline-flex items-center gap-1.5 text-xs">
           <ArrowLeft className="h-3.5 w-3.5" /> Menu
@@ -133,7 +133,7 @@ export default function PlayPage() {
             FLINTYO<span className="sr-only"> — playing the Donkey card game</span>
           </h1>
           {state.players.some((p) => p.bot) && (
-            <span className="text-[9px] font-black uppercase tracking-[0.14em] text-muted-foreground">
+            <span className="text-[11px] font-semibold tracking-wide text-muted-foreground">
               AI · {level}
             </span>
           )}
@@ -157,7 +157,7 @@ export default function PlayPage() {
         {counting && <Countdown onDone={() => { setCounting(false); sfx.deal(); }} />}
 
         {mode === "pass" && !revealed && !counting && state.phase === "playing" && (
-          <div className="absolute inset-0 rounded-[2rem] bg-background/88 backdrop-blur-md flex flex-col items-center justify-center gap-3 text-center p-6 fade-in z-30">
+          <div className="absolute inset-0 rounded-[2rem] bg-background/95 flex flex-col items-center justify-center gap-3 text-center p-6 fade-in z-30">
             <p className="text-sm text-muted-foreground">Pass the device to</p>
             <p className="text-3xl font-black text-gradient">{state.players[state.turn].name}</p>
             <button onClick={() => setRevealed(true)} className="btn-primary inline-flex items-center gap-2">

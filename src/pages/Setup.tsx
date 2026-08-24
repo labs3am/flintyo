@@ -1,7 +1,7 @@
 import { Seo } from "@/components/Seo";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Bot, Users, Wifi, LogIn, Loader2, Volume2, VolumeX, BookOpen } from "lucide-react";
+import { ArrowLeft, Wifi, LogIn, Loader2, Volume2, VolumeX, BookOpen } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { CharacterPicker } from "@/components/game/CharacterPicker";
@@ -110,13 +110,13 @@ export default function Setup() {
               setSoundEnabled(next);
             }}
             aria-label={sound ? "Mute sound" : "Unmute sound"}
-            className="h-9 w-9 grid place-items-center rounded-full border border-border bg-black/25 text-muted-foreground"
+            className="h-9 w-9 grid place-items-center rounded-full border border-border bg-surface-elevated text-muted-foreground"
           >
             {sound ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
           </button>
         </header>
 
-        <div className="panel rounded-3xl p-4 space-y-4">
+        <div className="panel rounded-xl p-4 space-y-4">
           <CharacterPicker value={char} onChange={setChar} />
 
           <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2">
@@ -129,16 +129,16 @@ export default function Setup() {
               onChange={(e) => setName(e.target.value)}
               maxLength={14}
               placeholder="Your nickname"
-              className="w-full rounded-xl bg-input/70 border border-border px-3 py-2.5 text-sm outline-none focus:border-primary"
+              className="w-full rounded-md bg-input border border-border px-3 py-2.5 text-sm outline-none focus:border-primary"
             />
           </div>
 
-          <div className="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-black/25 border border-border">
+          <div className="grid grid-cols-3 gap-1 p-1 rounded-lg bg-surface-elevated border border-border">
             {(
               [
-                { k: "ai", label: "Play with AI", icon: Bot },
-                { k: "online", label: "With friends", icon: Wifi },
-                { k: "pass", label: "One phone", icon: Users },
+                { k: "ai", label: "Play with AI" },
+                { k: "online", label: "With friends" },
+                { k: "pass", label: "One phone" },
               ] as const
             ).map((t) => (
               <button
@@ -149,7 +149,6 @@ export default function Setup() {
                   tab === t.k ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground",
                 )}
               >
-                <t.icon className="h-3.5 w-3.5" />
                 {t.label}
               </button>
             ))}
@@ -195,7 +194,7 @@ export default function Setup() {
                   onKeyDown={(e) => e.key === "Enter" && join()}
                   placeholder="ROOM CODE"
                   maxLength={5}
-                  className="flex-1 rounded-xl bg-input/70 border border-border px-3 py-2.5 text-center text-lg font-black tracking-[0.35em] outline-none focus:border-primary"
+                  className="flex-1 rounded-md bg-input border border-border px-3 py-2.5 text-center text-lg font-bold tracking-[0.3em] uppercase outline-none focus:border-primary"
                 />
                 <button onClick={join} className="btn-ghost px-4 inline-flex items-center gap-2">
                   <LogIn className="h-4 w-4" /> Join
@@ -246,7 +245,7 @@ function Counter({
   max: number;
 }) {
   return (
-    <div className="flex items-center justify-between rounded-xl border border-border bg-black/20 px-3 py-2.5">
+    <div className="flex items-center justify-between rounded-lg border border-border bg-surface px-3 py-2.5">
       <span className="text-sm font-medium">{label}</span>
       <div className="flex items-center gap-3">
         <button onClick={() => setValue(Math.max(min, value - 1))} className="btn-step" aria-label="Decrease">

@@ -96,7 +96,7 @@ export function TutorialDeck({ onDone, className }: { onDone?: () => void; class
 
 export function TutorialModal({ onClose }: { onClose: () => void }) {
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-background/85 backdrop-blur p-4 fade-in" onClick={onClose}>
+    <div className="fixed inset-0 z-50 grid place-items-center bg-background/95 p-4 fade-in" onClick={onClose}>
       <div className="panel relative w-full max-w-sm rounded-3xl p-5" onClick={(e) => e.stopPropagation()}>
         <button
           onClick={onClose}

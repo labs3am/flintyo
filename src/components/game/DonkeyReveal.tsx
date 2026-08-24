@@ -40,7 +40,7 @@ export function DonkeyReveal({
   const loserExpr = beat === 0 ? "confused" : beat === 1 ? "shocked" : "defeat";
 
   return (
-    <div className="absolute inset-0 rounded-[2rem] bg-background/92 backdrop-blur-md flex flex-col items-center justify-center gap-3 text-center p-5 fade-in overflow-y-auto z-40">
+    <div className="absolute inset-0 rounded-[2rem] bg-background/95 flex flex-col items-center justify-center gap-3 text-center p-5 fade-in overflow-y-auto z-40">
       <div className="flex items-end justify-center gap-2">
         {loser && (
           <div className="anim-zoom-focus">
@@ -54,11 +54,11 @@ export function DonkeyReveal({
         )}
       </div>
 
-      <h2 className="text-2xl font-black leading-tight">
+      <h2 className="max-w-sm text-2xl font-bold leading-snug">
         {loser ? (
           <>
-            <span className="text-4xl block anim-hop">🫏</span>
-            THE DONKEY GOT {loser.name.toUpperCase()}!
+            <span className="anim-hop mr-1 inline-block text-3xl">🫏</span>The Donkey got{" "}
+            <span className="text-highlight">{loser.name}</span>!
           </>
         ) : (
           "Nobody is the Donkey!"
@@ -78,7 +78,7 @@ export function DonkeyReveal({
           .map((p) => (
             <span
               key={p.id}
-              className="text-[11px] rounded-full border border-border bg-black/30 px-2.5 py-1 font-semibold"
+              className="rounded-md border border-border bg-surface-elevated px-2.5 py-1 text-xs font-semibold"
             >
               #{p.place} {p.name}
             </span>
@@ -108,7 +108,7 @@ export function Countdown({ onDone }: { onDone: () => void }) {
   }, [n, onDone]);
 
   return (
-    <div className="absolute inset-0 z-50 grid place-items-center bg-background/85 backdrop-blur-sm rounded-[2rem]">
+    <div className="absolute inset-0 z-50 grid place-items-center bg-background/95 rounded-[2rem]">
       <div key={n} className="anim-count text-7xl font-black text-gradient">
         {n === 0 ? "GO!" : n}
       </div>

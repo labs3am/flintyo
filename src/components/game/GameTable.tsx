@@ -1,6 +1,6 @@
 import { Maximize2, Minimize2 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { PointerEvent as ReactPointerEvent } from "react";
+import type { CSSProperties, PointerEvent as ReactPointerEvent } from "react";
 import { cn } from "@/lib/utils";
 import { CardBack, PlayingCard } from "./PlayingCard";
 import { PlayerSeat } from "./PlayerSeat";
@@ -11,6 +11,55 @@ import { legalCards, sortHand, SUIT_NAME, type GameState } from "@/lib/bhabhi/en
 import { ScoreBoard } from "./ScoreBoard";
 import { useTableRotated } from "./LandscapeShell";
 import type { Scores } from "@/lib/bhabhi/score";
+import type { SeatSide } from "./PlayerSeat";
+
+/**
+ * Where each opponent sits around the table, expressed as anchor points over
+ * the table area. `x`/`y` are percentages; `side` picks the PlayerSeat layout.
+ * - Narrow screens: all opponents along a tidy top strip (evenly spread).
+ * - Wide screens: opponents truly surround the felt (top corners + left/right
+ *   flanks for 5-6 player games).
+ */
+type SeatSlot = { x: number; y: number; side: SeatSide };
+function seatSlots(count: number, wide: boolean): SeatSlot[] {
+  if (!wide) {
+    return Array.from({ length: count }, (_, i) => ({
+      x: (100 / (count + 1)) * (i + 1),
+      y: 0,
+      side: "top" as const,
+    }));
+  }
+  switch (count) {
+    case 1:
+      return [{ x: 50, y: 0, side: "top" }];
+    case 2:
+      return [
+        { x: 26, y: 0, side: "top" },
+        { x: 74, y: 0, side: "top" },
+      ];
+    case 3:
+      return [
+        { x: 14, y: 0, side: "top" },
+        { x: 50, y: 0, side: "top" },
+        { x: 86, y: 0, side: "top" },
+      ];
+    case 4:
+      return [
+        { x: 15, y: 0, side: "top" },
+        { x: 85, y: 0, side: "top" },
+        { x: 3, y: 42, side: "left" },
+        { x: 97, y: 42, side: "right" },
+      ];
+    default:
+      return [
+        { x: 13, y: 0, side: "top" },
+        { x: 50, y: 0, side: "top" },
+        { x: 87, y: 0, side: "top" },
+        { x: 3, y: 42, side: "left" },
+        { x: 97, y: 42, side: "right" },
+      ];
+  }
+}
 
 export function GameTable({
   state,
@@ -44,7 +93,19 @@ export function GameTable({
   );
   const [foul, setFoul] = useState<{ id: string; at: number } | null>(null);
   const [tab, setTab] = useState<"scores" | null>(null);
-  const [gained, setGained] = useState<{ seat: number; n: number; seq: number } | null>(null);
+    const [gained, setGained] = useState<{ seat: number; n: number; seq: number } | null>(null);
+  // Respect the OS reduced-motion preference: disable the snap-back animation.
+  const [reduced, setReduced] = useState(
+    typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+  );
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setReduced(mq.matches);
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
   // Coaching fades out after the player's first few turns.
   const [myTurns, setMyTurns] = useState(0);
   const lastCounted = useRef<number>(-1);
@@ -209,9 +270,18 @@ export function GameTable({
   const [handW, setHandW] = useState(0);
   const rotated = useTableRotated();
   const [tightScreen, setTightScreen] = useState(false);
+  const [wideScreen, setWideScreen] = useState(false);
   useEffect(() => {
-    // When the table is rotated the usable height is the window's *width*.
-    const on = () => setTightScreen((rotated ? window.innerWidth : window.innerHeight) <= 560);
+    // When the table is rotated the usable dimensions swap: the container is
+    // 100dvw tall and 100dvh wide, so height == innerWidth and width == innerHeight.
+    const on = () => {
+      setTightScreen((rotated ? window.innerWidth : window.innerHeight) <= 560);
+      // Surround seating needs real room in BOTH axes: a rotated phone is wide
+      // but short, so forcing flanks there would squash the felt.
+      const w = rotated ? window.innerHeight : window.innerWidth;
+      const h = rotated ? window.innerWidth : window.innerHeight;
+      setWideScreen(w >= 768 && h >= 480);
+    };
     on();
     window.addEventListener("resize", on);
     window.addEventListener("orientationchange", on);
@@ -222,6 +292,15 @@ export function GameTable({
   }, [rotated]);
   const shortScreen = tightScreen;
   const sm = (cls: string) => (shortScreen ? cls : "");
+
+  // ---- seat layout: opponents surround the table --------------------------
+  // Wide screens seat opponents around the felt (top corners + flanks for big
+  // games); narrow/rotated-phone screens keep everyone as a tidy top strip.
+  const opponentCount = others.length;
+  const surround = wideScreen;
+  const slots = seatSlots(opponentCount, surround);
+  const opponentSize = shortScreen ? 36 : opponentCount >= 5 ? 44 : opponentCount >= 4 ? 50 : 54;
+  const flankSize = Math.round(opponentSize * 1.15);
   useEffect(() => {
     const el = handRef.current;
     if (!el) return;
@@ -263,44 +342,86 @@ export function GameTable({
           type="button"
           onClick={exitFull}
           aria-label="Exit full screen"
-          className="absolute top-2 right-2 z-[60] inline-flex items-center gap-1 rounded-full border border-primary bg-primary px-3 py-2 text-[10px] font-black uppercase tracking-[0.15em] text-primary-foreground shadow-lg transition active:scale-95 [touch-action:manipulation]"
+          className="absolute top-2 right-2 z-[60] inline-flex items-center gap-1.5 rounded-lg border border-violet bg-violet px-3 py-2 text-xs font-semibold text-primary-foreground shadow-lg transition active:scale-95 [touch-action:manipulation] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
         >
           <Minimize2 className="h-3.5 w-3.5" /> Exit
         </button>
       )}
 
 
-      {/* Opponents row keeps a little headroom for speech bubbles */}
+      {/* Opponent seats — surround the felt on wide screens, strip on narrow */}
+      <div
+        className={cn(
+          "relative min-h-0 flex-1",
+          surround ? "w-full" : "flex w-full flex-col gap-2",
+        )}
+      >
+        {surround ? (
+          others.map(({ p, i }, idx) => {
+            const slot = slots[idx];
+            const style: CSSProperties =
+              slot.side === "top"
+                ? { left: `${slot.x}%`, top: 2, transform: "translateX(-50%)" }
+                : slot.side === "left"
+                  ? { left: 4, top: `${slot.y}%`, transform: "translateY(-50%)" }
+                  : { right: 4, top: `${slot.y}%`, transform: "translateY(-50%)" };
+            return (
+              <div key={p.id} className="absolute z-20" style={style}>
+                <PlayerSeat
+                  seat={{
+                    name: p.name,
+                    charId: p.char,
+                    bot: p.bot,
+                    cards: p.hand.length,
+                    out: p.out,
+                    place: p.place,
+                    active: state.turn === i && state.phase === "playing",
+                  }}
+                  expression={expressionFor(state, i)}
+                  reaction={reactions[i]}
+                  says={says[i]}
+                  gained={gained?.seat === i ? gained.n : null}
+                  turnKey={state.seq}
+                  size={slot.side === "top" ? opponentSize : flankSize}
+                  side={slot.side}
+                  compact
+                />
+              </div>
+            );
+          })
+        ) : (
+          <div className="flex shrink-0 flex-wrap items-center justify-center gap-1.5 w-full max-w-full overflow-visible">
+            {others.map(({ p, i }) => (
+              <PlayerSeat
+                key={p.id}
+                seat={{
+                  name: p.name,
+                  charId: p.char,
+                  bot: p.bot,
+                  cards: p.hand.length,
+                  out: p.out,
+                  place: p.place,
+                  active: state.turn === i && state.phase === "playing",
+                }}
+                expression={expressionFor(state, i)}
+                reaction={reactions[i]}
+                says={says[i]}
+                gained={gained?.seat === i ? gained.n : null}
+                turnKey={state.seq}
+                size={opponentSize}
+                side="top"
+                compact
+              />
+            ))}
+          </div>
+        )}
 
-      <div className="flex shrink-0 flex-nowrap items-end justify-center gap-1 w-full max-w-full overflow-visible">
-        {others.map(({ p, i }) => (
-          <PlayerSeat
-            key={p.id}
-            seat={{
-              name: p.name,
-              charId: p.char,
-              bot: p.bot,
-              cards: p.hand.length,
-              out: p.out,
-              place: p.place,
-              active: state.turn === i && state.phase === "playing",
-            }}
-            expression={expressionFor(state, i)}
-            reaction={reactions[i]}
-            says={says[i]}
-            gained={gained?.seat === i ? gained.n : null}
-            turnKey={state.seq}
-            size={(shortScreen ? 0.58 : 1) * (others.length > 4 ? 40 : others.length > 3 ? 46 : 56)}
-            compact
-          />
-        ))}
-      </div>
-
-      {/* Arena */}
+        {/* Arena */}
       <div
         ref={arenaRef}
         className={cn(
-          "felt relative flex-1 min-h-0 overflow-hidden rounded-[2rem] border flex flex-col items-center justify-center transition-all duration-200",
+          "felt arena-vignette overflow-hidden rounded-[2rem] border flex flex-col items-center justify-center transition-all duration-200",
+          surround ? "absolute inset-x-2 bottom-2 top-[112px]" : "relative flex-1 min-h-0",
           shortScreen ? "p-2 pt-7 gap-1" : "p-3 pt-9 gap-2",
           dropReady
             ? "border-primary ring-2 ring-primary/70 scale-[1.01]"
@@ -323,30 +444,35 @@ export function GameTable({
             type="button"
             onClick={toggleFull}
             aria-label="Enter full screen"
-            className="absolute bottom-3 left-3 z-20 inline-flex items-center gap-1 rounded-full border border-border bg-black/50 px-3 py-2 text-[9px] font-black uppercase tracking-[0.15em] text-foreground/80 transition active:scale-95 [touch-action:manipulation]"
+            className="absolute bottom-3 left-3 z-20 inline-flex items-center gap-1 rounded-lg border border-border bg-surface-elevated px-2.5 py-1.5 text-[11px] font-semibold text-foreground/90 transition hover:border-ink-faint active:scale-95 [touch-action:manipulation]"
           >
             <Maximize2 className="h-3.5 w-3.5" /> Full
           </button>
         )}
 
-        <div className={cn("text-[10px] uppercase tracking-[0.3em] text-muted-foreground", sm("hidden"))}>
+        <div className={cn("text-xs font-medium text-muted-foreground", sm("hidden"))}>
           {state.leadSuit ? `${SUIT_NAME[state.leadSuit]} led` : "New trick"}
         </div>
 
-        <div className="flex items-end justify-center gap-1.5 flex-wrap overflow-hidden">
+        <div className="flex items-end justify-center gap-1.5 flex-wrap overflow-visible pt-1">
           {state.pile.length === 0 ? (
             reveal ? (
-              reveal.cards.map(({ p, card }) => (
-                <div key={card.id} className="flex flex-col items-center gap-1">
-                  <PlayingCard
-                    card={card}
-                    size={shortScreen ? "sm" : "md"}
-                    className={cn(
-                      "transition",
-                      reveal.who === p ? "ring-2 ring-gold" : "opacity-70",
-                    )}
-                  />
-                  <span className={cn("text-[9px] text-muted-foreground max-w-[4rem] truncate", sm("hidden"))}>
+              reveal.cards.map(({ p, card }, idx, arr) => (
+                <div key={card.id} className="flex flex-col items-center gap-1" style={{ zIndex: idx }}>
+                  <div
+                    className="transition-transform"
+                    style={{ transform: `rotate(${(idx - (arr.length - 1) / 2) * 6}deg) translateY(${-Math.abs(idx - (arr.length - 1) / 2) * 4}px)` }}
+                  >
+                    <PlayingCard
+                      card={card}
+                      size={shortScreen ? "sm" : "md"}
+                      className={cn(
+                        "transition",
+                        reveal.who === p ? "ring-2 ring-highlight" : "opacity-75",
+                      )}
+                    />
+                  </div>
+                  <span className={cn("text-[11px] text-muted-foreground max-w-[4.5rem] truncate", sm("hidden"))}>
                     {state.players[p].name}
                   </span>
                 </div>
@@ -358,10 +484,19 @@ export function GameTable({
               </div>
             )
           ) : (
-            state.pile.map(({ p, card }) => (
-              <div key={card.id} className="anim-deal flex flex-col items-center gap-1">
-                <PlayingCard card={card} size={shortScreen ? "sm" : "md"} />
-                <span className={cn("text-[9px] text-muted-foreground max-w-[4rem] truncate", sm("hidden"))}>
+            state.pile.map(({ p, card }, idx, arr) => (
+              <div
+                key={card.id}
+                className="anim-deal flex flex-col items-center gap-1"
+                style={{ animationDelay: `${idx * 90}ms`, zIndex: idx }}
+              >
+                <div
+                  className="transition-transform"
+                  style={{ transform: `rotate(${(idx - (arr.length - 1) / 2) * 6}deg) translateY(${-Math.abs(idx - (arr.length - 1) / 2) * 4}px)` }}
+                >
+                  <PlayingCard card={card} size={shortScreen ? "sm" : "md"} />
+                </div>
+                <span className={cn("text-[11px] text-muted-foreground max-w-[4.5rem] truncate", sm("hidden"))}>
                   {state.players[p].name}
                 </span>
               </div>
@@ -369,7 +504,7 @@ export function GameTable({
           )}
         </div>
         {reveal && state.pile.length === 0 && (
-          <span className="rounded-full border border-gold/50 bg-black/50 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-[0.2em] text-gold">
+          <span className="rounded-md border border-border bg-surface-elevated px-2.5 py-1 text-xs font-semibold text-highlight">
             {reveal.kind === "pickup"
               ? `${state.players[reveal.who].name} picks these up`
               : `${state.players[reveal.who].name} takes the trick`}
@@ -379,7 +514,7 @@ export function GameTable({
 
         {/* Live standings */}
         <div className="absolute top-3 left-3">
-          <span className="px-2 py-1 rounded-full text-[9px] font-black tracking-[0.15em] bg-black/40 border border-border text-gold">
+          <span className="rounded-md border border-border bg-surface-elevated px-2 py-0.5 text-[11px] font-semibold text-ink-muted">
             {alive} IN
           </span>
         </div>
@@ -388,8 +523,8 @@ export function GameTable({
         <button
           onClick={() => setTab((t) => (t === "scores" ? null : "scores"))}
           className={cn(
-            "absolute top-3 right-3 z-20 rounded-full border px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.15em] transition active:scale-95 [touch-action:manipulation]",
-            tab === "scores" ? "border-primary bg-primary/20 text-primary" : "border-border bg-black/40 text-foreground/80",
+            "absolute top-3 right-3 z-20 rounded-md border px-2.5 py-1 text-[11px] font-semibold transition active:scale-95 [touch-action:manipulation] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
+            tab === "scores" ? "border-primary bg-primary/15 text-primary" : "border-border bg-surface-elevated text-muted-foreground",
           )}
         >
           Scores
@@ -400,10 +535,10 @@ export function GameTable({
         <div className={cn("absolute left-1/2 -translate-x-1/2", shortScreen ? "top-1" : "top-3")}>
           <span
             className={cn(
-              "px-3 py-1 rounded-full text-[10px] font-black tracking-[0.2em] border",
+              "rounded-md border px-3 py-1 text-xs font-bold",
               myTurn
-                ? "bg-primary text-primary-foreground border-primary anim-pulse-soft"
-                : "bg-black/40 text-muted-foreground border-border",
+                ? "bg-turn text-turn-foreground border-turn"
+                : "bg-surface-elevated text-muted-foreground border-border",
             )}
           >
             {state.phase === "over" ? "ROUND OVER" : myTurn ? "YOUR TURN" : `${turnName.toUpperCase()}'S TURN`}
@@ -415,10 +550,10 @@ export function GameTable({
           <div className="pointer-events-none absolute inset-0 grid place-items-center z-10">
             <span
               className={cn(
-                "rounded-full border px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] backdrop-blur transition-colors",
+                "rounded-md border px-3 py-1.5 text-xs font-bold backdrop-blur-none transition-colors",
                 dropReady
                   ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border bg-black/60 text-muted-foreground",
+                  : "border-border bg-surface-elevated text-muted-foreground",
               )}
             >
               {dropReady ? "Release to play" : "Drop here"}
@@ -432,6 +567,7 @@ export function GameTable({
           </div>
         )}
       </div>
+      </div>
 
       {tab === "scores" && (
         <div className="absolute inset-x-3 top-12 z-30 fade-in" onClick={() => setTab(null)}>
@@ -441,7 +577,7 @@ export function GameTable({
 
 
       {/* You */}
-      <div className={cn("panel shrink-0 rounded-2xl flex items-center gap-2", shortScreen ? "p-1" : "p-2")}>
+      <div className={cn("relative shrink-0", shortScreen ? "px-1 pb-0.5" : "px-2 pb-1")}>
         <div className="flex shrink-0 flex-col items-center gap-0.5 max-w-[6.5rem]">
 
           {me && (
@@ -517,7 +653,12 @@ export function GameTable({
                               filter: "drop-shadow(0 18px 22px rgba(0,0,0,0.55))",
                             }
                           : snapBack === c.id
-                            ? { transform: "translate3d(0,0,0)", transition: "transform 280ms cubic-bezier(.22,1,.36,1)" }
+                                                        ? {
+                                transform: "translate3d(0,0,0)",
+                                transition: reduced
+                                  ? "transform 0.001ms"
+                                  : "transform 280ms cubic-bezier(.22,1,.36,1)",
+                              }
                             : null),
                       }}
                     >

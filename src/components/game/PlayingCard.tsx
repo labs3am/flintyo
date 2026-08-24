@@ -38,16 +38,20 @@ export function PlayingCard({
   const ink = red ? "text-[oklch(0.50_0.26_27)]" : "text-[oklch(0.16_0.02_280)]";
   const label = rankLabel(card.r);
   const face = FACE[card.r];
+  // One tasteful centered suit keeps the card clean and instantly readable.
+  const pipW = size === "sm" ? "w-[2em]" : size === "md" ? "w-[2.6em]" : "w-[3.2em]";
   
 
   const corner = (
     <span className="flex items-start gap-[0.12em] leading-none">
       <span className="font-black leading-[0.85] text-[1.5em] tracking-tighter">{label}</span>
+      <Suit suit={card.s} className="mt-[0.08em] w-[0.8em] shrink-0" />
     </span>
   );
 
   return (
     <Tag
+            type={onClick ? "button" : undefined}
       onClick={onClick}
       disabled={onClick ? disabled : undefined}
       aria-label={`${label} of ${card.s}`}
@@ -55,37 +59,27 @@ export function PlayingCard({
         "card-face relative shrink-0 select-none overflow-hidden",
         sizes[size],
         ink,
-        onClick && !disabled && "cursor-pointer hover:-translate-y-3 active:-translate-y-1.5",
+                onClick && !disabled &&
+          "cursor-pointer hover:-translate-y-3 active:-translate-y-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
         onClick && disabled && "cursor-not-allowed",
         dimmed && "opacity-45 saturate-50",
         selected && "-translate-y-3 ring-2 ring-primary",
-        highlight && "ring-2 ring-primary shadow-glow",
-        "transition-all duration-150",
+        highlight && "ring-2 ring-highlight",
+        "transition-all duration-fast ease-out",
         className,
       )}
     >
       <span className="absolute top-[3%] left-[8%]">{corner}</span>
-      <span className="absolute top-[6%] right-[8%]">
-        <Suit suit={card.s} className="w-[0.95em]" />
-      </span>
+      <span aria-hidden className="absolute bottom-[3%] right-[8%] rotate-180 opacity-60">{corner}</span>
 
-      {/* big glossy centre symbol */}
-      <span className="absolute inset-x-[14%] bottom-[10%] top-[32%] block">
+      {/* one clean centered suit (or a face letter) */}
+      <span className="absolute inset-0 grid place-items-center pointer-events-none">
         {face ? (
-          <span className="absolute inset-0 grid place-items-center">
-            <Suit suit={card.s} className="w-[85%] opacity-25" />
-            <span className="absolute text-[2.4em] font-black leading-none tracking-tighter">{face}</span>
+          <span className="relative text-[2.4em] font-black leading-none tracking-tighter drop-shadow-[0_1px_0_rgba(255,255,255,0.6)]">
+            {face}
           </span>
         ) : (
-          <span className="absolute inset-0 grid place-items-center">
-            <span className="relative block w-[88%]">
-              <Suit suit={card.s} className="w-full drop-shadow-[0_2px_2px_rgba(0,0,0,0.25)]" />
-              <Suit
-                suit={card.s}
-                className="absolute inset-0 w-full text-white opacity-30 [clip-path:inset(0_0_58%_0)]"
-              />
-            </span>
-          </span>
+          <Suit suit={card.s} className={pipW} />
         )}
       </span>
     </Tag>

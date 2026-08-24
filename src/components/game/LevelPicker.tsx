@@ -24,10 +24,10 @@ export function LevelPicker({
   className?: string;
 }) {
   return (
-    <div className={cn("rounded-xl border border-border bg-black/20 px-3 py-2", className)}>
+    <div className={cn("rounded-xl border border-border bg-surface px-3 py-2", className)}>
       <div className="flex items-center justify-between gap-2">
         <span className="text-sm font-medium">AI difficulty</span>
-        <div className="flex gap-1 rounded-lg bg-black/25 p-0.5">
+        <div className="flex gap-1 rounded-md bg-surface-elevated p-0.5">
           {(["easy", "normal", "hard"] as const).map((l) => (
             <button
               key={l}
@@ -58,8 +58,8 @@ export function LevelChip({ value, onChange }: { value: Level; onChange?: (l: Le
       onClick={onChange ? next : undefined}
       title={onChange ? "Tap to change AI difficulty" : undefined}
       className={cn(
-        "rounded-full border border-border bg-black/35 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em]",
-        value === "hard" ? "text-primary" : value === "easy" ? "text-muted-foreground" : "text-gold",
+        "rounded-md border border-border bg-surface-elevated px-2.5 py-1 text-xs font-semibold",
+        value === "hard" ? "text-primary" : value === "easy" ? "text-muted-foreground" : "text-highlight",
         onChange && "active:scale-95 transition",
       )}
     >

@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { Check } from "lucide-react";
 import { CHARACTERS } from "@/lib/characters";
 import { CharacterAvatar } from "./Character";
 
@@ -15,12 +16,13 @@ export function CharacterPicker({
   return (
     <div className={cn("space-y-3", className)}>
       <div className="text-center">
-        <h2 className="text-lg font-black tracking-tight">Choose Your Player</h2>
+        <h2 className="text-base font-semibold">Choose your player</h2>
         <p className="text-xs text-muted-foreground">
-          <span className="text-primary font-bold">{selected.name}</span> — {selected.personality} · {selected.tagline}
+          <span className="font-semibold text-primary">{selected.name}</span> — {selected.personality} ·{" "}
+          {selected.tagline}
         </p>
       </div>
-      <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
+      <div className="grid grid-cols-4 gap-2 sm:grid-cols-5">
         {CHARACTERS.map((c) => {
           const active = c.id === value;
           return (
@@ -29,14 +31,19 @@ export function CharacterPicker({
               onClick={() => onChange(c.id)}
               aria-pressed={active}
               className={cn(
-                "rounded-2xl p-1.5 flex flex-col items-center gap-0.5 border transition-all active:scale-95",
+                "relative flex flex-col items-center gap-0.5 rounded-lg border p-1.5 transition-colors",
                 active
-                  ? "border-primary bg-primary/12 glow scale-[1.03]"
-                  : "border-border/70 bg-black/20 hover:border-primary/50",
+                  ? "border-primary bg-surface-elevated ring-2 ring-primary"
+                  : "border-border bg-surface hover:border-ink-faint",
               )}
             >
+              {active && (
+                <span className="absolute -right-1 -top-1 grid h-4 w-4 place-items-center rounded-full bg-primary text-primary-foreground">
+                  <Check className="h-2.5 w-2.5" strokeWidth={3.5} />
+                </span>
+              )}
               <CharacterAvatar character={c} expression={active ? "excited" : "idle"} size={52} />
-              <span className="text-[10px] font-bold truncate max-w-full">{c.name}</span>
+              <span className="max-w-full truncate text-[11px] font-semibold">{c.name}</span>
             </button>
           );
         })}
@@ -44,3 +51,4 @@ export function CharacterPicker({
     </div>
   );
 }
+

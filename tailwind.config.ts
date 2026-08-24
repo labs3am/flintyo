@@ -21,6 +21,9 @@ export default {
       screens: { "2xl": "1400px" },
     },
     extend: {
+      screens: {
+        xs: "400px",
+      },
       fontFamily: {
         display: ["Bricolage Grotesque", "system-ui", "sans-serif"],
         sans: ["Plus Jakarta Sans", "system-ui", "sans-serif"],
@@ -32,6 +35,22 @@ export default {
         ring: c("ring"),
         background: c("background"),
         foreground: c("foreground"),
+        surface: c("surface"),
+        "surface-elevated": c("surface-elevated"),
+        "surface-hover": c("surface-hover"),
+        table: c("table-surface"),
+        ink: c("ink"),
+        "ink-muted": c("ink-muted"),
+        "ink-faint": c("ink-faint"),
+        ember: c("ember"),
+        "ember-hover": c("ember-hover"),
+        cream: c("cream"),
+        violet: c("violet"),
+        "violet-hover": c("violet-hover"),
+        lavender: c("lavender"),
+        highlight: c("highlight"),
+        success: c("success"),
+        danger: c("danger"),
         primary: {
           DEFAULT: c("primary"),
           foreground: c("primary-foreground"),
@@ -77,9 +96,21 @@ export default {
         sm: "calc(var(--radius) - 4px)",
         xl: "calc(var(--radius) + 4px)",
       },
-      boxShadow: {
+            boxShadow: {
         glow: "var(--shadow-glow)",
         elegant: "var(--shadow-elegant)",
+        card: "var(--shadow-card)",
+        "shadow-1": "var(--shadow-1)",
+        "shadow-2": "var(--shadow-2)",
+        "shadow-3": "var(--shadow-3)",
+      },
+      transitionDuration: {
+        fast: "var(--dur-fast)",
+        base: "var(--dur-base)",
+        slow: "var(--dur-slow)",
+      },
+      transitionTimingFunction: {
+        "ease-out": "var(--ease-out)",
       },
       keyframes: {
         "accordion-down": {

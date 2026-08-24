@@ -15,6 +15,29 @@ export type SeatView = {
   isYou?: boolean;
 };
 
+/** Which edge of the table the seat sits on — drives layout + turn caret direction. */
+export type SeatSide = "top" | "left" | "right";
+
+/** Mini fanned card stack — the "tidy pile" read for how many cards a player holds. */
+function MiniDeck({ cards }: { cards: number }) {
+  const shown = Math.min(cards, 3);
+  return (
+    <span aria-hidden className="relative inline-block" style={{ width: 24, height: 16 }}>
+      {Array.from({ length: shown }).map((_, i) => (
+        <span
+          key={i}
+          className="absolute top-0 h-[14px] w-[10.5px] rounded-[2px] card-back"
+          style={{
+            left: i * 7,
+            zIndex: i,
+            transform: `rotate(${(i - (shown - 1) * 0.5) * 14}deg)`,
+          }}
+        />
+      ))}
+    </span>
+  );
+}
+
 export function PlayerSeat({
   seat,
   expression,
@@ -25,6 +48,7 @@ export function PlayerSeat({
   compact,
   turnKey,
   turnSeconds = 12,
+  side = "top",
 }: {
   seat: SeatView;
   expression: Expression;
@@ -37,22 +61,23 @@ export function PlayerSeat({
   /** Changes whenever a new turn starts — restarts the timer bar. */
   turnKey?: number;
   turnSeconds?: number;
+  side?: SeatSide;
 }) {
   const character: Character = getCharacter(seat.charId);
-  const plates = ["bg-plate-1", "bg-plate-2", "bg-plate-3", "bg-plate-4", "bg-plate-5"];
-  const plate = plates[[...seat.name].reduce((a, c) => a + c.charCodeAt(0), 0) % plates.length];
   return (
     <div
       className={cn(
-        "relative flex flex-col items-center gap-1 rounded-2xl px-2 py-1.5 transition-all duration-300 min-w-0",
-        seat.active ? "seat-turn ring-2 ring-turn" : "bg-black/20 ring-1 ring-border/60",
-        seat.out && "opacity-70",
+        "relative flex gap-2 min-w-0 transition-all duration-300",
+        side === "top" && "flex-col items-center",
+        side === "left" && "flex-row items-center",
+        side === "right" && "flex-row-reverse items-center",
+        seat.out ? "opacity-55 saturate-[0.6]" : seat.active ? "opacity-100" : "opacity-85",
       )}
     >
       {gained ? (
         <span
           key={`g${gained}`}
-          className="anim-pop-up absolute -top-3 -right-1 z-20 rounded-full border border-destructive/70 bg-destructive/90 px-1.5 py-0.5 text-[9px] font-black text-destructive-foreground pointer-events-none"
+          className="anim-pop-up pointer-events-none absolute -top-3 right-0 z-20 rounded-md bg-destructive px-1.5 py-0.5 text-[10px] font-bold text-destructive-foreground"
         >
           +{gained}
         </span>
@@ -60,7 +85,7 @@ export function PlayerSeat({
       {reaction && (
         <span
           key={reaction}
-          className="anim-pop-up absolute -top-6 left-1/2 -translate-x-1/2 text-2xl drop-shadow z-20 pointer-events-none"
+          className="anim-pop-up pointer-events-none absolute -top-6 left-1/2 z-20 -translate-x-1/2 text-2xl drop-shadow"
         >
           {reaction}
         </span>
@@ -68,7 +93,7 @@ export function PlayerSeat({
       {says && (
         <span
           key={says}
-          className="fade-in absolute -top-7 left-1/2 -translate-x-1/2 z-20 max-w-[9rem] truncate rounded-xl rounded-bl-sm border border-primary/50 bg-popover/95 px-2 py-1 text-[10px] font-medium shadow-lg pointer-events-none"
+          className="fade-in pointer-events-none absolute -top-7 left-1/2 z-20 max-w-[9rem] truncate rounded-md bg-popover px-2 py-1 text-[11px] font-medium text-popover-foreground shadow-lg"
         >
           {says}
         </span>
@@ -87,52 +112,50 @@ export function PlayerSeat({
         />
       </div>
 
-      <div className={cn("plate flex items-center gap-1 max-w-full min-w-0 -mt-2", seat.isYou ? "bg-primary text-primary-foreground" : plate)}>
-        <span className="truncate text-[11px] leading-4">{seat.name}</span>
-        {seat.bot && <span className="text-[9px] opacity-80 shrink-0">AI</span>}
-      </div>
-      {seat.out ? (
-        <span className="text-[10px] font-bold text-gold leading-none">
-          {seat.place ? `SAFE #${seat.place}` : "SAFE"}
+      {/* Character-first info: name over count, no containers. */}
+      <div className="flex min-w-0 flex-col items-center gap-0.5">
+        <span className="max-w-full truncate text-[13px] font-semibold leading-tight" style={{ fontFamily: "var(--font-display)" }}>
+          {seat.name}
+          {seat.bot && <span className="ml-1 text-[10px] font-medium text-ink-faint">AI</span>}
         </span>
-      ) : (
-        <div className="flex items-center gap-1">
-          {!compact && (
-            <span className="flex gap-[2px]">
-              {Array.from({ length: Math.min(seat.cards, 6) }).map((_, i) => (
-                <span key={i} className="h-3.5 w-2 rounded-[2px] card-back" />
-              ))}
-            </span>
-          )}
+        {seat.out ? (
+          <span className="text-[11px] font-semibold leading-none text-highlight">
+            {seat.place ? `SAFE #${seat.place}` : "SAFE"}
+          </span>
+        ) : (
           <span
             className={cn(
-              "inline-flex items-center gap-1 rounded-full border px-1.5 py-[1px] text-[10px] font-black leading-none tabular-nums",
-              seat.cards > 16
-                ? "border-destructive/60 bg-destructive/20 text-destructive"
-                : "border-gold/50 bg-black/50 text-gold",
+              "inline-flex items-center gap-1.5 text-sm font-semibold leading-none tabular-nums",
+              seat.cards > 16 ? "text-danger" : "text-ink-muted",
             )}
           >
-            <span className="h-2.5 w-[7px] rounded-[1px] card-back" />
+            {!compact && <MiniDeck cards={seat.cards} />}
             {seat.cards}
           </span>
-        </div>
+        )}
+        {seat.active && !seat.out && (
+          <span
+            key={`t${turnKey ?? 0}`}
+            aria-label={`${turnSeconds} second turn timer`}
+            className="turn-timer mt-1 h-[3px] w-12 overflow-hidden rounded-full bg-white/10"
+            style={{ ["--turn-dur" as string]: `${turnSeconds}s` }}
+          >
+            <i />
+          </span>
+        )}
+        {seat.isYou && seat.active && !seat.out && (
+          <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-turn">
+            Your turn
+          </span>
+        )}
+      </div>
 
-      )}
-      {seat.active && !seat.out && (
+      {seat.active && !seat.out && side !== "top" && (
         <span
-          key={`t${turnKey ?? 0}`}
-          className="turn-timer mt-1 h-1 w-12 overflow-hidden rounded-full bg-black/40"
-          style={{ ["--turn-dur" as string]: `${turnSeconds}s` }}
+          className={cn("seat-caret", side === "left" ? "seat-caret--right" : "seat-caret--left")}
+          aria-hidden
         >
           <i />
-        </span>
-      )}
-      {seat.active && !seat.isYou && (
-        <span
-          className="absolute -bottom-2 text-[9px] font-black tracking-widest text-turn bg-background/90 px-1.5 rounded-full border"
-          style={{ borderColor: "var(--turn)" }}
-        >
-          TURN
         </span>
       )}
     </div>
