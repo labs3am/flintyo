@@ -80,8 +80,7 @@ const FAQ = [
 
 export default function Landing() {
   const [tut, setTut] = useState(false);
-  const marquee = [...CHARACTERS, ...CHARACTERS];
-
+  
   return (
     <>
       <Seo
@@ -227,7 +226,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Characters marquee */}
+      {/* Characters */}
       <section className="pb-16">
         <div className="px-4">
           <Reveal>
@@ -237,20 +236,22 @@ export default function Landing() {
             </p>
           </Reveal>
         </div>
-        <div className="mt-6 relative overflow-hidden">
-          <div className="marquee-track gap-3 px-3">
-            {marquee.map((c, i) => (
+        <Reveal>
+          <div className="mt-6 flex flex-wrap justify-center gap-2.5 px-4">
+            {CHARACTERS.map((c) => (
               <div
-                key={`${c.id}-${i}`}
-                className="panel rounded-2xl p-3 w-[104px] shrink-0 flex flex-col items-center gap-1"
+                key={c.id}
+                className="panel flex w-[104px] flex-col items-center gap-1 rounded-xl p-3"
               >
                 <CharacterAvatar character={c} expression="idle" size={54} />
-                <span className="text-[11px] font-bold truncate max-w-full">{c.name}</span>
-                <span className="text-[9px] text-muted-foreground text-center leading-tight">{c.personality}</span>
+                <span className="max-w-full truncate text-xs font-bold">{c.name}</span>
+                <span className="min-h-[26px] text-center text-[10px] leading-tight text-muted-foreground">
+                  {c.personality}
+                </span>
               </div>
             ))}
           </div>
-        </div>
+        </Reveal>
       </section>
 
       {/* Rules deck */}
