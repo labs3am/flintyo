@@ -21,6 +21,9 @@ export default {
       screens: { "2xl": "1400px" },
     },
     extend: {
+      screens: {
+        xs: "400px",
+      },
       fontFamily: {
         display: ["Bricolage Grotesque", "system-ui", "sans-serif"],
         sans: ["Plus Jakarta Sans", "system-ui", "sans-serif"],
