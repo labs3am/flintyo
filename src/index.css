@@ -186,7 +186,11 @@
     from { transform: scaleX(1); }
     to { transform: scaleX(0); }
   }
-  .panel {
+     /* ---- glow (restrained, not a full-halos) for UI chrome like selected chars ---- */
+   .glow {
+     box-shadow: 0 0 0 1px oklch(from var(--ember) l c h / 0.15), 0 0 14px oklch(from var(--ember) l c h / 0.18);
+   }
+   .panel {
     background-color: oklch(from var(--surface-elevated) l c h / 0.65);
     backdrop-filter: blur(14px);
     border: 1px solid var(--hairline);

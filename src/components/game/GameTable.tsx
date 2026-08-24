@@ -444,7 +444,7 @@ export function GameTable({
             type="button"
             onClick={toggleFull}
             aria-label="Enter full screen"
-            className="absolute bottom-3 left-3 z-20 inline-flex items-center gap-1 rounded-full border border-border bg-black/50 px-3 py-2 text-[9px] font-black uppercase tracking-[0.15em] text-foreground/80 transition active:scale-95 [touch-action:manipulation]"
+            className="absolute bottom-3 left-3 z-20 inline-flex items-center gap-1 rounded-full border border-border bg-surface-elevated/80 px-3 py-2 text-[9px] font-black uppercase tracking-[0.15em] text-foreground/80 transition active:scale-95 [touch-action:manipulation]"
           >
             <Maximize2 className="h-3.5 w-3.5" /> Full
           </button>
@@ -504,7 +504,7 @@ export function GameTable({
           )}
         </div>
         {reveal && state.pile.length === 0 && (
-          <span className="rounded-full border border-gold/50 bg-black/50 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-[0.2em] text-gold">
+          <span className="rounded-full border border-gold/50 bg-surface/60 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-[0.2em] text-gold">
             {reveal.kind === "pickup"
               ? `${state.players[reveal.who].name} picks these up`
               : `${state.players[reveal.who].name} takes the trick`}
@@ -514,7 +514,7 @@ export function GameTable({
 
         {/* Live standings */}
         <div className="absolute top-3 left-3">
-          <span className="px-2 py-1 rounded-full text-[9px] font-black tracking-[0.15em] bg-black/40 border border-border text-gold">
+          <span className="px-2 py-1 rounded-full text-[9px] font-black tracking-[0.15em] bg-surface-elevated/80 border border-border text-gold">
             {alive} IN
           </span>
         </div>
@@ -524,7 +524,7 @@ export function GameTable({
           onClick={() => setTab((t) => (t === "scores" ? null : "scores"))}
           className={cn(
             "absolute top-3 right-3 z-20 rounded-full border px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.15em] transition active:scale-95 [touch-action:manipulation] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
-            tab === "scores" ? "border-primary bg-primary/20 text-primary" : "border-border bg-black/40 text-foreground/80",
+            tab === "scores" ? "border-primary bg-primary/20 text-primary" : "border-border bg-surface-elevated/80 text-foreground/80",
           )}
         >
           Scores
@@ -538,7 +538,7 @@ export function GameTable({
               "px-3 py-1 rounded-full text-[10px] font-black tracking-[0.2em] border",
               myTurn
                 ? "bg-primary text-primary-foreground border-primary anim-pulse-soft"
-                : "bg-black/40 text-muted-foreground border-border",
+                : "bg-surface-elevated/80 text-muted-foreground border-border",
             )}
           >
             {state.phase === "over" ? "ROUND OVER" : myTurn ? "YOUR TURN" : `${turnName.toUpperCase()}'S TURN`}
@@ -553,7 +553,7 @@ export function GameTable({
                 "rounded-full border px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] backdrop-blur transition-colors",
                 dropReady
                   ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border bg-black/60 text-muted-foreground",
+                  : "border-border bg-surface-elevated/80 text-muted-foreground",
               )}
             >
               {dropReady ? "Release to play" : "Drop here"}

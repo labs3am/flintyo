@@ -78,7 +78,7 @@ export function DonkeyReveal({
           .map((p) => (
             <span
               key={p.id}
-              className="text-[11px] rounded-full border border-border bg-black/30 px-2.5 py-1 font-semibold"
+              className="text-[11px] rounded-full border border-border bg-surface/50 px-2.5 py-1 font-semibold"
             >
               #{p.place} {p.name}
             </span>

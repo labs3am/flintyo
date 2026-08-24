@@ -32,7 +32,7 @@ export function CharacterPicker({
                 "rounded-2xl p-1.5 flex flex-col items-center gap-0.5 border transition-all active:scale-95",
                 active
                   ? "border-primary bg-primary/12 glow scale-[1.03]"
-                  : "border-border/70 bg-black/20 hover:border-primary/50",
+                  : "border-border/70 bg-surface-elevated/80 hover:border-primary/50"
               )}
             >
               <CharacterAvatar character={c} expression={active ? "excited" : "idle"} size={52} />
@@ -44,3 +44,4 @@ export function CharacterPicker({
     </div>
   );
 }
+
