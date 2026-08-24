@@ -390,7 +390,7 @@ export default function RoomPage() {
                 onKeyDown={(e) => e.key === "Enter" && saveName()}
                 placeholder="Enter your name"
                 maxLength={14}
-                className="flex-1 min-w-0 rounded-xl border border-border/70 bg-black/30 px-3 py-2 text-sm outline-none focus:border-primary"
+                className="flex-1 min-w-0 rounded-xl border border-border/70 bg-surface/60 px-3 py-2 text-sm outline-none focus:border-primary"
               />
               <button
                 onClick={saveName}
@@ -411,7 +411,7 @@ export default function RoomPage() {
           <div className="grid grid-cols-3 gap-2">
 
             {room.seats.map((s) => (
-              <div key={s.id} className="fade-in flex flex-col items-center gap-1 rounded-2xl border border-border/70 bg-black/20 py-2">
+              <div key={s.id} className="fade-in flex flex-col items-center gap-1 rounded-2xl border border-border/70 bg-surface/50 py-2">
                 <CharacterAvatar character={getCharacter(s.char)} expression="idle" size={58} />
                 <span className="text-[11px] font-bold truncate max-w-full px-1">{s.name}</span>
                 <span className="text-[9px] text-muted-foreground">
@@ -493,7 +493,7 @@ export default function RoomPage() {
               if (window.confirm("Exit the game and leave this room?")) void leave();
             }}
             aria-label="Exit game"
-            className="fixed top-3 right-3 z-30 h-11 rounded-full px-3 inline-flex items-center gap-1.5 border border-border bg-black/60 backdrop-blur text-xs font-bold active:scale-90 transition"
+            className="fixed top-3 right-3 z-30 h-11 rounded-full px-3 inline-flex items-center gap-1.5 border border-border bg-surface-elevated/80 backdrop-blur text-xs font-bold active:scale-90 transition"
           >
             <LogOut className="h-4 w-4" /> Exit
           </button>
@@ -506,7 +506,7 @@ export default function RoomPage() {
               setSeenChat(chat.length);
             }}
             aria-label="Table chat"
-            className="fixed bottom-4 left-4 z-30 h-11 w-11 rounded-full grid place-items-center border border-border bg-black/60 backdrop-blur active:scale-90 transition"
+            className="fixed bottom-4 left-4 z-30 h-11 w-11 rounded-full grid place-items-center border border-border bg-surface-elevated/80 backdrop-blur active:scale-90 transition"
           >
             {chatOpen ? <X className="h-5 w-5" /> : <MessageSquare className="h-5 w-5" />}
             {unread > 0 && (

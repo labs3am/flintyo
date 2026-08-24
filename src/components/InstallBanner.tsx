@@ -86,7 +86,7 @@ export function InstallBanner({ className = "" }: { className?: string }) {
           <button
             onClick={dismiss}
             aria-label="Dismiss install banner"
-            className="grid h-9 w-9 place-items-center rounded-full border border-border/70 bg-black/20 text-muted-foreground hover:text-foreground"
+            className="grid h-9 w-9 place-items-center rounded-full border border-border/70 bg-surface/60 text-muted-foreground hover:text-foreground"
           >
             <X className="h-4 w-4" />
           </button>

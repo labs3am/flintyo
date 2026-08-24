@@ -110,7 +110,7 @@ export default function Setup() {
               setSoundEnabled(next);
             }}
             aria-label={sound ? "Mute sound" : "Unmute sound"}
-            className="h-9 w-9 grid place-items-center rounded-full border border-border bg-black/25 text-muted-foreground"
+            className="h-9 w-9 grid place-items-center rounded-full border border-border bg-surface-elevated/70 text-muted-foreground"
           >
             {sound ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
           </button>
@@ -133,7 +133,7 @@ export default function Setup() {
             />
           </div>
 
-          <div className="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-black/25 border border-border">
+          <div className="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-surface-elevated/60 border border-border">
             {(
               [
                 { k: "ai", label: "Play with AI", icon: Bot },
@@ -246,7 +246,7 @@ function Counter({
   max: number;
 }) {
   return (
-    <div className="flex items-center justify-between rounded-xl border border-border bg-black/20 px-3 py-2.5">
+    <div className="flex items-center justify-between rounded-xl border border-border bg-surface/60 px-3 py-2.5">
       <span className="text-sm font-medium">{label}</span>
       <div className="flex items-center gap-3">
         <button onClick={() => setValue(Math.max(min, value - 1))} className="btn-step" aria-label="Decrease">
