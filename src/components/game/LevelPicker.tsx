@@ -24,10 +24,10 @@ export function LevelPicker({
   className?: string;
 }) {
   return (
-    <div className={cn("rounded-xl border border-border bg-surface/60 px-3 py-2", className)}>
+    <div className={cn("rounded-xl border border-border bg-surface px-3 py-2", className)}>
       <div className="flex items-center justify-between gap-2">
         <span className="text-sm font-medium">AI difficulty</span>
-        <div className="flex gap-1 rounded-lg bg-surface-elevated/60 p-0.5">
+        <div className="flex gap-1 rounded-md bg-surface-elevated p-0.5">
           {(["easy", "normal", "hard"] as const).map((l) => (
             <button
               key={l}
