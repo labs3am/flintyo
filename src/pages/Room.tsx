@@ -313,7 +313,7 @@ export default function RoomPage() {
     <LandscapeShell>
     <main
       className={cn(
-        "w-full max-w-5xl mx-auto overflow-x-hidden p-2.5 md:p-4 flex flex-col gap-2",
+        "w-full max-w-5xl mx-auto overflow-x-hidden p-2.5 md:p-4 pb-[max(0.625rem,env(safe-area-inset-bottom))] md:pb-[max(1rem,env(safe-area-inset-bottom))] flex flex-col gap-2",
         room.status === "playing" && game
           ? "h-[100dvh] max-h-[100dvh] overflow-hidden"
           : "min-h-screen",
@@ -321,7 +321,7 @@ export default function RoomPage() {
     >
       <Seo title="Donkey Room — Flintyo" description="Join a Flintyo Donkey room with a room code and play with friends online." path={`/room/${code}`} />
       <h1 className="sr-only">Flintyo game room {code} — play the Donkey card game online</h1>
-      <header className="panel shrink-0 rounded-2xl px-3 py-2 flex items-center justify-between gap-2">
+      <header className="shrink-0 px-1 py-1 flex items-center justify-between gap-2">
         <button onClick={leave} className="btn-ghost px-3 py-1.5 inline-flex items-center gap-1.5 text-xs">
           <ArrowLeft className="h-3.5 w-3.5" /> Leave
         </button>

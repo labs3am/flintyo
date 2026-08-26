@@ -122,9 +122,9 @@ export default function PlayPage() {
 
   return (
     <LandscapeShell>
-    <main className="h-[100dvh] max-h-[100dvh] w-full max-w-5xl mx-auto overflow-hidden p-2.5 md:p-4 flex flex-col gap-2">
+    <main className="h-[100dvh] max-h-[100dvh] w-full max-w-5xl mx-auto overflow-hidden p-2.5 md:p-4 pb-[max(0.625rem,env(safe-area-inset-bottom))] md:pb-[max(1rem,env(safe-area-inset-bottom))] flex flex-col gap-2">
       <Seo title="Play Donkey — Flintyo" description="Play a round of Donkey against bots or on one shared phone." path="/play" />
-      <header className="panel shrink-0 rounded-2xl px-2.5 py-1.5 [@media(max-height:520px)]:py-0.5 flex items-center justify-between gap-2">
+      <header className="shrink-0 px-1 py-0.5 flex items-center justify-between gap-2">
         <Link to="/" className="btn-ghost px-3 py-1.5 inline-flex items-center gap-1.5 text-xs">
           <ArrowLeft className="h-3.5 w-3.5" /> Menu
         </Link>
