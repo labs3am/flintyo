@@ -9,7 +9,7 @@ import { expressionFor } from "@/lib/bhabhi/mood";
 import { sfx } from "@/lib/sound";
 import { legalCards, sortHand, SUIT_NAME, type GameState } from "@/lib/bhabhi/engine";
 import { ScoreBoard } from "./ScoreBoard";
-import { useIsPortrait, useTableRotated } from "./LandscapeShell";
+import { useIsPortrait, useTableRotated } from "@/lib/orientation";
 import type { Scores } from "@/lib/bhabhi/score";
 import type { SeatSide } from "./PlayerSeat";
 

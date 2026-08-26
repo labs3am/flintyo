@@ -23,4 +23,13 @@ export default tseslint.config(
       "@typescript-eslint/no-unused-vars": "off",
     },
   },
+  {
+    // shadcn UI primitives intentionally export cva variants + helpers alongside
+    // their components (the standard shadcn pattern) — Fast Refresh for these
+    // library files is a non-goal, so silence the HMR hint for them.
+    files: ["src/components/ui/**"],
+    rules: {
+      "react-refresh/only-export-components": "off",
+    },
+  },
 );
