@@ -5,9 +5,9 @@ import { Suit } from "./Suit";
 type Size = "sm" | "md" | "lg";
 
 const sizes: Record<Size, string> = {
-  sm: "h-16 w-11 text-[13px] rounded-lg",
-  md: "h-[5.5rem] w-16 text-[17px] rounded-xl",
-  lg: "h-28 w-20 text-[21px] rounded-2xl",
+  sm: "h-16 w-11 text-[13px] rounded-[6px]",
+  md: "h-[5.5rem] w-16 text-[17px] rounded-[8px]",
+  lg: "h-28 w-20 text-[21px] rounded-[10px]",
 };
 
 const FACE: Record<number, string> = { 11: "J", 12: "Q", 13: "K" };

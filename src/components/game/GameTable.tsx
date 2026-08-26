@@ -9,7 +9,7 @@ import { expressionFor } from "@/lib/bhabhi/mood";
 import { sfx } from "@/lib/sound";
 import { legalCards, sortHand, SUIT_NAME, type GameState } from "@/lib/bhabhi/engine";
 import { ScoreBoard } from "./ScoreBoard";
-import { useTableRotated } from "./LandscapeShell";
+import { useIsPortrait, useTableRotated } from "./LandscapeShell";
 import type { Scores } from "@/lib/bhabhi/score";
 import type { SeatSide } from "./PlayerSeat";
 
@@ -268,19 +268,16 @@ export function GameTable({
   // ---- hand fitting: every card visible, no horizontal scrolling ----------
   const handRef = useRef<HTMLDivElement>(null);
   const [handW, setHandW] = useState(0);
-  const rotated = useTableRotated();
+  const portrait = useIsPortrait();
+  const rotated = useTableRotated(); // always false — the table never physically rotates
   const [tightScreen, setTightScreen] = useState(false);
   const [wideScreen, setWideScreen] = useState(false);
   useEffect(() => {
-    // When the table is rotated the usable dimensions swap: the container is
-    // 100dvw tall and 100dvh wide, so height == innerWidth and width == innerHeight.
     const on = () => {
-      setTightScreen((rotated ? window.innerWidth : window.innerHeight) <= 560);
-      // Surround seating needs real room in BOTH axes: a rotated phone is wide
-      // but short, so forcing flanks there would squash the felt.
-      const w = rotated ? window.innerHeight : window.innerWidth;
-      const h = rotated ? window.innerWidth : window.innerHeight;
-      setWideScreen(w >= 768 && h >= 480);
+      setTightScreen(window.innerHeight <= 560);
+      // Compact screens (phones — short in either orientation) keep all the
+      // opponents along a tidy top strip; only wide desktop gets flanks.
+      setWideScreen(window.innerWidth >= 768 && window.innerHeight >= 480);
     };
     on();
     window.addEventListener("resize", on);
@@ -289,8 +286,8 @@ export function GameTable({
       window.removeEventListener("resize", on);
       window.removeEventListener("orientationchange", on);
     };
-  }, [rotated]);
-  const shortScreen = tightScreen;
+  }, []);
+  const shortScreen = tightScreen || portrait;
   const sm = (cls: string) => (shortScreen ? cls : "");
 
   // ---- seat layout: opponents surround the table --------------------------
@@ -310,10 +307,13 @@ export function GameTable({
     return () => ro.disconnect();
   }, []);
   const myCards = me ? sortHand(me.hand) : [];
-  const cardSize = shortScreen ? "md" : "lg";
-  const CARD_W = shortScreen ? 64 : 80;
+  // Portrait gets smaller cards + a tighter fan so the whole hand stays on
+  // screen in one or two rows; landscape phones keep a readable medium; desktop
+  // keeps the full-size cards.
+  const cardSize = shortScreen ? (portrait ? "sm" : "md") : "lg";
+  const CARD_W = shortScreen ? (portrait ? 44 : 64) : 80;
   // Never squeeze a card down to an unreadable sliver — wrap into a second row instead.
-  const MIN_STEP = 34;
+  const MIN_STEP = shortScreen ? (portrait ? 26 : 34) : 34;
   const perRowCap =
     handW > 0 ? Math.max(1, Math.floor((handW - CARD_W - 8) / MIN_STEP) + 1) : myCards.length;
   const rows = myCards.length > perRowCap ? 2 : 1;
@@ -332,7 +332,7 @@ export function GameTable({
       className={cn(
         "relative flex min-h-0 w-full max-w-full overflow-hidden flex-col gap-2",
         full
-          ? "fixed inset-0 z-50 h-[100dvh] bg-background p-2 pb-3"
+          ? "fixed inset-0 z-50 h-[100dvh] bg-background p-2 pl-[max(0.5rem,env(safe-area-inset-left))] pr-[max(0.5rem,env(safe-area-inset-right))] pt-[max(0.4rem,env(safe-area-inset-top))] pb-[max(0.625rem,env(safe-area-inset-bottom))]"
           : "flex-1",
       )}
     >
@@ -352,8 +352,8 @@ export function GameTable({
       {/* Opponent seats — surround the felt on wide screens, strip on narrow */}
       <div
         className={cn(
-          "relative min-h-0 flex-1",
-          surround ? "w-full" : "flex w-full flex-col gap-2",
+          "relative min-h-0",
+          surround ? "flex-1 w-full" : "w-full shrink-0 flex flex-col gap-2",
         )}
       >
         {surround ? (
@@ -420,14 +420,14 @@ export function GameTable({
       <div
         ref={arenaRef}
         className={cn(
-          "felt arena-vignette overflow-hidden rounded-[2rem] border flex flex-col items-center justify-center transition-all duration-200",
+          "felt arena-vignette overflow-hidden rounded-[1.6rem] border flex flex-col items-center justify-center transition-all duration-200",
           surround ? "absolute inset-x-2 bottom-2 top-[112px]" : "relative flex-1 min-h-0",
           shortScreen ? "p-2 pt-7 gap-1" : "p-3 pt-9 gap-2",
           dropReady
             ? "border-primary ring-2 ring-primary/70 scale-[1.01]"
             : drag
               ? "border-primary/50 border-dashed"
-              : "border-border/60",
+              : "border-white/[0.05]",
         )}
         style={
           full
@@ -444,7 +444,7 @@ export function GameTable({
             type="button"
             onClick={toggleFull}
             aria-label="Enter full screen"
-            className="absolute bottom-3 left-3 z-20 inline-flex items-center gap-1 rounded-lg border border-border bg-surface-elevated px-2.5 py-1.5 text-[11px] font-semibold text-foreground/90 transition hover:border-ink-faint active:scale-95 [touch-action:manipulation]"
+            className="absolute bottom-3 left-3 z-20 inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[11px] font-bold text-ink-muted transition hover:text-foreground active:scale-95 [touch-action:manipulation] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
           >
             <Maximize2 className="h-3.5 w-3.5" /> Full
           </button>
@@ -454,7 +454,8 @@ export function GameTable({
           {state.leadSuit ? `${SUIT_NAME[state.leadSuit]} led` : "New trick"}
         </div>
 
-        <div className="flex items-end justify-center gap-1.5 flex-wrap overflow-visible pt-1">
+        <div className="flex w-full min-w-0 max-w-full flex-col items-center justify-center gap-0.5 pt-1">
+        <div className="flex items-end justify-center gap-1.5 flex-wrap overflow-visible">
           {state.pile.length === 0 ? (
             reveal ? (
               reveal.cards.map(({ p, card }, idx, arr) => (
@@ -511,38 +512,39 @@ export function GameTable({
           </span>
         )}
         <p className={cn("text-center text-foreground/90 px-2", shortScreen ? "text-[10px] min-h-0" : "text-xs min-h-[1rem]")}>{state.lastEvent}</p>
+      </div>
 
         {/* Live standings */}
-        <div className="absolute top-3 left-3">
-          <span className="rounded-md border border-border bg-surface-elevated px-2 py-0.5 text-[11px] font-semibold text-ink-muted">
-            {alive} IN
-          </span>
-        </div>
+        <p className="pointer-events-none absolute top-3 left-3 z-10 text-[10px] font-semibold tracking-[0.14em] text-ink-faint">
+          {alive} IN
+        </p>
 
         {/* Scores toggle */}
         <button
           onClick={() => setTab((t) => (t === "scores" ? null : "scores"))}
           className={cn(
-            "absolute top-3 right-3 z-20 rounded-md border px-2.5 py-1 text-[11px] font-semibold transition active:scale-95 [touch-action:manipulation] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
-            tab === "scores" ? "border-primary bg-primary/15 text-primary" : "border-border bg-surface-elevated text-muted-foreground",
+            "absolute top-2.5 right-2.5 z-20 inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-bold transition [touch-action:manipulation] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
+            tab === "scores" ? "text-primary" : "text-ink-muted hover:text-foreground",
           )}
         >
           Scores
         </button>
 
 
-        {/* Turn banner */}
-        <div className={cn("absolute left-1/2 -translate-x-1/2", shortScreen ? "top-1" : "top-3")}>
-          <span
-            className={cn(
-              "rounded-md border px-3 py-1 text-xs font-bold",
-              myTurn
-                ? "bg-turn text-turn-foreground border-turn"
-                : "bg-surface-elevated text-muted-foreground border-border",
-            )}
-          >
-            {state.phase === "over" ? "ROUND OVER" : myTurn ? "YOUR TURN" : `${turnName.toUpperCase()}'S TURN`}
-          </span>
+        {/* Turn indicator — one integrated lead, not a boxed badge */}
+        <div className="pointer-events-none absolute left-1/2 top-1.5 z-10 -translate-x-1/2 text-center">
+          {state.phase === "over" ? (
+            <span className="font-game text-[0.85rem] tracking-[0.16em] text-ink-muted">ROUND OVER</span>
+          ) : myTurn ? (
+            <span className="inline-flex items-center gap-2 font-game text-[1rem] tracking-[0.08em] text-turn">
+              <span className="h-1.5 w-1.5 rounded-full bg-turn" />
+              YOUR TURN
+            </span>
+          ) : (
+            <span className="font-game text-[0.9rem] font-bold tracking-[0.02em] text-ink-muted">
+              {turnName}’s turn
+            </span>
+          )}
         </div>
 
 

@@ -27,7 +27,7 @@ const MILESTONES = [
   {
     date: "Today",
     title: "Play anywhere",
-    body: "Flintyo now runs AI matches, pass-and-play on one phone, and online rooms with a four-letter code. It is built mobile-first, landscape-locked at the table, and deliberately free of accounts.",
+    body: "Flintyo now runs AI matches, pass-and-play on one phone, and online rooms with a four-letter code. It is built mobile-first, adapting to portrait and landscape at the table, and deliberately free of accounts.",
     icon: Globe,
   },
 ];
@@ -42,8 +42,8 @@ const DECISIONS = [
     body: "The AI does not cheat. It tracks which suits opponents are likely out of, dumps dangerous high cards when void, and leads into suits it thinks others still hold. Easy is forgiving; Hard is competitive.",
   },
   {
-    title: "Landscape-first table",
-    body: "A hand of cards does not fit a portrait phone without scrolling. The table rotates to landscape, opponents sit in a single row, and the player's hand fans to fit the width automatically.",
+    title: "Adaptive table",
+    body: "The table works in both orientations. Hold the phone upright and the hand spreads across the full width in compact rows, opponents sit in a single row, and the felt always fits the screen — no rotation, no scrolling.",
   },
   {
     title: "Characters, not accounts",
@@ -234,7 +234,7 @@ export default function CaseStudy() {
             <div className="mt-6 space-y-3">
               {[
                 "A strong mechanic beats a broad feature list. Donkey has one clear loop, which made the UI easier to explain and the AI easier to tune.",
-                "Mobile web games must respect the device. Forcing landscape at the table removed more confusion than any tutorial could.",
+                "Mobile web games must respect the device. Letting the table adapt to how the phone is held removed more confusion than any tutorial could.",
                 "Invite links are part of the UX. The share message, room code, and join flow were redesigned as carefully as the deal animation.",
                 "Brand and game can share a name. Flintyo is the app; Donkey is the game. That distinction lets the product grow without confusing players.",
               ].map((lesson, i) => (

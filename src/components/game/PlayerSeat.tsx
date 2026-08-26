@@ -143,11 +143,6 @@ export function PlayerSeat({
             <i />
           </span>
         )}
-        {seat.isYou && seat.active && !seat.out && (
-          <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-turn">
-            Your turn
-          </span>
-        )}
       </div>
 
       {seat.active && !seat.out && side !== "top" && (
