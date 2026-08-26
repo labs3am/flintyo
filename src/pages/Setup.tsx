@@ -9,7 +9,8 @@ import { CharacterAvatar } from "@/components/game/Character";
 import { CHARACTERS, getCharacter } from "@/lib/characters";
 import { createRoom, getIdentity, saveIdentity } from "@/lib/room";
 import { setSoundEnabled, soundEnabled } from "@/lib/sound";
-import { LevelPicker, type Level } from "@/components/game/LevelPicker";
+import { LevelPicker } from "@/components/game/LevelPicker";
+import type { Level } from "@/lib/levels";
 import { TutorialModal } from "@/components/game/Tutorial";
 import { InlineInstallCard } from "@/components/InstallBanner";
 

@@ -17,7 +17,8 @@ import { ScoreBoard } from "@/components/game/ScoreBoard";
 import { useReactions } from "@/hooks/useReactions";
 import { sfx } from "@/lib/sound";
 import { cn } from "@/lib/utils";
-import { LevelPicker, LEVEL_LABEL, type Level } from "@/components/game/LevelPicker";
+import { LevelPicker } from "@/components/game/LevelPicker";
+import { LEVEL_LABEL, type Level } from "@/lib/levels";
 
 export default function RoomPage() {
   const { code = "" } = useParams<{ code: string }>();

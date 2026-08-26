@@ -111,19 +111,3 @@ export function TutorialModal({ onClose }: { onClose: () => void }) {
     </div>
   );
 }
-
-const SEEN_KEY = "flintyo.tutorial.seen";
-export const tutorialSeen = () => {
-  try {
-    return localStorage.getItem(SEEN_KEY) === "1";
-  } catch {
-    return true;
-  }
-};
-export const markTutorialSeen = () => {
-  try {
-    localStorage.setItem(SEEN_KEY, "1");
-  } catch {
-    /* ignore */
-  }
-};

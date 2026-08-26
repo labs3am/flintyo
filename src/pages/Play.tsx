@@ -9,9 +9,10 @@ import { createGame, playCard, type GameState } from "@/lib/bhabhi/engine";
 import { chooseCard, botDelay, type Difficulty } from "@/lib/bhabhi/ai";
 import { CHARACTERS, getCharacter } from "@/lib/characters";
 import { applyResult, type Scores } from "@/lib/bhabhi/score";
-import { TutorialModal, tutorialSeen, markTutorialSeen } from "@/components/game/Tutorial";
+import { TutorialModal } from "@/components/game/Tutorial";
+import { tutorialSeen, markTutorialSeen } from "@/lib/tutorial";
 import { useReactions } from "@/hooks/useReactions";
-import { EMOJI_REACTIONS } from "@/components/game/ReactionMenu";
+import { EMOJI_REACTIONS } from "@/lib/reactions";
 import { sfx } from "@/lib/sound";
 
 type Search = { mode: "ai" | "pass"; players: number; name: string; char: string; level: Difficulty };

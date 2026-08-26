@@ -1,12 +1,5 @@
 import { cn } from "@/lib/utils";
-
-export type Level = "easy" | "normal" | "hard";
-
-export const LEVEL_LABEL: Record<Level, string> = {
-  easy: "Easy",
-  normal: "Normal",
-  hard: "Hard",
-};
+import { LEVEL_LABEL, type Level } from "@/lib/levels";
 
 const BLURB: Record<Level, string> = {
   easy: "Plays loose and forgiving — good for learning.",

@@ -2,16 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Smile, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { sfx } from "@/lib/sound";
-
-export const EMOJI_REACTIONS = ["😂", "😈", "👀", "😱", "😭", "🔥", "💀", "🤡", "👏", "🫏"];
-
-export const ACTION_REACTIONS = [
-  { key: "LAUGH", emoji: "😂", label: "Laugh" },
-  { key: "MOCK", emoji: "🤪", label: "Mock" },
-  { key: "SHOCK", emoji: "😱", label: "Shock" },
-  { key: "HIT", emoji: "🍅", label: "Hit" },
-  { key: "GG", emoji: "🤝", label: "GG" },
-];
+import { EMOJI_REACTIONS, ACTION_REACTIONS } from "@/lib/reactions";
 
 const COOLDOWN_MS = 2500;
 const HIT_COOLDOWN_MS = 5000;
