@@ -2,6 +2,7 @@ import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
+import { Analytics } from "@vercel/analytics/react";
 import Landing from "./pages/Landing";
 import Setup from "./pages/Setup";
 import Rules from "./pages/Rules";
@@ -39,6 +40,7 @@ const App = () => {
       </Routes>
     </BrowserRouter>
     <Toaster />
+    <Analytics />
     {booting && <LoadingScreen onDone={() => setBooting(false)} />}
   </QueryClientProvider>
   );
