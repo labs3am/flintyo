@@ -11,7 +11,7 @@ import { createGame, playCard } from "@/lib/bhabhi/engine";
 import { chooseCard, botDelay, type Difficulty } from "@/lib/bhabhi/ai";
 import { CHARACTERS, getCharacter } from "@/lib/characters";
 import { RoomChat } from "@/components/game/RoomChat";
-import { fetchRoom, getIdentity, leaveRoom, mutateRoom, saveIdentity, shareRoom, subscribeRoom, whatsappUrl, type ChatMsg, type RoomState } from "@/lib/room";
+import { fetchRoom, getIdentity, leaveRoom, mutateRoom, normalizeRoomCode, saveIdentity, shareRoom, subscribeRoom, whatsappUrl, type ChatMsg, type RoomState } from "@/lib/room";
 import { applyResult } from "@/lib/bhabhi/score";
 import { ScoreBoard } from "@/components/game/ScoreBoard";
 import { useReactions } from "@/hooks/useReactions";
@@ -21,7 +21,8 @@ import { LevelPicker } from "@/components/game/LevelPicker";
 import { LEVEL_LABEL, type Level } from "@/lib/levels";
 
 export default function RoomPage() {
-  const { code = "" } = useParams<{ code: string }>();
+  const { code: rawCode = "" } = useParams<{ code: string }>();
+  const code = normalizeRoomCode(rawCode);
   const navigate = useNavigate();
   const [me, setMe] = useState(() => getIdentity());
   const [nameDraft, setNameDraft] = useState(() => getIdentity().name ?? "");
@@ -320,7 +321,7 @@ export default function RoomPage() {
           : "min-h-screen",
       )}
     >
-      <Seo title="Donkey Room — Flintyo" description="Join a Flintyo Donkey room with a room code and play with friends online." path={`/room/${code}`} />
+      <Seo title="Donkey Room — Flintyo" description="Join a Flintyo Donkey room with a room code and play with friends online." path={`/room/${code}`} noindex />
       <h1 className="sr-only">Flintyo game room {code} — play the Donkey card game online</h1>
       <header className="shrink-0 px-1 py-1 flex items-center justify-between gap-2">
         <button onClick={leave} className="btn-ghost px-3 py-1.5 inline-flex items-center gap-1.5 text-xs">
