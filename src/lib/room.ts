@@ -56,6 +56,12 @@ export const makeCode = () => {
   return Array.from({ length: 5 }, () => alphabet[Math.floor(Math.random() * alphabet.length)]).join("");
 };
 
+/** Normalise a room code supplied by a player (e.g. from the URL) so it can never
+ *  inject characters into realtime filters/channel names or the URL. */
+export function normalizeRoomCode(value: string | undefined | null): string {
+  return (value ?? "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8);
+}
+
 /* ------------------------------------------------------------------ *
  * Rooms are stored in the `rooms` table and synced live via realtime.
  * ------------------------------------------------------------------ */

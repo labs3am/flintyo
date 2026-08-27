@@ -305,12 +305,35 @@ export default function Landing() {
             <Link to="/rules" className="text-xs text-muted-foreground hover:text-primary">
               Donkey card game rules
             </Link>
+            <Link to="/about" className="text-xs text-muted-foreground hover:text-primary">
+              About
+            </Link>
+            <Link to="/contact" className="text-xs text-muted-foreground hover:text-primary">
+              Contact
+            </Link>
             <Link to="/case-study" className="text-xs text-muted-foreground hover:text-primary">
               Case study
             </Link>
             <Link to="/start" className="text-xs text-muted-foreground hover:text-primary">
               Start a game →
             </Link>
+          </div>
+          <div className="flex items-center gap-4 flex-wrap justify-center">
+            <Link to="/terms" className="text-[11px] text-muted-foreground/70 hover:text-primary">
+              Terms of Service
+            </Link>
+            <Link to="/privacy" className="text-[11px] text-muted-foreground/70 hover:text-primary">
+              Privacy Policy
+            </Link>
+            <Link to="/cookies" className="text-[11px] text-muted-foreground/70 hover:text-primary">
+              Cookie Policy
+            </Link>
+            <a
+              href="mailto:info@labs3am.com"
+              className="text-[11px] text-muted-foreground/70 hover:text-primary"
+            >
+              info@labs3am.com
+            </a>
           </div>
           <p className="text-[11px] text-muted-foreground/70">© {new Date().getFullYear()} Labs3am. All rights reserved.</p>
         </div>

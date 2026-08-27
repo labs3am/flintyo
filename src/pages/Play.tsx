@@ -37,9 +37,10 @@ function buildSeats(mode: "ai" | "pass", players: number, name: string, char: st
 export default function PlayPage() {
   const [params] = useSearchParams();
   const mode: Search["mode"] = params.get("mode") === "pass" ? "pass" : "ai";
-  const players = Math.min(6, Math.max(2, Number(params.get("players")) || 4));
-  const name = (params.get("name") || "You").slice(0, 14);
-  const char = params.get("char") || CHARACTERS[0].id;
+  const players = Math.min(6, Math.max(2, Math.round(Number(params.get("players")) || 4)));
+  const name = (params.get("name") ?? "").split("").filter((ch) => ch.charCodeAt(0) >= 32 && ch.charCodeAt(0) !== 127).join("").trim().slice(0, 24) || "You";
+  const charRaw = params.get("char") ?? "";
+  const char = CHARACTERS.some((c) => c.id === charRaw) ? charRaw : CHARACTERS[0].id;
   const levelParam = params.get("level");
   const level: Difficulty = levelParam === "easy" || levelParam === "hard" ? levelParam : "normal";
   const [state, setState] = useState<GameState | null>(null);
@@ -124,7 +125,7 @@ export default function PlayPage() {
   return (
     <LandscapeShell>
     <main className="h-[100dvh] max-h-[100dvh] w-full max-w-5xl mx-auto overflow-hidden p-2.5 md:p-4 pb-[max(0.625rem,env(safe-area-inset-bottom))] md:pb-[max(1rem,env(safe-area-inset-bottom))] flex flex-col gap-2">
-      <Seo title="Play Donkey — Flintyo" description="Play a round of Donkey against bots or on one shared phone." path="/play" />
+      <Seo title="Play Donkey — Flintyo" description="Play a round of Donkey against bots or on one shared phone." path="/play" noindex />
       <header className="shrink-0 px-1 py-0.5 flex items-center justify-between gap-2">
         <Link to="/" className="btn-ghost px-3 py-1.5 inline-flex items-center gap-1.5 text-xs">
           <ArrowLeft className="h-3.5 w-3.5" /> Menu
